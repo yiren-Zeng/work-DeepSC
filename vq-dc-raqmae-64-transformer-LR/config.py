@@ -1,0 +1,59 @@
+import torch
+import os
+
+
+class Config:
+    IN_CHANNELS = 3
+    OUT_CHANNELS = 3
+    NUM_DOWNSAMPLE_BLOCKS = 4
+    BASE_CHANNELS = 64
+
+    EMBEDDING_DIM_LIST = [128, 256, 512, 1024]
+    NUM_EMBEDDINGS_LIST = [64, 64, 64, 64]
+    COMMITMENT_COST = 0.25
+    RAQ_TARGET_LIST = [32, 32, 32, 32]
+    RAQ_TARGET_LIST_BEST = [32, 128, 64, 32]
+    RAQ_MIN_TRG = 32
+    RAQ_MAX_TRG = 4096
+    RAQ_SYNC_EVERY = 100
+
+    LEARNING_RATE_G = 1.75e-5
+    BETAS = (0.5, 0.999)
+
+    # === 【修改】有限码长传输参数 ===
+    # 1. 编码速率: 固定为 1/2
+    CHANNEL_CODING_RATE_TRAIN = 0.5
+    CHANNEL_CODING_RATE_VAL = 0.5
+
+    # 2. 调制参数: QPSK -> 2 bits per symbol
+    # 所指的 "调制阶数为 2" 在 QPSK 上通常指 2 bits/symbol (M=4)
+    MODULATION_BITS = 2
+
+    # 3. 码长: 固定为 256
+    BLOCK_LENGTH = 256
+
+    # 4. 信噪比范围: 0 ~ 15 dB
+    SNR_RANGE_DB = [0, 15]
+
+    CHANNEL_TYPE = "AWGN"
+    RICIAN_K_FACTOR = 10
+
+    # === 梯度累积配置 ===
+    TOTAL_BATCH_SIZE = 24
+    MICRO_BATCH_SIZE = 4
+
+    NUM_WORKERS = 8
+    PIN_MEMORY = True
+
+    # 请根据实际环境修改路径
+    TRAIN_DATASET_PATH = "/home/yi/.conda/envs/worka/xiaoxin/VQ-DeepSC-3/work-vq-deepsc/vq_deepsc/data/Cars196"
+    VAL_DATASET_PATH = "/home/yi/.conda/envs/worka/xiaoxin/VQ-DeepSC-3/work-vq-deepsc/vq_deepsc/data/Validation_set"
+    TEST_DATASET_PATH = "/home/yi/.conda/envs/worka/xiaoxin/VQ-DeepSC-3/work-vq-deepsc/vq_deepsc/data/Kodak"
+
+    DEVICE = "cuda:4" if torch.cuda.is_available() else "cpu"
+    CHECKPOINT_DIR = "./checkpoints"
+    LOG_DIR = "./logs"
+    SAVE_INTERVAL = 20
+    NUM_EPOCHS = 400
+    RESUME = True
+    RESUME_PATH = os.path.join(CHECKPOINT_DIR, "last_checkpoint.pth")

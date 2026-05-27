@@ -1,0 +1,66 @@
+# Python cache
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Environment / local config
+.env
+.venv/
+venv/
+conda-meta/
+
+# Logs
+*.log
+logs/
+wandb/
+runs/
+tensorboard/
+events.out.tfevents.*
+
+# Model checkpoints / weights
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.onnx
+checkpoints/
+checkpoint/
+**/checkpoints/
+**/checkpoint/
+
+# Experiment outputs / snapshots
+experiments/checkpoints/
+experiments/snapshots/
+**/experiments/checkpoints/
+**/experiments/snapshots/
+outputs/
+output/
+results/
+result/
+samples/
+save/
+saved/
+
+# Datasets / data
+data/
+dataset/
+datasets/
+Cars196/
+Kodak/
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# BPG / JPEG generated images and test data
+BPG/kodak/
+BPG/kodak-decompress-*/
+JPEG/kodak/
+JPEG/kodak-jpeg-*/
