@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .semantic_encoder import make_activation, make_norm
+
 
 class SkipConnectionDropout(nn.Module):
     def __init__(self, p=0.3):
@@ -22,25 +24,27 @@ class SkipConnectionDropout(nn.Module):
 
 
 class ResidualBlock(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, norm_type="batch", num_groups=32, activation="prelu"):
         super().__init__()
         self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
-        self.bn = nn.BatchNorm2d(channels)
-        self.prelu = nn.PReLU()
+        self.norm = make_norm(channels, norm_type, num_groups)
+        self.act = make_activation(activation)
         self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
 
     def forward(self, x):
         identity = x
         out = self.conv1(x)
-        out = self.bn(out)
-        out = self.prelu(out)
+        out = self.norm(out)
+        out = self.act(out)
         out = self.conv2(out)
         out = out + identity
         return out
 
 
 class UpSampleBlock(nn.Module):
-    def __init__(self, in_ch, out_ch, up_mode: str = "nearest", scale_factor: int = 2):
+    def __init__(self, in_ch, out_ch, up_mode: str = "nearest", scale_factor: int = 2,
+                 norm_type="batch", num_groups=32, activation="prelu",
+                 num_res_blocks=1):
         """
         上采样块
         :param in_ch: 输入通道数
@@ -49,31 +53,36 @@ class UpSampleBlock(nn.Module):
         :param scale_factor: 上采样倍率（2=2倍上采样，4=4倍上采样）
         """
         super().__init__()
-        self.res = ResidualBlock(in_ch)
+        self.res = nn.Sequential(*[
+            ResidualBlock(in_ch, norm_type, num_groups, activation)
+            for _ in range(num_res_blocks)
+        ])
         self.up_mode = up_mode
         self.scale_factor = scale_factor
         self.conv = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=1, padding=1)
-        self.bn = nn.BatchNorm2d(out_ch)
-        self.prelu = nn.PReLU()
+        self.norm = make_norm(out_ch, norm_type, num_groups)
+        self.act = make_activation(activation)
 
     def forward(self, x):
         x = self.res(x)
         x = F.interpolate(x, scale_factor=self.scale_factor, mode=self.up_mode,
                           align_corners=False if self.up_mode == "bilinear" else None)
         x = self.conv(x)
-        x = self.bn(x)
-        x = self.prelu(x)
+        x = self.norm(x)
+        x = self.act(x)
         return x
 
 
 class SemanticDecoder(nn.Module):
     """
-    二层解码器: 2次上采样 + skip connection
-    第一层2倍上采样，第二层4倍上采样（与编码器 [4x, 2x] 下采样对称）
-    输入 [F̂1,F̂2] → 输出 (B,3,256,256)
+    可配置多层解码器。
+
+    上采样倍率与编码器 strides 反序对称；前 L-1 个上采样块使用 skip connection。
     """
     def __init__(self, embedding_dims, out_channels, up_mode: str = "nearest",
-                 skip_dropout_p=None, upsample_scales=None):
+                 skip_dropout_p=None, upsample_scales=None,
+                 norm_type="batch", num_groups=32, activation="prelu",
+                 num_res_blocks=1):
         """
         embedding_dims: 各尺度量化特征通道列表（如 [128,256]，与编码器输出对应）
         out_channels:   输出图像通道数（RGB=3）
@@ -93,10 +102,8 @@ class SemanticDecoder(nn.Module):
         self.upsample_scales = upsample_scales
 
         # 每层一个独立的 SkipConnectionDropout（前 L-1 层有 skip，最后一层无 skip）
-        num_skip = self.L - 1  # 1
+        num_skip = self.L - 1
         if skip_dropout_p and len(skip_dropout_p) >= num_skip:
-            # skip_dropout_p = [Layer0_p]
-            # 循环中 i=0 → Layer0，所以反序
             self.skip_dropouts = nn.ModuleList([
                 SkipConnectionDropout(p=skip_dropout_p[num_skip - 1 - i]) for i in range(num_skip)
             ])
@@ -108,7 +115,7 @@ class SemanticDecoder(nn.Module):
 
         self.init = nn.Sequential(
             nn.Conv2d(deepest_c, deepest_c, 3, 1, 1),
-            nn.PReLU(),
+            make_activation(activation),
         )
 
         blocks = []
@@ -120,8 +127,14 @@ class SemanticDecoder(nn.Module):
             else:
                 # 最后一块不再 concat，给一个合理的输出通道
                 out_ch = self.embedding_dims[0]       # 例如 128
-            blocks.append(UpSampleBlock(in_ch, out_ch, up_mode=self.up_mode,
-                                        scale_factor=self.upsample_scales[i]))
+            blocks.append(UpSampleBlock(
+                in_ch, out_ch, up_mode=self.up_mode,
+                scale_factor=self.upsample_scales[i],
+                norm_type=norm_type,
+                num_groups=num_groups,
+                activation=activation,
+                num_res_blocks=num_res_blocks,
+            ))
             # 若还有下一次，需要为"concat 后"的通道数做准备
             if i < self.L - 1:
                 in_ch = out_ch * 2  # 与下一次要拼接的同尺度特征通道相加
@@ -135,7 +148,7 @@ class SemanticDecoder(nn.Module):
     def set_skip_dropout_p(self, p_list):
         """
         动态设置各层跳跃连接 Dropout 概率
-        p_list: [Layer0_p]（按层号排列）
+        p_list: 从浅层到深层排列，长度为 L-1
         """
         if p_list is None or len(p_list) < self.L - 1:
             return
@@ -147,8 +160,8 @@ class SemanticDecoder(nn.Module):
     def forward(self, quant_feats):
         """
         quant_feats: list[Tensor]，从浅到深排列：
-            [F̂1(B,128,64,64), F̂2(B,256,32,32)]
-        返回：Î，形状 (B, out_channels, H, W)（假设 H=W=256）
+            [F̂1, F̂2, ... F̂L]
+        返回：Î，形状 (B, out_channels, H, W)
         """
         assert len(quant_feats) == self.L, f"尺度数不匹配：{len(quant_feats)} vs L={self.L}"
 

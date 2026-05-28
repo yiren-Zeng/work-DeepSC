@@ -5,12 +5,12 @@ from .semantic_encoder import SemanticEncoder
 from .semantic_decoder import SemanticDecoder
 from .vector_quantizer import VectorQuantizer
 from .channel import FiniteBlocklengthChannel
-from config import Config
+from .attention import BottleneckAttentionStack
 
 
 class DeepSC(nn.Module):
     """
-    二层 U-Net (4x/2x 下采样) + SimVQ
+    Configurable multi-layer U-Net + SimVQ.
     """
     def __init__(self,
                  in_channels,
@@ -21,18 +21,58 @@ class DeepSC(nn.Module):
                  embedding_dim_list,
                  commitment_cost,
                  device,
-                 strides=None
+                 strides=None,
+                 skip_dropout_p=None,
+                 channel_coding_rate_train=0.5,
+                 channel_coding_rate_val=0.5,
+                 block_length=256,
+                 snr_range_db=None,
+                 norm_type="batch",
+                 norm_groups=32,
+                 activation="prelu",
+                 encoder_res_blocks=1,
+                 decoder_res_blocks=1,
+                 upsample_mode="nearest",
+                 use_bottleneck_attention=False,
+                 bottleneck_attention_blocks=1,
                  ):
         super(DeepSC, self).__init__()
-        self.semantic_encoder = SemanticEncoder(in_channels, num_downsample_blocks, base_channels, strides=strides)
-        # 解码器上采样倍率与编码器下采样步幅对称（反序）
+        if len(num_embeddings_list) != num_downsample_blocks:
+            raise ValueError("num_embeddings_list length must match num_downsample_blocks")
+        if len(embedding_dim_list) != num_downsample_blocks:
+            raise ValueError("embedding_dim_list length must match num_downsample_blocks")
+        if strides is not None and len(strides) != num_downsample_blocks:
+            raise ValueError("strides length must match num_downsample_blocks")
+
+        self.semantic_encoder = SemanticEncoder(
+            in_channels, num_downsample_blocks, base_channels, strides=strides,
+            norm_type=norm_type,
+            num_groups=norm_groups,
+            activation=activation,
+            num_res_blocks=encoder_res_blocks,
+        )
         if strides is not None:
             upsample_scales = list(reversed(strides))
         else:
             upsample_scales = None
-        self.semantic_decoder = SemanticDecoder(embedding_dim_list, out_channels,
-                                                skip_dropout_p=Config.SKIP_DROPOUT_P_INIT,
-                                                upsample_scales=upsample_scales)
+        self.semantic_decoder = SemanticDecoder(
+            embedding_dim_list, out_channels,
+            up_mode=upsample_mode,
+            skip_dropout_p=skip_dropout_p,
+            upsample_scales=upsample_scales,
+            norm_type=norm_type,
+            num_groups=norm_groups,
+            activation=activation,
+            num_res_blocks=decoder_res_blocks,
+        )
+        if use_bottleneck_attention:
+            self.bottleneck_attention = BottleneckAttentionStack(
+                embedding_dim_list[-1],
+                num_blocks=bottleneck_attention_blocks,
+                num_groups=norm_groups,
+            )
+        else:
+            self.bottleneck_attention = nn.Identity()
         self.vector_quantizers = nn.ModuleList()
         for i in range(num_downsample_blocks):
             self.vector_quantizers.append(VectorQuantizer(
@@ -44,10 +84,14 @@ class DeepSC(nn.Module):
         self.device = device
         self.num_embeddings_list = num_embeddings_list
         self.embedding_dim_list = embedding_dim_list
+        self.channel_coding_rate_train = channel_coding_rate_train
+        self.channel_coding_rate_val = channel_coding_rate_val
+        self.snr_range_db = snr_range_db or [0, 15]
+        self.channel_prob = 1.0
 
         self.channel = FiniteBlocklengthChannel(
-            channel_coding_rate=Config.CHANNEL_CODING_RATE_TRAIN,
-            coded_block_length_bits=Config.BLOCK_LENGTH,
+            channel_coding_rate=channel_coding_rate_train,
+            coded_block_length_bits=block_length,
             device=self.device
         )
 
@@ -60,31 +104,34 @@ class DeepSC(nn.Module):
             return random.choice([2, 4])
 
     def forward_train(self, x):
-        snr_db = random.uniform(Config.SNR_RANGE_DB[0], Config.SNR_RANGE_DB[1])
+        snr_db = random.uniform(self.snr_range_db[0], self.snr_range_db[1])
         snr_tensor = torch.tensor(snr_db, device=self.device)
         current_mod_bits = self._sample_mod_bits(snr_db)
-        current_rc = Config.CHANNEL_CODING_RATE_TRAIN
+        current_rc = self.channel_coding_rate_train
 
         encoder_features = self.semantic_encoder(x)
+        encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
 
         quantized_corrupted = []
         vq_losses = []
+        use_channel = random.random() < self.channel_prob
 
         for i, feat in enumerate(encoder_features):
             vq_loss, quantized_clean, encoding_idx = self.vector_quantizers[i](feat)
             vq_losses.append(vq_loss)
 
-            corrupted_idx, _ = self.channel.apply_channel_noise(
-                encoding_idx,
-                self.num_embeddings_list[i],
-                snr_tensor,
-                current_rc,
-                mod_bits=current_mod_bits
-            )
-
-            quantized_noisy = self.vector_quantizers[i].get_quantized_features(corrupted_idx)
-
-            quantized_final = quantized_clean + (quantized_noisy - quantized_clean).detach()
+            if use_channel:
+                corrupted_idx, _ = self.channel.apply_channel_noise(
+                    encoding_idx,
+                    self.num_embeddings_list[i],
+                    snr_tensor,
+                    current_rc,
+                    mod_bits=current_mod_bits
+                )
+                quantized_noisy = self.vector_quantizers[i].get_quantized_features(corrupted_idx)
+                quantized_final = quantized_clean + (quantized_noisy - quantized_clean).detach()
+            else:
+                quantized_final = quantized_clean
             quantized_corrupted.append(quantized_final)
 
         reconstructed_images = self.semantic_decoder(quantized_corrupted)
@@ -92,45 +139,54 @@ class DeepSC(nn.Module):
         return {
             "reconstructed_images": reconstructed_images,
             "vq_losses": vq_losses,
-            "current_snr": snr_db,
+            "current_snr": snr_db if use_channel else None,
+            "channel_used": use_channel,
+            "channel_prob": self.channel_prob,
         }
 
     def forward_val(self, x):
-        snr_db = random.uniform(Config.SNR_RANGE_DB[0], Config.SNR_RANGE_DB[1])
+        snr_db = random.uniform(self.snr_range_db[0], self.snr_range_db[1])
         snr_tensor = torch.tensor(snr_db, device=self.device)
         current_mod_bits = self._sample_mod_bits(snr_db)
-        current_rc = Config.CHANNEL_CODING_RATE_VAL
+        current_rc = self.channel_coding_rate_val
 
         encoder_features = self.semantic_encoder(x)
+        encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
 
         quantized_corrupted = []
         vq_losses = []
+        use_channel = random.random() < self.channel_prob
 
         for i, feat in enumerate(encoder_features):
-            vq_loss, _, encoding_idx = self.vector_quantizers[i](feat)
+            vq_loss, quantized_clean, encoding_idx = self.vector_quantizers[i](feat)
             vq_losses.append(vq_loss)
 
-            corrupted_idx, _ = self.channel.apply_channel_noise(
-                encoding_idx,
-                self.num_embeddings_list[i],
-                snr_tensor,
-                current_rc,
-                mod_bits=current_mod_bits
-            )
-
-            quantized_noisy = self.vector_quantizers[i].get_quantized_features(corrupted_idx)
-            quantized_corrupted.append(quantized_noisy)
+            if use_channel:
+                corrupted_idx, _ = self.channel.apply_channel_noise(
+                    encoding_idx,
+                    self.num_embeddings_list[i],
+                    snr_tensor,
+                    current_rc,
+                    mod_bits=current_mod_bits
+                )
+                quantized_final = self.vector_quantizers[i].get_quantized_features(corrupted_idx)
+            else:
+                quantized_final = quantized_clean
+            quantized_corrupted.append(quantized_final)
 
         reconstructed_images = self.semantic_decoder(quantized_corrupted)
 
         return {
             "reconstructed_images": reconstructed_images,
             "vq_losses": vq_losses,
-            "current_snr": snr_db,
+            "current_snr": snr_db if use_channel else None,
+            "channel_used": use_channel,
+            "channel_prob": self.channel_prob,
         }
 
     def forward_test(self, x):
         encoder_features = self.semantic_encoder(x)
+        encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
         indices_list = []
         for i, feat in enumerate(encoder_features):
             _, _, encoding_idx = self.vector_quantizers[i](feat)
@@ -145,95 +201,5 @@ class DeepSC(nn.Module):
         reconstructed_image = self.semantic_decoder(quantized_features)
         return reconstructed_image
 
-    @torch.no_grad()
-    def compute_codebook_utilization(self, dataloader, max_batches=None, device=None):
-        """
-        遍历数据集，统计 Source 码本的利用率
-
-        Args:
-            dataloader: 数据加载器
-            max_batches: 最多统计多少个 batch (None=全部)
-            device: 计算设备
-
-        Returns:
-            dict: {
-                'src': [Layer0_stats, Layer1_stats, ...]
-            }
-        """
-        if device is None:
-            device = self.device
-
-        self.eval()
-
-        num_layers = len(self.vector_quantizers)
-
-        # 累积所有 batch 的索引
-        all_indices_src = [[] for _ in range(num_layers)]
-
-        batch_count = 0
-        for images in dataloader:
-            if max_batches is not None and batch_count >= max_batches:
-                break
-
-            images = images.to(device)
-            encoder_features = self.semantic_encoder(images)
-
-            for i, feat in enumerate(encoder_features):
-                # === Source 支路 ===
-                _, _, encoding_idx_src = self.vector_quantizers[i](feat)
-                all_indices_src[i].append(encoding_idx_src.cpu())
-
-            batch_count += 1
-
-        # 统计各层码本利用率
-        results = {'src': []}
-
-        for i in range(num_layers):
-            # --- Source 支路 ---
-            src_all = torch.cat(all_indices_src[i], dim=0)
-            src_stats = VectorQuantizer.compute_codebook_stats(src_all, self.num_embeddings_list[i])
-            # 计算源码本码字间最小L2距离与坍缩统计
-            src_codebook = self.vector_quantizers[i].codebook.projected_weight()
-            src_l2_stats = VectorQuantizer.compute_min_l2_distance(src_codebook)
-            src_stats['min_l2_dist'] = src_l2_stats['min_l2_dist']
-            src_stats['collapse_count'] = src_l2_stats['collapse_count']
-            src_stats['collapse_ratio'] = src_l2_stats['collapse_ratio']
-            results['src'].append(src_stats)
-
-        return results
-
-    @staticmethod
-    def print_codebook_utilization(results, num_embeddings_list=None):
-        """
-        格式化打印码本利用率统计结果
-
-        Args:
-            results: compute_codebook_utilization 返回的字典
-            num_embeddings_list: 各层码本大小列表 (可选，用于显示)
-        """
-        num_layers = len(results['src'])
-
-        print("\n" + "=" * 80)
-        print("  码本利用率统计报告 (Codebook Utilization Report)")
-        print("=" * 80)
-
-        for i in range(num_layers):
-            k_src = num_embeddings_list[i] if num_embeddings_list else "?"
-
-            print(f"\n  Layer {i} (K={k_src})")
-            print("  " + "-" * 60)
-
-            # Source 支路
-            s = results['src'][i]
-            print(f"  [SimVQ] 活跃率: {s['active_ratio']:.2%}  |  "
-                  f"活跃码字: {s['active_count']}/{k_src}  |  "
-                  f"死码字: {s['dead_count']}  |  "
-                  f"困惑度: {s['perplexity']:.1f}/{k_src}  |  "
-                  f"最小L2距离: {s['min_l2_dist']:.4f}  |  "
-                  f"坍缩码字: {s['collapse_count']}/{k_src} ({s['collapse_ratio']:.2%})")
-
-        # 汇总
-        print("\n" + "-" * 80)
-        src_avg = sum(s['active_ratio'] for s in results['src']) / num_layers
-        print(f"  [SimVQ] 平均活跃率: {src_avg:.2%}")
-        print("=" * 80 + "\n")
+    def set_channel_prob(self, channel_prob):
+        self.channel_prob = float(max(0.0, min(1.0, channel_prob)))

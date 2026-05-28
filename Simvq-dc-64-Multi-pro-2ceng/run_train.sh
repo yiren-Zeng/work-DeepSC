@@ -7,13 +7,20 @@ cd /workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng
 mkdir -p checkpoints
 mkdir -p experiments/logs
 
-RUN_ID="${RUN_ID:-$(date +%Y%m%d-%H%M%S)}"
+EXPERIMENT_NAME="${EXPERIMENT_NAME:-$(python - <<'PY'
+from config import Config
+Config.validate()
+print(Config.EXPERIMENT_NAME)
+PY
+)}"
+RUN_ID="${RUN_ID:-${EXPERIMENT_NAME}-$(date +%Y%m%d-%H%M%S)}"
 GPU_ID="${GPU_ID:-3}"
 LOG_FILE="experiments/logs/train_${RUN_ID}.log"
 
 export EXPERIMENT_RUN_ID="$RUN_ID"
 export PYTHONUNBUFFERED=1
 echo "Run ID: ${RUN_ID}"
+echo "Experiment: ${EXPERIMENT_NAME}"
 echo "GPU ID: ${GPU_ID}"
 echo "Log file: ${LOG_FILE}"
 CUDA_VISIBLE_DEVICES="$GPU_ID" python -u train.py 2>&1 | tee "$LOG_FILE"

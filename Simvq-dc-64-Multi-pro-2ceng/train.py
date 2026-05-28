@@ -2,80 +2,35 @@ import torch
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import os
-import random
-import numpy as np
-import csv
 from datetime import datetime
 from config import Config
 from models.deepsc import DeepSC
 from losses.deepsc_loss import DeepSCLoss
 from data.datasets import get_dataloader
-
-
-def compute_schedule(epoch, num_epochs, cfg):
-    """
-    根据当前 epoch 计算 Dropout 概率和损失权重
-    返回 (dropout_p_list, loss_weights, phase_desc)
-    """
-    phase1_end = int(cfg.PHASE1_END * num_epochs)  # 240
-    phase2_end = int(cfg.PHASE2_END * num_epochs)  # 360
-
-    if epoch < phase1_end:
-        # 阶段1：深层强制拓荒期
-        dropout_p = list(cfg.SKIP_DROPOUT_P_INIT)
-        loss_weights = list(cfg.LAYER_LOSS_WEIGHTS_INIT)
-        phase_desc = "Phase1-拓荒"
-    elif epoch < phase2_end:
-        # 阶段2：全层复苏与退火期（线性插值）
-        progress = (epoch - phase1_end) / (phase2_end - phase1_end)
-        dropout_p = [init * (1 - progress) + final * progress
-                     for init, final in zip(cfg.SKIP_DROPOUT_P_INIT, cfg.SKIP_DROPOUT_P_FINAL)]
-        loss_weights = [init + (final - init) * progress
-                        for init, final in zip(cfg.LAYER_LOSS_WEIGHTS_INIT, cfg.LAYER_LOSS_WEIGHTS_FINAL)]
-        phase_desc = f"Phase2-退火({progress:.0%})"
-    else:
-        # 阶段3：无损高保真微调期
-        dropout_p = list(cfg.SKIP_DROPOUT_P_FINAL)
-        loss_weights = list(cfg.LAYER_LOSS_WEIGHTS_FINAL)
-        phase_desc = "Phase3-微调"
-
-    return dropout_p, loss_weights, phase_desc
-
-
-def setup_seed(seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    print(f"[Info] Random seed set to {seed}")
-
-
-def append_epoch_record(path, row):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    fieldnames = [
-        "run_id", "epoch", "train_recon", "train_vq", "val_recon",
-        "best_val_recon", "is_best", "phase", "learning_rate"
-    ]
-    write_header = not os.path.exists(path)
-    with open(path, "a", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
-        if write_header:
-            writer.writeheader()
-        writer.writerow(row)
+from monitoring.codebook import (
+    compute_codebook_utilization,
+    print_codebook_utilization,
+    write_codebook_tensorboard,
+)
+from training.schedules import compute_schedule
+from utils.experiment_io import append_epoch_record
+from utils.reproducibility import setup_seed
 
 
 def main():
     cfg = Config()
+    cfg.validate()
     setup_seed(42)
-    run_id = os.environ.get("EXPERIMENT_RUN_ID", datetime.now().strftime("%Y%m%d-%H%M%S"))
-    metrics_path = os.path.join("experiments", "epoch_metrics.csv")
+    run_id = os.environ.get(
+        "EXPERIMENT_RUN_ID",
+        f"{cfg.EXPERIMENT_NAME}-{datetime.now().strftime('%Y%m%d-%H%M%S')}",
+    )
+    metrics_path = cfg.METRICS_PATH
 
     device = torch.device(cfg.DEVICE)
     print(f"Start training on {device}")
+    print(f"[Info] Experiment name: {cfg.EXPERIMENT_NAME}")
+    print(f"[Info] Experiment stage: {cfg.EXPERIMENT_STAGE}")
     print(f"[Info] Experiment run ID: {run_id}")
     print(f"[Info] Epoch metrics file: {metrics_path}")
     print(f"[Info] Checkpoint directory: {cfg.CHECKPOINT_DIR}")
@@ -89,7 +44,20 @@ def main():
     print(f"  - 总Batch Size：{cfg.TOTAL_BATCH_SIZE}")
     print(f"  - 小Batch Size：{cfg.MICRO_BATCH_SIZE}")
     print(f"  - 梯度累积步数: {accumulation_steps}")
+    print(f"  - U-Net层数: {cfg.UNET_DEPTH}")
     print(f"  - 下采样步幅: {cfg.DOWNSAMPLE_STRIDES}")
+    print(f"  - 总下采样倍率: {cfg.architecture_summary()['total_downsample']}x")
+    print(f"  - 估算源端BPP: {cfg.ESTIMATED_SOURCE_BPP:.4f}")
+    print(f"  - 每层特征维度: {cfg.EMBEDDING_DIM_LIST}")
+    print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
+    print(f"  - 归一化/激活: {cfg.NORM_TYPE} / {cfg.ACTIVATION}")
+    print(f"  - 编码器/解码器残差块数: {cfg.ENCODER_RES_BLOCKS} / {cfg.DECODER_RES_BLOCKS}")
+    print(f"  - 上采样方式: {cfg.UPSAMPLE_MODE}")
+    print(f"  - Bottleneck Attention: {cfg.USE_BOTTLENECK_ATTENTION}, blocks={cfg.BOTTLENECK_ATTENTION_BLOCKS}")
+    print(f"  - 重建损失: MSE*{cfg.MSE_LOSS_WEIGHT} + MS-SSIM*{cfg.MS_SSIM_LOSS_WEIGHT}")
+    print(f"  - 信道课程: epoch<{cfg.CHANNEL_PROB_START_EPOCH}:0, "
+          f"{cfg.CHANNEL_PROB_START_EPOCH}-{cfg.CHANNEL_PROB_END_EPOCH}:线性升至1, "
+          f">={cfg.CHANNEL_PROB_END_EPOCH}:1")
     print(f"  - VQ损失层权重(初始): {cfg.LAYER_LOSS_WEIGHTS_INIT}")
     print(f"  - VQ损失层权重(最终): {cfg.LAYER_LOSS_WEIGHTS_FINAL}")
     print(f"  - 跳跃连接Dropout(初始): {cfg.SKIP_DROPOUT_P_INIT}")
@@ -113,7 +81,20 @@ def main():
         embedding_dim_list=cfg.EMBEDDING_DIM_LIST,
         commitment_cost=cfg.COMMITMENT_COST,
         device=device,
-        strides=cfg.DOWNSAMPLE_STRIDES
+        strides=cfg.DOWNSAMPLE_STRIDES,
+        skip_dropout_p=cfg.SKIP_DROPOUT_P_INIT,
+        channel_coding_rate_train=cfg.CHANNEL_CODING_RATE_TRAIN,
+        channel_coding_rate_val=cfg.CHANNEL_CODING_RATE_VAL,
+        block_length=cfg.BLOCK_LENGTH,
+        snr_range_db=cfg.SNR_RANGE_DB,
+        norm_type=cfg.NORM_TYPE,
+        norm_groups=cfg.GROUP_NORM_GROUPS,
+        activation=cfg.ACTIVATION,
+        encoder_res_blocks=cfg.ENCODER_RES_BLOCKS,
+        decoder_res_blocks=cfg.DECODER_RES_BLOCKS,
+        upsample_mode=cfg.UPSAMPLE_MODE,
+        use_bottleneck_attention=cfg.USE_BOTTLENECK_ATTENTION,
+        bottleneck_attention_blocks=cfg.BOTTLENECK_ATTENTION_BLOCKS,
     ).to(device)
 
     # BN 动量调整
@@ -125,7 +106,11 @@ def main():
             if isinstance(module, torch.nn.BatchNorm2d):
                 module.momentum = new_momentum
 
-    deepsc_loss_fn = DeepSCLoss(layer_weights=cfg.LAYER_LOSS_WEIGHTS_INIT).to(device)
+    deepsc_loss_fn = DeepSCLoss(
+        layer_weights=cfg.LAYER_LOSS_WEIGHTS_INIT,
+        mse_weight=cfg.MSE_LOSS_WEIGHT,
+        ms_ssim_weight=cfg.MS_SSIM_LOSS_WEIGHT,
+    ).to(device)
 
     # 参数分组：SimVQ 码本投影层单独学习率
     proj_params = []
@@ -190,8 +175,9 @@ def main():
 
     for epoch in range(start_epoch, cfg.NUM_EPOCHS):
         # === 调度：更新 Dropout 概率和损失权重 ===
-        dropout_p, loss_weights, phase_desc = compute_schedule(epoch, cfg.NUM_EPOCHS, cfg)
+        dropout_p, loss_weights, channel_prob, phase_desc = compute_schedule(epoch, cfg.NUM_EPOCHS, cfg)
         deepsc_model.semantic_decoder.set_skip_dropout_p(dropout_p)
+        deepsc_model.set_channel_prob(channel_prob)
         deepsc_loss_fn.set_layer_weights(loss_weights)
 
         deepsc_model.train()
@@ -221,7 +207,8 @@ def main():
             total_recon_losses += recon_loss.item()
             total_vq_losses += vq_loss.item()
 
-            current_snr = out.get("current_snr", 0.0)
+            current_snr = out.get("current_snr")
+            snr_desc = "clean" if current_snr is None else f"{current_snr:.2f} dB"
 
             if do_step:
                 torch.nn.utils.clip_grad_norm_(deepsc_model.parameters(), max_norm=1.0)
@@ -231,9 +218,11 @@ def main():
             if i % (accumulation_steps * 10) == 0:
                 print(f"Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], Step [{i + 1}/{steps_per_epoch}], "
                       f"Recon: {recon_loss.item():.4f}, VQ: {vq_loss.item():.4f}, "
-                      f"SNR: {current_snr:.2f} dB")
-                writer.add_scalar("Train/SNR", current_snr, global_step)
+                      f"ChannelProb: {channel_prob:.2f}, SNR: {snr_desc}")
+                if current_snr is not None:
+                    writer.add_scalar("Train/SNR", current_snr, global_step)
                 writer.add_scalar("Train/Loss_Step", recon_loss.item() + vq_loss.item(), global_step)
+                writer.add_scalar("Train/ChannelProb", channel_prob, global_step)
 
             global_step += 1
 
@@ -244,12 +233,14 @@ def main():
 
         print(f"[{phase_desc}] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], "
               f"Recon: {avg_recon:.4f}, VQ: {avg_vq:.4f}, "
+              f"ChannelProb: {channel_prob:.2f}, "
               f"Dropout: {[f'{p:.2f}' for p in dropout_p]}, "
               f"LossW: {[f'{w:.1f}' for w in loss_weights]}")
 
         writer.add_scalar("Loss/Train/Recon", avg_recon, epoch)
         writer.add_scalar("Loss/Train/VQ", avg_vq, epoch)
         writer.add_scalar("Loss/Train/Total", avg_recon + avg_vq, epoch)
+        writer.add_scalar("Schedule/ChannelProb", channel_prob, epoch)
         # 记录调度参数
         for li, p in enumerate(dropout_p):
             writer.add_scalar(f"Schedule/Dropout_L{li}", p, epoch)
@@ -278,20 +269,14 @@ def main():
         codebook_monitor_interval = 10
         if (epoch + 1) % codebook_monitor_interval == 0:
             print(f"\n[Codebook Utilization] Epoch {epoch + 1} - 统计中...")
-            cb_stats = deepsc_model.compute_codebook_utilization(
+            cb_stats = compute_codebook_utilization(
+                deepsc_model,
                 val_dataloader,
                 max_batches=20,
                 device=device
             )
-            # 打印到控制台
-            DeepSC.print_codebook_utilization(cb_stats, cfg.NUM_EMBEDDINGS_LIST)
-
-            # 记录到 TensorBoard
-            for i in range(len(cb_stats['src'])):
-                writer.add_scalar(f"Codebook/L{i}/ActiveRatio", cb_stats['src'][i]['active_ratio'], epoch)
-                writer.add_scalar(f"Codebook/L{i}/Perplexity", cb_stats['src'][i]['perplexity'], epoch)
-                writer.add_scalar(f"Codebook/L{i}/MinL2Dist", cb_stats['src'][i]['min_l2_dist'], epoch)
-                writer.add_scalar(f"Codebook/L{i}/CollapseRatio", cb_stats['src'][i]['collapse_ratio'], epoch)
+            print_codebook_utilization(cb_stats, cfg.NUM_EMBEDDINGS_LIST)
+            write_codebook_tensorboard(writer, cb_stats, epoch)
 
         is_best = avg_val_loss < best_val_loss
         if is_best:
@@ -312,6 +297,7 @@ def main():
             "best_val_recon": f"{best_val_loss:.8f}",
             "is_best": int(is_best),
             "phase": phase_desc,
+            "channel_prob": f"{channel_prob:.6f}",
             "learning_rate": f"{optimizer_g.param_groups[0]['lr']:.10g}",
         })
 

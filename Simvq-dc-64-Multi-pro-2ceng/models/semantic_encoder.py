@@ -2,27 +2,43 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .attention import make_group_norm
+
+
+def make_norm(channels, norm_type="batch", num_groups=32):
+    if norm_type == "group":
+        return make_group_norm(channels, num_groups)
+    return nn.BatchNorm2d(channels)
+
+
+def make_activation(name="prelu"):
+    if name == "silu":
+        return nn.SiLU(inplace=True)
+    return nn.PReLU()
+
 
 class ResidualBlock(nn.Module):
-    def __init__(self, channels: int):
+    def __init__(self, channels: int, norm_type="batch", num_groups=32, activation="prelu"):
         super().__init__()
         self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
-        self.bn = nn.BatchNorm2d(channels)
-        self.prelu = nn.PReLU()
+        self.norm = make_norm(channels, norm_type, num_groups)
+        self.act = make_activation(activation)
         self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
 
     def forward(self, x):
         identity = x
         out = self.conv1(x)
-        out = self.bn(out)
-        out = self.prelu(out)
+        out = self.norm(out)
+        out = self.act(out)
         out = self.conv2(out)
         out = out + identity
         return out
 
 
 class DownSampleBlock(nn.Module):
-    def __init__(self, in_ch: int, out_ch: int, stride: int = 2):
+    def __init__(self, in_ch: int, out_ch: int, stride: int = 2,
+                 norm_type="batch", num_groups=32, activation="prelu",
+                 num_res_blocks=1):
         """
         下采样块
         :param in_ch: 输入通道数
@@ -30,18 +46,46 @@ class DownSampleBlock(nn.Module):
         :param stride: 下采样步幅（2=2倍下采样，4=4倍下采样）
         """
         super().__init__()
-        self.res1 = ResidualBlock(in_ch)
-        self.down = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=stride, padding=1)
-        self.res2 = ResidualBlock(out_ch)
-        self.bn = nn.BatchNorm2d(out_ch)
-        self.act = nn.PReLU()
+        self.res1 = nn.Sequential(*[
+            ResidualBlock(in_ch, norm_type, num_groups, activation)
+            for _ in range(num_res_blocks)
+        ])
+        self.down = self._make_cascade_downsample(
+            in_ch, out_ch, stride, norm_type, num_groups, activation
+        )
+        self.res2 = nn.Sequential(*[
+            ResidualBlock(out_ch, norm_type, num_groups, activation)
+            for _ in range(num_res_blocks)
+        ])
+        self.norm = make_norm(out_ch, norm_type, num_groups)
+        self.act = make_activation(activation)
         self.tail = nn.Conv2d(out_ch, out_ch, kernel_size=3, stride=1, padding=1)
+
+    @staticmethod
+    def _make_cascade_downsample(in_ch, out_ch, stride, norm_type, num_groups, activation):
+        if stride in (4, 8):
+            layers = []
+            current_ch = in_ch
+            remaining = stride
+            while remaining > 1:
+                next_ch = out_ch if remaining <= 2 else max(out_ch // 2, 32)
+                layers.extend([
+                    nn.Conv2d(current_ch, next_ch, kernel_size=3, stride=2, padding=1),
+                    make_norm(next_ch, norm_type, num_groups),
+                    make_activation(activation),
+                ])
+                current_ch = next_ch
+                remaining //= 2
+            if current_ch != out_ch:
+                layers.append(nn.Conv2d(current_ch, out_ch, kernel_size=1))
+            return nn.Sequential(*layers)
+        return nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=stride, padding=1)
 
     def forward(self, x):
         x = self.res1(x)
         x = self.down(x)
         x = self.res2(x)
-        x = self.bn(x)
+        x = self.norm(x)
         x = self.act(x)
         x = self.tail(x)
         return x
@@ -49,18 +93,21 @@ class DownSampleBlock(nn.Module):
 
 class SemanticEncoder(nn.Module):
     """
-    二层编码器: 2次下采样
-    第一层4倍下采样，第二层2倍下采样
-    输入 (B,3,256,256) → 输出 [(B,128,64,64), (B,256,32,32)]
+    可配置多层编码器。
+
+    层数由 num_downsample_blocks 决定；每层输出通道按 base_channels * 2**层号递增。
+    strides 控制每层下采样倍率，例如 [4, 2] 表示 256 -> 64 -> 32。
     """
-    def __init__(self, in_channels, num_downsample_blocks, base_channels, strides=None):
+    def __init__(self, in_channels, num_downsample_blocks, base_channels, strides=None,
+                 norm_type="batch", num_groups=32, activation="prelu",
+                 num_res_blocks=1):
         """
         :param strides: 各层下采样步幅列表，如 [4, 2]，默认全为2
         """
         super().__init__()
         self.init = nn.Sequential(
             nn.Conv2d(in_channels, base_channels, kernel_size=3, stride=1, padding=1),
-            nn.PReLU(),
+            make_activation(activation),
         )
         if strides is None:
             strides = [2] * num_downsample_blocks
@@ -70,7 +117,13 @@ class SemanticEncoder(nn.Module):
         blocks = []
         ch = base_channels
         for i in range(num_downsample_blocks):
-            blocks.append(DownSampleBlock(ch, ch * 2, stride=strides[i]))
+            blocks.append(DownSampleBlock(
+                ch, ch * 2, stride=strides[i],
+                norm_type=norm_type,
+                num_groups=num_groups,
+                activation=activation,
+                num_res_blocks=num_res_blocks,
+            ))
             ch *= 2
         self.blocks = nn.ModuleList(blocks)
 
