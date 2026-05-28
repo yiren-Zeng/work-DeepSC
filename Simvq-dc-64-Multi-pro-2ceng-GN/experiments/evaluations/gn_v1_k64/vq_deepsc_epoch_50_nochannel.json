@@ -1,0 +1,13 @@
+{
+  "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng-GN/experiments/checkpoints/gn_v1_k64/vq_deepsc_epoch_50.pth",
+  "num_embeddings_list": [
+    64,
+    64
+  ],
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9606086559430852,
+      "psnr": 28.267285029093426
+    }
+  }
+}

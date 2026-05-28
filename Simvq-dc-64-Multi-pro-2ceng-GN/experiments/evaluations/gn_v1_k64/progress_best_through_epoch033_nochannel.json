@@ -1,0 +1,13 @@
+{
+  "checkpoint": "experiments/checkpoints/gn_v1_k64/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    64,
+    64
+  ],
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9572250980038008,
+      "psnr": 27.533175746599834
+    }
+  }
+}

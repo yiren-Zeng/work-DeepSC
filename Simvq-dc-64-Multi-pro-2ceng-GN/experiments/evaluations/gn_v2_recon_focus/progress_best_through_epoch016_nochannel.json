@@ -1,0 +1,13 @@
+{
+  "checkpoint": "experiments/snapshots/gn_v2_recon_focus/best_through_epoch016.pth",
+  "num_embeddings_list": [
+    64,
+    64
+  ],
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9575341813575915,
+      "psnr": 27.0387265086174
+    }
+  }
+}
