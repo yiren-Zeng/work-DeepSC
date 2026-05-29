@@ -64,21 +64,21 @@ def _source_bpp(strides, num_embeddings_list):
     return bpp
 
 
+def _env_int(name, default):
+    value = os.environ.get(name)
+    return int(value) if value else default
+
+
+def _env_int_list(name, default):
+    value = os.environ.get(name)
+    if not value:
+        return list(default)
+    return [int(item.strip()) for item in value.split(",") if item.strip()]
+
+
 def _stage_settings(stage):
-    stage = (stage or "full").lower()
+    stage = (stage or "c").lower()
     settings = {
-        "full": {
-            "family": "quality_v2",
-            "norm_type": "group",
-            "activation": "silu",
-            "encoder_res_blocks": 2,
-            "decoder_res_blocks": 2,
-            "upsample_mode": "bilinear",
-            "use_attention": True,
-            "attention_blocks": 1,
-            "mse_loss_weight": 0.8,
-            "ms_ssim_loss_weight": 0.2,
-        },
         "a": {
             "family": "quality_v2_A_curriculum",
             "norm_type": "batch",
@@ -86,10 +86,13 @@ def _stage_settings(stage):
             "encoder_res_blocks": 1,
             "decoder_res_blocks": 1,
             "upsample_mode": "nearest",
+            "use_cascade_downsample": False,
             "use_attention": False,
             "attention_blocks": 0,
             "mse_loss_weight": 1.0,
             "ms_ssim_loss_weight": 0.0,
+            "phase1_end": 0.1,
+            "phase2_end": 0.4,
         },
         "b": {
             "family": "quality_v2_B_backbone",
@@ -98,10 +101,13 @@ def _stage_settings(stage):
             "encoder_res_blocks": 2,
             "decoder_res_blocks": 2,
             "upsample_mode": "bilinear",
+            "use_cascade_downsample": False,
             "use_attention": False,
             "attention_blocks": 0,
             "mse_loss_weight": 1.0,
             "ms_ssim_loss_weight": 0.0,
+            "phase1_end": 0.1,
+            "phase2_end": 0.4,
         },
         "c": {
             "family": "quality_v2_C_full",
@@ -110,18 +116,21 @@ def _stage_settings(stage):
             "encoder_res_blocks": 2,
             "decoder_res_blocks": 2,
             "upsample_mode": "bilinear",
+            "use_cascade_downsample": False,
             "use_attention": True,
             "attention_blocks": 1,
-            "mse_loss_weight": 0.8,
-            "ms_ssim_loss_weight": 0.2,
+            "mse_loss_weight": 1.0,
+            "ms_ssim_loss_weight": 0.0,
+            "phase1_end": 0.1,
+            "phase2_end": 0.4,
         },
     }
     if stage not in settings:
-        raise ValueError(f"Unknown SIMVQ_EXPERIMENT_STAGE={stage!r}; use full, A, B, or C")
+        raise ValueError(f"Unknown SIMVQ_EXPERIMENT_STAGE={stage!r}; use A, B, or C")
     return settings[stage]
 
 
-_STAGE = os.environ.get("SIMVQ_EXPERIMENT_STAGE", "full")
+_STAGE = os.environ.get("SIMVQ_EXPERIMENT_STAGE", "C")
 _STAGE_SETTINGS = _stage_settings(_STAGE)
 
 
@@ -131,23 +140,23 @@ class Config:
     IN_CHANNELS = 3
     OUT_CHANNELS = 3
     # Change this number to switch the model between 2/3/4-layer U-Net variants.
-    UNET_DEPTH = 2
+    UNET_DEPTH = _env_int("SIMVQ_UNET_DEPTH", 2)
     NUM_DOWNSAMPLE_BLOCKS = UNET_DEPTH
     BASE_CHANNELS = 64
     EMBEDDING_DIM_LIST = _default_embedding_dims(BASE_CHANNELS, UNET_DEPTH)
     # 0.083-BPP target configuration: 4/64 + 5/256 = 0.0820 BPP.
     NUM_EMBEDDINGS_PER_LAYER = None
-    NUM_EMBEDDINGS_LIST = [16, 32]
+    NUM_EMBEDDINGS_LIST = _env_int_list("SIMVQ_NUM_EMBEDDINGS_LIST", [16, 32])
     COMMITMENT_COST = 0.25
-    DOWNSAMPLE_STRIDES = [8, 2]
+    DOWNSAMPLE_STRIDES = _env_int_list("SIMVQ_DOWNSAMPLE_STRIDES", [8, 2])
     # The baseline's VQ term dominated its reconstruction loss during early training.
     LAYER_LOSS_WEIGHTS_INIT = _default_loss_weights_init(UNET_DEPTH)
     LAYER_LOSS_WEIGHTS_FINAL = _default_loss_weights_final(UNET_DEPTH)
     # Retain robustness training without discarding half of the high-resolution path.
     SKIP_DROPOUT_P_INIT = _default_skip_dropout_init(UNET_DEPTH)
     SKIP_DROPOUT_P_FINAL = _default_skip_dropout_final(UNET_DEPTH)
-    PHASE1_END = 0.4
-    PHASE2_END = 0.6
+    PHASE1_END = _STAGE_SETTINGS["phase1_end"]
+    PHASE2_END = _STAGE_SETTINGS["phase2_end"]
     LEARNING_RATE_G = 5e-5
     CODEBOOK_PROJ_LR = 2e-4
     BETAS = (0.5, 0.999)
@@ -165,6 +174,7 @@ class Config:
     ENCODER_RES_BLOCKS = _STAGE_SETTINGS["encoder_res_blocks"]
     DECODER_RES_BLOCKS = _STAGE_SETTINGS["decoder_res_blocks"]
     UPSAMPLE_MODE = _STAGE_SETTINGS["upsample_mode"]
+    USE_CASCADE_DOWNSAMPLE = _STAGE_SETTINGS["use_cascade_downsample"]
     USE_BOTTLENECK_ATTENTION = _STAGE_SETTINGS["use_attention"]
     BOTTLENECK_ATTENTION_BLOCKS = _STAGE_SETTINGS["attention_blocks"]
     MSE_LOSS_WEIGHT = _STAGE_SETTINGS["mse_loss_weight"]
@@ -186,7 +196,6 @@ class Config:
     METRICS_PATH = os.path.join("./experiments", f"{EXPERIMENT_NAME}_epoch_metrics.csv")
     SCREENING_PATH = os.path.join("./experiments", f"{EXPERIMENT_NAME}_screening.csv")
     SNAPSHOT_DIR = os.path.join("./experiments/snapshots", EXPERIMENT_NAME)
-    SAVE_INTERVAL = 10
     NUM_EPOCHS = 200
     RESUME = True
     RESUME_PATH = os.path.join(CHECKPOINT_DIR, "last_checkpoint.pth")
@@ -235,6 +244,7 @@ class Config:
             "encoder_res_blocks": cls.ENCODER_RES_BLOCKS,
             "decoder_res_blocks": cls.DECODER_RES_BLOCKS,
             "upsample_mode": cls.UPSAMPLE_MODE,
+            "use_cascade_downsample": cls.USE_CASCADE_DOWNSAMPLE,
             "use_bottleneck_attention": cls.USE_BOTTLENECK_ATTENTION,
             "bottleneck_attention_blocks": cls.BOTTLENECK_ATTENTION_BLOCKS,
             "mse_loss_weight": cls.MSE_LOSS_WEIGHT,

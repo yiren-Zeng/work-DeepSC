@@ -1,0 +1,21 @@
+{
+  "checkpoint": "experiments/checkpoints/gn_v2_recon_focus/vq_deepsc_epoch_180.pth",
+  "num_embeddings_list": [
+    64,
+    64
+  ],
+  "results": {
+    "0": {
+      "ms_ssim": 0.9717279993723599,
+      "psnr": 29.898670315742493
+    },
+    "3": {
+      "ms_ssim": 0.973328145496288,
+      "psnr": 30.052659412225086
+    },
+    "6": {
+      "ms_ssim": 0.973328145496288,
+      "psnr": 30.052659412225086
+    }
+  }
+}

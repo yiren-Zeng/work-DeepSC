@@ -104,6 +104,10 @@ def main():
     args = parse_args()
     milestones = [5, 10] + list(range(20, args.max_epoch + 1, 10))
     completed = set()
+    initial_epochs = completed_epochs(args.metrics_path)
+    initial_last_epoch = max(initial_epochs) if initial_epochs else 0
+    if initial_last_epoch and not args.screening_path.exists():
+        completed.update(epoch for epoch in milestones if epoch < initial_last_epoch)
     print(f"Monitoring {args.checkpoint_path}")
     print(f"Upper-bound target: PSNR >= {args.target_psnr}, MS-SSIM >= {args.target_ms_ssim}")
     while milestones:

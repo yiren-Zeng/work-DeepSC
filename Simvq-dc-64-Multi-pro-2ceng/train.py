@@ -52,6 +52,7 @@ def main():
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
     print(f"  - 归一化/激活: {cfg.NORM_TYPE} / {cfg.ACTIVATION}")
     print(f"  - 编码器/解码器残差块数: {cfg.ENCODER_RES_BLOCKS} / {cfg.DECODER_RES_BLOCKS}")
+    print(f"  - 级联下采样: {cfg.USE_CASCADE_DOWNSAMPLE}")
     print(f"  - 上采样方式: {cfg.UPSAMPLE_MODE}")
     print(f"  - Bottleneck Attention: {cfg.USE_BOTTLENECK_ATTENTION}, blocks={cfg.BOTTLENECK_ATTENTION_BLOCKS}")
     print(f"  - 重建损失: MSE*{cfg.MSE_LOSS_WEIGHT} + MS-SSIM*{cfg.MS_SSIM_LOSS_WEIGHT}")
@@ -93,6 +94,7 @@ def main():
         encoder_res_blocks=cfg.ENCODER_RES_BLOCKS,
         decoder_res_blocks=cfg.DECODER_RES_BLOCKS,
         upsample_mode=cfg.UPSAMPLE_MODE,
+        use_cascade_downsample=cfg.USE_CASCADE_DOWNSAMPLE,
         use_bottleneck_attention=cfg.USE_BOTTLENECK_ATTENTION,
         bottleneck_attention_blocks=cfg.BOTTLENECK_ATTENTION_BLOCKS,
     ).to(device)
@@ -283,10 +285,6 @@ def main():
             best_val_loss = avg_val_loss
             torch.save(deepsc_model.state_dict(), os.path.join(cfg.CHECKPOINT_DIR, "best_vq_deepsc.pth"))
             print(f"Saved Best Model with Val Loss: {best_val_loss:.4f}")
-
-        if (epoch + 1) % cfg.SAVE_INTERVAL == 0:
-            torch.save(deepsc_model.state_dict(),
-                       os.path.join(cfg.CHECKPOINT_DIR, f"vq_deepsc_epoch_{epoch + 1}.pth"))
 
         append_epoch_record(metrics_path, {
             "run_id": run_id,

@@ -10,8 +10,38 @@
 
 只存放模型权重。当前项目里只保留这一个 checkpoint 根目录。
 
+- `checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k16-32/`
+  - A 消融实验权重，只验证课程学习。
+
+- `checkpoints/quality_v2_B_backbone_unet2_ds8x2_k16-32/`
+  - B 消融实验权重，A + 主干网络升级。
+
+- `checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/`
+  - C 消融实验权重，B + MS-SSIM 混合损失 + bottleneck attention。
+
 - `checkpoints/quality_v2_unet2_ds8x2_k16-32/`
-  - 当前 `0.083 BPP` 低码率主实验的权重目录。
+  - full 参考实验权重，配置等价 C，但命名不是严格的 C。
+
+每个实验目录只保留：
+
+```text
+best_vq_deepsc.pth
+last_checkpoint.pth
+```
+
+含义：
+
+```text
+best_vq_deepsc.pth：用于测试和结果对比
+last_checkpoint.pth：用于中断后恢复训练
+```
+
+旧的 `vq_deepsc_epoch_10.pth`、`vq_deepsc_epoch_20.pth` 等周期性权重已经删除，后续训练也不再保存这些文件。
+
+旧说明：
+
+- `checkpoints/quality_v2_unet2_ds8x2_k16-32/`
+  - `0.083 BPP` 低码率 full 参考实验的权重目录。
   - `best_vq_deepsc.pth`：验证集表现最好的模型权重。
   - `last_checkpoint.pth`：用于继续训练的断点，包含模型、优化器、调度器、随机数状态等信息。
   - `vq_deepsc_epoch_200.pth`：当前 200 轮训练完成后保留的最终 epoch 权重。

@@ -33,6 +33,7 @@ class DeepSC(nn.Module):
                  encoder_res_blocks=1,
                  decoder_res_blocks=1,
                  upsample_mode="nearest",
+                 use_cascade_downsample=True,
                  use_bottleneck_attention=False,
                  bottleneck_attention_blocks=1,
                  ):
@@ -50,6 +51,7 @@ class DeepSC(nn.Module):
             num_groups=norm_groups,
             activation=activation,
             num_res_blocks=encoder_res_blocks,
+            use_cascade_downsample=use_cascade_downsample,
         )
         if strides is not None:
             upsample_scales = list(reversed(strides))

@@ -59,6 +59,7 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         encoder_res_blocks=cfg.ENCODER_RES_BLOCKS,
         decoder_res_blocks=cfg.DECODER_RES_BLOCKS,
         upsample_mode=cfg.UPSAMPLE_MODE,
+        use_cascade_downsample=cfg.USE_CASCADE_DOWNSAMPLE,
         use_bottleneck_attention=cfg.USE_BOTTLENECK_ATTENTION,
         bottleneck_attention_blocks=cfg.BOTTLENECK_ATTENTION_BLOCKS,
     ).to(device)

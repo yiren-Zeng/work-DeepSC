@@ -38,7 +38,7 @@ class ResidualBlock(nn.Module):
 class DownSampleBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int, stride: int = 2,
                  norm_type="batch", num_groups=32, activation="prelu",
-                 num_res_blocks=1):
+                 num_res_blocks=1, use_cascade_downsample=True):
         """
         下采样块
         :param in_ch: 输入通道数
@@ -50,9 +50,12 @@ class DownSampleBlock(nn.Module):
             ResidualBlock(in_ch, norm_type, num_groups, activation)
             for _ in range(num_res_blocks)
         ])
-        self.down = self._make_cascade_downsample(
-            in_ch, out_ch, stride, norm_type, num_groups, activation
-        )
+        if use_cascade_downsample:
+            self.down = self._make_cascade_downsample(
+                in_ch, out_ch, stride, norm_type, num_groups, activation
+            )
+        else:
+            self.down = nn.Conv2d(in_ch, out_ch, kernel_size=3, stride=stride, padding=1)
         self.res2 = nn.Sequential(*[
             ResidualBlock(out_ch, norm_type, num_groups, activation)
             for _ in range(num_res_blocks)
@@ -100,7 +103,7 @@ class SemanticEncoder(nn.Module):
     """
     def __init__(self, in_channels, num_downsample_blocks, base_channels, strides=None,
                  norm_type="batch", num_groups=32, activation="prelu",
-                 num_res_blocks=1):
+                 num_res_blocks=1, use_cascade_downsample=True):
         """
         :param strides: 各层下采样步幅列表，如 [4, 2]，默认全为2
         """
@@ -123,6 +126,7 @@ class SemanticEncoder(nn.Module):
                 num_groups=num_groups,
                 activation=activation,
                 num_res_blocks=num_res_blocks,
+                use_cascade_downsample=use_cascade_downsample,
             ))
             ch *= 2
         self.blocks = nn.ModuleList(blocks)

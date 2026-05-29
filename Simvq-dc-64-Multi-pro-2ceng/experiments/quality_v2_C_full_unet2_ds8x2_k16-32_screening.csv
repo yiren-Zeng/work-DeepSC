@@ -1,0 +1,12 @@
+epoch_seen,snapshot,no_channel_psnr,no_channel_ms_ssim,target_psnr,target_ms_ssim,upper_bound_passed
+40,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.423334,0.892744,32.3,0.9777,0
+50,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.655758,0.895466,32.3,0.9777,0
+60,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.853152,0.900355,32.3,0.9777,0
+70,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.958482,0.901771,32.3,0.9777,0
+80,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.958482,0.901771,32.3,0.9777,0
+90,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,24.906881,0.904729,32.3,0.9777,0
+100,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.157395,0.904829,32.3,0.9777,0
+110,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.166964,0.905497,32.3,0.9777,0
+120,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.208406,0.906190,32.3,0.9777,0
+130,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.241462,0.906736,32.3,0.9777,0
+140,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.241462,0.906736,32.3,0.9777,0
