@@ -1,0 +1,15 @@
+{
+  "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_backbone_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    16,
+    32
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9086891009716086,
+      "psnr": 25.237999359766643
+    }
+  }
+}

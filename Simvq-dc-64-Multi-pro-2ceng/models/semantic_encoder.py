@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import os
+from torch.utils.checkpoint import checkpoint
 
 from .attention import make_group_norm
 
@@ -134,7 +136,11 @@ class SemanticEncoder(nn.Module):
     def forward(self, x):
         feats = []
         x = self.init(x)
+        use_checkpoint = self.training and os.environ.get("SIMVQ_GRADIENT_CHECKPOINTING", "0") == "1"
         for b in self.blocks:
-            x = b(x)
+            if use_checkpoint:
+                x = checkpoint(b, x, use_reentrant=False)
+            else:
+                x = b(x)
             feats.append(x)
         return feats

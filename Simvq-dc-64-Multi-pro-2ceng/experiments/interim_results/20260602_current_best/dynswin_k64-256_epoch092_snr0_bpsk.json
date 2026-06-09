@@ -1,0 +1,15 @@
+{
+  "checkpoint": "experiments/interim_results/20260602_current_best/checkpoints/dynswin_k64-256_best_epoch092.pth",
+  "num_embeddings_list": [
+    64,
+    256
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.9374931742063923,
+      "psnr": 26.80144002040227
+    }
+  }
+}

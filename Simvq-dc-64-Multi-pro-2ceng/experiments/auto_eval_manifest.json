@@ -1,0 +1,170 @@
+{
+  "quality_v2_B_larger_unet2_ds8x2_k64-256": {
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  "quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256": {
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_SwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "4",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  "quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256": {
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_DynSwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "6",
+      "SIMVQ_BASE_CHANNELS": "96",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  "quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536": {
+    "snrs": [4],
+    "modulation": "qpsk",
+    "result_suffix": "qpsk_snr4",
+    "report_clone": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "report_overrides": {
+      "实验阶段": "B + 扩容主干 + 大码本 [4096,65536]",
+      "备注": "基于扩容方案，仅将码本扩大为 [4096,65536]；其余条件保持一致。"
+    },
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb4096-65536",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "4096,65536",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  "quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256": {
+    "snrs": [4],
+    "modulation": "qpsk",
+    "result_suffix": "qpsk_snr4",
+    "report_clone": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "report_overrides": {
+      "实验阶段": "B + 扩容主干 + 大码本 [16384,256]",
+      "备注": "基于扩容方案，仅将码本扩大为 [16384,256]；其余条件保持一致。"
+    },
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb16384-256",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16384,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  "quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256": {
+    "report_clone": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "report_overrides": {
+      "实验阶段": "B + 扩容主干 + ViTvq NoCompress [64,256]",
+      "备注": "基于原扩容方案，保留 U-Net 主干与其余训练条件，仅将两层 SimVQ 量化器替换为 ViTvq NoCompress。"
+    },
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_ViTvqNoCompress",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "vitvq_nocompress",
+      "SIMVQ_VITVQ_QBRIDGE_TYPE": "QBridgeNoCompress-S",
+      "SIMVQ_VITVQ_EMB_NOGRAD": "0"
+    }
+  },
+  "quality_v2_B_larger_NoQuant_unet2_ds8x2_k64-256": {
+    "report_clone": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "no_channel_only": true,
+    "report_overrides": {
+      "实验阶段": "B + 扩容主干 + 无量化直通",
+      "备注": "基于 27 dB 扩容方案，移除两层量化模块。Encoder 特征直接输入 Decoder，用于测量纯自编码器重建上限；不适用于离散 LDPC 链路测试。"
+    },
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_NoQuant",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "none"
+    }
+  },
+  "quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16": {
+    "report_clone": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "report_overrides": {
+      "实验阶段": "B + 扩容主干 + SimVQ 码本 [128,16]",
+      "备注": "基于约 27 dB 的扩容 SimVQ 方案，仅将两层码本从 [64,256] 改为 [128,16]。总 Source BPP 保持 0.125 不变，用于验证将码率预算向第一层倾斜的效果。"
+    },
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb128-16",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "128,16",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "simvq"
+    }
+  },
+  "quality_v2_B_larger_cb128-16_DIV2K-Flickr2K_768x512_unet2_ds8x2_k128-16": {
+    "max_epoch": 200,
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb128-16_DIV2K-Flickr2K_768x512",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "128,16",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "simvq",
+      "SIMVQ_TEST_RESIZE": "768,512",
+      "SIMVQ_TEST_DATASET_PATH": "/workspace/yi/work/Kodak"
+    }
+  },
+  "quality_v2_B_larger_cb128-16_VQ_unet2_ds8x2_k128-16": {
+    "max_epoch": 200,
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb128-16_VQ",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "128,16",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "vq",
+      "SIMVQ_TEST_RESIZE": "768,512",
+      "SIMVQ_TEST_DATASET_PATH": "/workspace/yi/work/Kodak"
+    }
+  }
+}

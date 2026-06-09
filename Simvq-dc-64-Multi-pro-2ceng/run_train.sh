@@ -19,8 +19,13 @@ LOG_FILE="experiments/logs/train_${RUN_ID}.log"
 
 export EXPERIMENT_RUN_ID="$RUN_ID"
 export PYTHONUNBUFFERED=1
+# 透传预训练权重路径（如设置）
+if [ -n "${SIMVQ_PRETRAINED_CHECKPOINT:-}" ]; then
+    export SIMVQ_PRETRAINED_CHECKPOINT
+fi
 echo "Run ID: ${RUN_ID}"
 echo "Experiment: ${EXPERIMENT_NAME}"
 echo "GPU ID: ${GPU_ID}"
 echo "Log file: ${LOG_FILE}"
+[ -n "${SIMVQ_PRETRAINED_CHECKPOINT:-}" ] && echo "Pretrained: ${SIMVQ_PRETRAINED_CHECKPOINT}"
 CUDA_VISIBLE_DEVICES="$GPU_ID" python -u train.py 2>&1 | tee "$LOG_FILE"

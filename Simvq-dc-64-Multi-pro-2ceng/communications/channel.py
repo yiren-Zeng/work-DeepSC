@@ -9,7 +9,10 @@ def awgn_channel(x, snr):
     power_x = torch.mean(torch.abs(x) ** 2)
     noise_power = power_x / snr_linear
 
-    noise = torch.sqrt(noise_power / 2) * (torch.randn_like(x) + 1j * torch.randn_like(x))
+    real_dtype = x.real.dtype if x.is_complex() else x.dtype
+    noise_real = torch.randn(x.shape, dtype=real_dtype, device=x.device)
+    noise_imag = torch.randn(x.shape, dtype=real_dtype, device=x.device)
+    noise = torch.sqrt(noise_power / 2) * (noise_real + 1j * noise_imag)
 
     return x + noise
 
@@ -32,6 +35,9 @@ def rician_channel(x, snr, K_factor):
 
     h = h_los + h_nlos
 
-    noise = torch.sqrt(noise_power / 2) * (torch.randn_like(x) + 1j * torch.randn_like(x))
+    real_dtype = x.real.dtype if x.is_complex() else x.dtype
+    noise_real = torch.randn(x.shape, dtype=real_dtype, device=x.device)
+    noise_imag = torch.randn(x.shape, dtype=real_dtype, device=x.device)
+    noise = torch.sqrt(noise_power / 2) * (noise_real + 1j * noise_imag)
 
     return h * x + noise

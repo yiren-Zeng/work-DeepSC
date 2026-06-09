@@ -1,0 +1,15 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_rate041_B_hybridcvq_cb65536-8192_unet2_ds8x2_k65536-8192/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    65536,
+    8192
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.8745709198652983,
+      "psnr": 24.424263040224712
+    }
+  }
+}

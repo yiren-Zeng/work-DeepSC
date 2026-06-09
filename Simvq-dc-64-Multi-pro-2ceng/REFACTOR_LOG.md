@@ -55,14 +55,7 @@ Before:
 
 After:
 
-- 新增 `evaluation/bpp.py`：
-  - `calculate_bpp`
-- 新增 `evaluate_bpp.py` 作为更清晰的主入口。
-- `test_BPP.py` 保留为兼容入口，内部调用 `evaluate_bpp.evaluate_bpp`。
-
-Reason:
-
-- `evaluate_bpp.py` 名称更符合“评估脚本”的职责，同时旧命令仍可用。
+- BPP 相关文件已被移除（改用压缩率计算）。
 
 ### 4. 拆出 checkpoint 与复现实验工具
 
@@ -121,22 +114,13 @@ Reason:
 python train.py
 python test_real.py --checkpoint <path> --no-channel
 python test_real.py --checkpoint <path> --snrs 0 3 6 9 12
-python test_BPP.py --checkpoint <path>
 ```
-
-新增推荐命令：
-
-```bash
-python evaluate_bpp.py --checkpoint <path>
-python tools/monitor_quality.py
-python tools/monitor_quality.py --help
 ```
 
 ## Files Added
 
 - `evaluation/__init__.py`
 - `evaluation/quality.py`
-- `evaluation/bpp.py`
 - `monitoring/__init__.py`
 - `monitoring/codebook.py`
 - `training/__init__.py`
@@ -146,7 +130,6 @@ python tools/monitor_quality.py --help
 - `utils/checkpoint_utils.py`
 - `utils/experiment_io.py`
 - `utils/reproducibility.py`
-- `evaluate_bpp.py`
 - `REFACTOR_LOG.md`
 
 ## Files Simplified
@@ -154,7 +137,6 @@ python tools/monitor_quality.py --help
 - `models/deepsc.py`
 - `train.py`
 - `test_real.py`
-- `test_BPP.py`
 - `communications/evaluate.py`
 
 ## Validation
@@ -171,7 +153,6 @@ Also checked representative imports:
 ```bash
 python - <<'PY'
 import test_real
-import evaluate_bpp
 from communications.evaluate import evaluate_metrics_with_channel
 from monitoring.codebook import compute_codebook_utilization
 print('imports_ok')
@@ -184,7 +165,6 @@ Checked CLI help for the main entry points:
 
 ```bash
 python test_real.py --help
-python evaluate_bpp.py --help
 python test_BPP.py --help
 python tools/monitor_quality.py --help
 ```

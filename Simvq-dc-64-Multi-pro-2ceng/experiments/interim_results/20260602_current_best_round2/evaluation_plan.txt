@@ -1,0 +1,2 @@
+larger_cb16384-256 best_epoch=112 modulation=qpsk snr=4
+vitvq_nocompress_k64-256 best_epoch=82 modulation=bpsk snr=0

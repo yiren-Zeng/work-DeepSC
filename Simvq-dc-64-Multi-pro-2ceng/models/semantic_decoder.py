@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import os
+from torch.utils.checkpoint import checkpoint
 
 from .semantic_encoder import make_activation, make_norm
 
@@ -144,6 +146,17 @@ class SemanticDecoder(nn.Module):
 
         # 以转置卷积结束；此处只做通道映射，不改尺寸（stride=1）
         self.final = nn.ConvTranspose2d(in_ch, out_channels, kernel_size=3, stride=1, padding=1)
+        self.tail_device = None
+        self.tail_blocks = 0
+
+    def set_tail_device(self, device, tail_blocks=1):
+        self.tail_device = torch.device(device)
+        self.tail_blocks = max(0, min(int(tail_blocks), len(self.up_blocks)))
+        if self.tail_blocks > 0:
+            for block in self.up_blocks[-self.tail_blocks:]:
+                block.to(self.tail_device)
+            self.final.to(self.tail_device)
+        return self
 
     def set_skip_dropout_p(self, p_list):
         """
@@ -167,16 +180,28 @@ class SemanticDecoder(nn.Module):
 
         # 起点：最深层
         x = self.init(quant_feats[-1])
+        use_checkpoint = self.training and os.environ.get("SIMVQ_GRADIENT_CHECKPOINTING", "0") == "1"
 
         # 逐块上采样并按需 concat
         for i, block in enumerate(self.up_blocks):
-            x = block(x)  # 上采样 + Conv+BN+PReLU
+            block_device = next(block.parameters()).device
+            if x.device != block_device:
+                x = x.to(block_device, non_blocking=True)
+            if use_checkpoint:
+                x = checkpoint(block, x, use_reentrant=False)
+            else:
+                x = block(x)  # 上采样 + Conv+BN+PReLU
             # 前 L-1 个块后与对应浅层量化特征 concat
             if i < self.L - 1:
                 skip = quant_feats[-2 - i]  # 依次取 F̂1
+                if skip.device != x.device:
+                    skip = skip.to(x.device, non_blocking=True)
                 skip = self.skip_dropouts[i](skip)  # 各层独立 Dropout
                 x = torch.cat([x, skip], dim=1)
 
         # 末端：转置卷积（不改尺寸）映射到 RGB
+        final_device = self.final.weight.device
+        if x.device != final_device:
+            x = x.to(final_device, non_blocking=True)
         out = self.final(x)
         return out

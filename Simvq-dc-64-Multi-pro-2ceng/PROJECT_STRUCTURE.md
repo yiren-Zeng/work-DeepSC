@@ -206,18 +206,6 @@ python test_real.py --checkpoint checkpoints/quality_v2_unet2_ds8x2_k16-32/best_
 python test_real.py --checkpoint checkpoints/quality_v2_unet2_ds8x2_k16-32/best_vq_deepsc.pth --snrs 0 3 6 9 12
 ```
 
-### `evaluate_bpp.py`
-
-推荐使用的 BPP 评估入口。
-
-```bash
-python evaluate_bpp.py --checkpoint checkpoints/quality_v2_unet2_ds8x2_k16-32/best_vq_deepsc.pth
-```
-
-### `test_BPP.py`
-
-旧 BPP 命令的兼容入口。新代码优先使用 `evaluate_bpp.py`。
-
 ### `run_train.sh`
 
 训练启动脚本，日志写入 `experiments/logs/`。

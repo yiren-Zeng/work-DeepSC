@@ -1,0 +1,3 @@
+dynswin_k64-256 best_epoch=92 modulation=bpsk snr=0
+larger_cb16384-256 best_epoch=101 modulation=qpsk snr=4
+vitvq_nocompress_k64-256 best_epoch=59 modulation=bpsk snr=0

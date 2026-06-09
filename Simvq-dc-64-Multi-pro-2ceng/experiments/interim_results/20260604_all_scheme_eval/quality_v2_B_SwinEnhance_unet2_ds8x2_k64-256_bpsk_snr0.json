@@ -1,0 +1,15 @@
+{
+  "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    64,
+    256
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.9385848326448852,
+      "psnr": 26.468710601329803
+    }
+  }
+}

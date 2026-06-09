@@ -1,0 +1,13 @@
+{
+  "checkpoint": "checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    16,
+    32
+  ],
+  "results": {
+    "0": {
+      "ms_ssim": 0.8869074722596659,
+      "psnr": 24.215764502684276
+    }
+  }
+}

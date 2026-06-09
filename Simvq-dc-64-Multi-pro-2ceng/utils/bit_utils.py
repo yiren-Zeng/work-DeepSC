@@ -23,9 +23,9 @@ def bits_to_indices(bit_stream, original_spatial_dims, original_num_embeddings_l
     current_pos = 0
 
     for i, n_embed in enumerate(original_num_embeddings_list):
-        h, w = original_spatial_dims[i]
+        dims = tuple(original_spatial_dims[i])
         bits_per_index = int(np.log2(n_embed))
-        num_indices_in_scale = h * w
+        num_indices_in_scale = int(np.prod(dims))
         num_bits_for_scale = num_indices_in_scale * bits_per_index
 
         scale_bits = bit_stream[current_pos: current_pos + num_bits_for_scale]
@@ -37,6 +37,6 @@ def bits_to_indices(bit_stream, original_spatial_dims, original_num_embeddings_l
         powers = 1 << np.arange(bits_per_index - 1, -1, -1, dtype=np.int64)
         indices = np.sum(scale_bits_reshaped * powers, axis=1)
 
-        indices_list.append(torch.from_numpy(indices.reshape(h, w)).long())
+        indices_list.append(torch.from_numpy(indices.reshape(dims)).long())
 
     return indices_list

@@ -13,8 +13,29 @@ from monitoring.codebook import (
     write_codebook_tensorboard,
 )
 from training.schedules import compute_schedule
-from utils.experiment_io import append_epoch_record
+from utils.experiment_io import append_codebook_records, append_epoch_record
 from utils.reproducibility import setup_seed
+from utils.checkpoint_utils import load_model_state_dict
+
+
+def load_pretrained_weights(model, pretrained_path, device):
+    """加载预训练权重，仅加载兼容的参数（忽略形状不匹配的键）"""
+    if not pretrained_path or not os.path.exists(pretrained_path):
+        print(f"[Warning] 预训练权重路径不存在: {pretrained_path}，将从头训练")
+        return 0
+    pretrained_state = load_model_state_dict(pretrained_path, device)
+    model_state = model.state_dict()
+    loaded = 0
+    skipped = 0
+    for key, value in pretrained_state.items():
+        if key in model_state and model_state[key].shape == value.shape:
+            model_state[key] = value
+            loaded += 1
+        else:
+            skipped += 1
+    model.load_state_dict(model_state)
+    print(f"[Info] 从预训练权重加载: {loaded} 个参数匹配, {skipped} 个跳过")
+    return loaded
 
 
 def main():
@@ -28,13 +49,33 @@ def main():
     metrics_path = cfg.METRICS_PATH
 
     device = torch.device(cfg.DEVICE)
-    print(f"Start training on {device}")
+    visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "<not set>")
+    print(f"Start training on logical device: {device}")
+    print(f"[Info] CUDA_VISIBLE_DEVICES: {visible_devices}")
+    if device.type == "cuda":
+        logical_index = device.index if device.index is not None else torch.cuda.current_device()
+        visible_device_ids = [
+            value.strip() for value in visible_devices.split(",") if value.strip()
+        ]
+        mapped_physical_device = (
+            visible_device_ids[logical_index]
+            if visible_devices != "<not set>" and logical_index < len(visible_device_ids)
+            else str(logical_index)
+        )
+        print(
+            f"[Info] GPU mapping: logical cuda:{logical_index} -> "
+            f"physical GPU {mapped_physical_device} "
+            f"({torch.cuda.get_device_name(logical_index)})"
+        )
     print(f"[Info] Experiment name: {cfg.EXPERIMENT_NAME}")
     print(f"[Info] Experiment stage: {cfg.EXPERIMENT_STAGE}")
     print(f"[Info] Experiment run ID: {run_id}")
     print(f"[Info] Epoch metrics file: {metrics_path}")
     print(f"[Info] Checkpoint directory: {cfg.CHECKPOINT_DIR}")
     print(f"[Info] Resume checkpoint: {cfg.RESUME_PATH}")
+    pretrained_path = os.environ.get("SIMVQ_PRETRAINED_CHECKPOINT", "")
+    if pretrained_path:
+        print(f"[Info] 预训练权重路径: {pretrained_path}")
 
     accumulation_steps = cfg.TOTAL_BATCH_SIZE // cfg.MICRO_BATCH_SIZE
     if accumulation_steps < 1:
@@ -47,15 +88,28 @@ def main():
     print(f"  - U-Net层数: {cfg.UNET_DEPTH}")
     print(f"  - 下采样步幅: {cfg.DOWNSAMPLE_STRIDES}")
     print(f"  - 总下采样倍率: {cfg.architecture_summary()['total_downsample']}x")
-    print(f"  - 估算源端BPP: {cfg.ESTIMATED_SOURCE_BPP:.4f}")
+    print(f"  - 估算训练源端BPP: {cfg.ESTIMATED_SOURCE_BPP:.6f}")
+    print(f"  - 估算测试源端BPP: {cfg.ESTIMATED_TEST_SOURCE_BPP:.6f}")
+    print(f"  - 估算测试传输压缩率(LDPC1/2+BPSK): {cfg.ESTIMATED_TEST_TRANSMISSION_RATIO:.8f}")
     print(f"  - 每层特征维度: {cfg.EMBEDDING_DIM_LIST}")
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
+    print(f"  - 量化器类型: {cfg.QUANTIZER_TYPE}")
+    print(f"  - 逐层量化轴: {cfg.QUANTIZER_AXIS_LIST}")
+    print(f"  - CVQ codeword shape: {cfg.CVQ_CODEWORD_SHAPES}")
+    print(f"  - Nested channel dropout alpha: {cfg.NESTED_CHANNEL_DROPOUT_ALPHA}")
+    print(f"  - 模型并行: {cfg.MODEL_PARALLEL}, encoder={cfg.ENCODER_DEVICE}, decoder={cfg.DECODER_DEVICE}")
+    if cfg.QUANTIZER_TYPE == "none":
+        print("  - 无量化直通模式: Encoder 特征直接输入 Decoder；离散信道与码本监控关闭")
+    if cfg.QUANTIZER_TYPE == "vitvq_nocompress":
+        print(f"  - ViTvq QBridge: {cfg.VITVQ_QBRIDGE_TYPE}, emb_nograd={cfg.VITVQ_EMB_NOGRAD}")
     print(f"  - 归一化/激活: {cfg.NORM_TYPE} / {cfg.ACTIVATION}")
     print(f"  - 编码器/解码器残差块数: {cfg.ENCODER_RES_BLOCKS} / {cfg.DECODER_RES_BLOCKS}")
     print(f"  - 级联下采样: {cfg.USE_CASCADE_DOWNSAMPLE}")
     print(f"  - 上采样方式: {cfg.UPSAMPLE_MODE}")
     print(f"  - Bottleneck Attention: {cfg.USE_BOTTLENECK_ATTENTION}, blocks={cfg.BOTTLENECK_ATTENTION_BLOCKS}")
-    print(f"  - 重建损失: MSE*{cfg.MSE_LOSS_WEIGHT} + MS-SSIM*{cfg.MS_SSIM_LOSS_WEIGHT}")
+    print(f"  - SwinIR Enhance: {cfg.USE_SWINIR_ENHANCE}, blocks={cfg.SWINIR_ENHANCE_BLOCKS}")
+    print(f"  - Swin Backbone: {cfg.USE_SWIN_BACKBONE}")
+    print(f"  - 重建损失: MSE*{cfg.MSE_LOSS_WEIGHT} + MS-SSIM*{cfg.MS_SSIM_LOSS_WEIGHT} + LPIPS*{cfg.LPIPS_LOSS_WEIGHT}")
     print(f"  - 信道课程: epoch<{cfg.CHANNEL_PROB_START_EPOCH}:0, "
           f"{cfg.CHANNEL_PROB_START_EPOCH}-{cfg.CHANNEL_PROB_END_EPOCH}:线性升至1, "
           f">={cfg.CHANNEL_PROB_END_EPOCH}:1")
@@ -97,7 +151,28 @@ def main():
         use_cascade_downsample=cfg.USE_CASCADE_DOWNSAMPLE,
         use_bottleneck_attention=cfg.USE_BOTTLENECK_ATTENTION,
         bottleneck_attention_blocks=cfg.BOTTLENECK_ATTENTION_BLOCKS,
+        use_swinir_enhance=cfg.USE_SWINIR_ENHANCE,
+        swinir_enhance_blocks=cfg.SWINIR_ENHANCE_BLOCKS,
+        quantizer_type=cfg.QUANTIZER_TYPE,
+        quantizer_axis_list=cfg.QUANTIZER_AXIS_LIST,
+        cvq_codeword_shapes=cfg.CVQ_CODEWORD_SHAPES,
+        nested_channel_dropout_alpha=cfg.NESTED_CHANNEL_DROPOUT_ALPHA,
+        vitvq_qbridge_type=cfg.VITVQ_QBRIDGE_TYPE,
+        vitvq_emb_nograd=cfg.VITVQ_EMB_NOGRAD,
     ).to(device)
+
+    # 加载预训练权重（如果指定）
+    if pretrained_path:
+        load_pretrained_weights(deepsc_model, pretrained_path, device)
+
+    if cfg.MODEL_PARALLEL:
+        if not torch.cuda.is_available() or torch.cuda.device_count() < 2:
+            raise RuntimeError("SIMVQ_MODEL_PARALLEL=1 requires at least two visible CUDA devices.")
+        deepsc_model.enable_model_parallel(cfg.ENCODER_DEVICE, cfg.DECODER_DEVICE)
+        print(
+            f"[Info] Model parallel enabled: encoder/quantizer/channel on {cfg.ENCODER_DEVICE}, "
+            f"decoder/enhance on {cfg.DECODER_DEVICE}"
+        )
 
     # BN 动量调整
     if accumulation_steps > 1:
@@ -112,25 +187,26 @@ def main():
         layer_weights=cfg.LAYER_LOSS_WEIGHTS_INIT,
         mse_weight=cfg.MSE_LOSS_WEIGHT,
         ms_ssim_weight=cfg.MS_SSIM_LOSS_WEIGHT,
-    ).to(device)
+        lpips_weight=cfg.LPIPS_LOSS_WEIGHT,
+    ).to(deepsc_model.decoder_device if cfg.MODEL_PARALLEL else device)
 
-    # 参数分组：SimVQ 码本投影层单独学习率
+    # SimVQ projection and ViTvq QBridge transformations use the codebook LR.
     proj_params = []
     other_params = []
     for name, param in deepsc_model.named_parameters():
         if not param.requires_grad:
             continue
-        if "codebook.proj" in name:
+        if "codebook.proj" in name or ".qbridge." in name:
             proj_params.append(param)
         else:
             other_params.append(param)
 
-    optimizer_g = optim.Adam([
-        {"params": other_params, "lr": cfg.LEARNING_RATE_G},
-        {"params": proj_params,  "lr": cfg.CODEBOOK_PROJ_LR},
-    ], betas=cfg.BETAS)
+    optimizer_groups = [{"params": other_params, "lr": cfg.LEARNING_RATE_G}]
+    if proj_params:
+        optimizer_groups.append({"params": proj_params, "lr": cfg.CODEBOOK_PROJ_LR})
+    optimizer_g = optim.Adam(optimizer_groups, betas=cfg.BETAS)
     print(f"[Info] 优化器参数分组: 普通参数 {len(other_params)} 个 (lr={cfg.LEARNING_RATE_G}), "
-          f"码本投影层 {len(proj_params)} 个 (lr={cfg.CODEBOOK_PROJ_LR})")
+          f"码本变换层 {len(proj_params)} 个 (lr={cfg.CODEBOOK_PROJ_LR})")
     scheduler_g = optim.lr_scheduler.StepLR(optimizer_g, step_size=100, gamma=0.5)
 
     # 断点续训
@@ -269,7 +345,9 @@ def main():
 
         # === 每 N 个 epoch 统计一次码本利用率 ===
         codebook_monitor_interval = 10
-        if (epoch + 1) % codebook_monitor_interval == 0:
+        if cfg.QUANTIZER_TYPE == "none" and (epoch + 1) % codebook_monitor_interval == 0:
+            print(f"\n[Codebook Utilization] Epoch {epoch + 1} - 无量化模式，跳过码本统计")
+        elif (epoch + 1) % codebook_monitor_interval == 0:
             print(f"\n[Codebook Utilization] Epoch {epoch + 1} - 统计中...")
             cb_stats = compute_codebook_utilization(
                 deepsc_model,
@@ -279,6 +357,13 @@ def main():
             )
             print_codebook_utilization(cb_stats, cfg.NUM_EMBEDDINGS_LIST)
             write_codebook_tensorboard(writer, cb_stats, epoch)
+            append_codebook_records(
+                cfg.CODEBOOK_METRICS_PATH,
+                run_id,
+                epoch + 1,
+                cb_stats,
+                cfg.NUM_EMBEDDINGS_LIST,
+            )
 
         is_best = avg_val_loss < best_val_loss
         if is_best:

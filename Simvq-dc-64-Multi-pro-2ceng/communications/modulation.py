@@ -43,7 +43,9 @@ def qpsk_modulate(bits):
     bits_reshaped = bits.view(-1, 2)
     real_part = 2 * bits_reshaped[:, 0] - 1
     imag_part = 2 * bits_reshaped[:, 1] - 1
-    return (real_part + 1j * imag_part) / torch.sqrt(torch.tensor(2.0))
+    return (real_part + 1j * imag_part) / torch.sqrt(
+        torch.tensor(2.0, device=bits.device)
+    )
 
 
 def qpsk_demodulate(symbols):  # 硬解调

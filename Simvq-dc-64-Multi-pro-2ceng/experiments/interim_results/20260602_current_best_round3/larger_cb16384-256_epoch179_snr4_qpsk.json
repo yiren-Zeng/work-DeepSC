@@ -1,0 +1,15 @@
+{
+  "checkpoint": "experiments/interim_results/20260602_current_best_round3/checkpoints/larger_cb16384-256_best_epoch179.pth",
+  "num_embeddings_list": [
+    16384,
+    256
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "qpsk",
+  "results": {
+    "4": {
+      "ms_ssim": 0.9669081882016982,
+      "psnr": 29.12149002154668
+    }
+  }
+}

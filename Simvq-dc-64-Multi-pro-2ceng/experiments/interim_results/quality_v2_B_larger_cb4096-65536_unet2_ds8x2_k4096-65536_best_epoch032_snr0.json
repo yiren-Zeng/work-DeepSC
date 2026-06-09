@@ -1,0 +1,13 @@
+{
+  "checkpoint": "experiments/interim_results/checkpoints/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536_best_epoch032.pth",
+  "num_embeddings_list": [
+    4096,
+    65536
+  ],
+  "results": {
+    "0": {
+      "ms_ssim": 0.9554015941013594,
+      "psnr": 27.91268825531006
+    }
+  }
+}

@@ -16,7 +16,10 @@ LDPC_R = 0.5
 
 
 @torch.no_grad()
-def test_real(checkpoint_path=None, test_snrs=None, json_output=None, no_channel=False):
+def test_real(
+    checkpoint_path=None, test_snrs=None, json_output=None, no_channel=False,
+    modulation="bpsk",
+):
     cfg = Config()
     setup_seed(42)
 
@@ -30,11 +33,13 @@ def test_real(checkpoint_path=None, test_snrs=None, json_output=None, no_channel
         print("链路: no-channel source reconstruction upper bound")
     else:
         print(f"LDPC: n={LDPC_N}, k={int(LDPC_N * LDPC_R)}, R={LDPC_R}")
-        print("调制: BPSK")
+        print(f"调制: {modulation.upper()}")
     print(f"Loading checkpoint from {checkpoint_path}")
 
     deepsc_model, inferred = build_model_from_checkpoint(checkpoint_path, cfg, device)
     num_embeddings_list = inferred["num_embeddings_list"]
+    if inferred["quantizer_type"] == "none" and not no_channel:
+        raise ValueError("No-quantization checkpoints only support --no-channel evaluation.")
     print(f"码本大小: {num_embeddings_list} (inferred from checkpoint)")
     if not no_channel:
         print(f"测试 SNR: {test_snrs} dB")
@@ -61,7 +66,8 @@ def test_real(checkpoint_path=None, test_snrs=None, json_output=None, no_channel
         for snr in test_snrs:
             print(f"\n正在测试 SNR = {snr} dB ...")
             mean_ms_ssim, mean_psnr = evaluate_ldpc_channel(
-                deepsc_model, test_dataloader, num_embeddings_list, snr, ldpc_code, device)
+                deepsc_model, test_dataloader, num_embeddings_list, snr, ldpc_code, device,
+                modulation=modulation)
             results[snr] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
             print(f"SNR {snr} dB | SimVQ Avg MS-SSIM: {mean_ms_ssim:.4f} | Avg PSNR: {mean_psnr:.4f} dB")
 
@@ -79,6 +85,8 @@ def test_real(checkpoint_path=None, test_snrs=None, json_output=None, no_channel
         payload = {
             "checkpoint": checkpoint_path,
             "num_embeddings_list": num_embeddings_list,
+            "ldpc_rate": LDPC_R,
+            "modulation": modulation,
             "results": {str(condition): metrics for condition, metrics in results.items()},
         }
         with open(json_output, "w", encoding="utf-8") as handle:
@@ -94,5 +102,6 @@ if __name__ == "__main__":
     parser.add_argument("--snrs", type=int, nargs="+", default=[0, 3, 6, 9, 12])
     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
+    parser.add_argument("--modulation", choices=["bpsk", "qpsk"], default="bpsk")
     args = parser.parse_args()
-    test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel)
+    test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel, args.modulation)

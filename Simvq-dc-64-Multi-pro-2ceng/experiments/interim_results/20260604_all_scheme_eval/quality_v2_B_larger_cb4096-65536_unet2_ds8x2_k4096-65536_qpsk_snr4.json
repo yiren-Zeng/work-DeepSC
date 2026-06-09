@@ -1,0 +1,15 @@
+{
+  "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    4096,
+    65536
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "qpsk",
+  "results": {
+    "4": {
+      "ms_ssim": 0.9616346962688785,
+      "psnr": 28.467920025189716
+    }
+  }
+}

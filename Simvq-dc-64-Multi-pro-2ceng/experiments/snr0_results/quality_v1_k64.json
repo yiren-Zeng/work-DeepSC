@@ -1,0 +1,13 @@
+{
+  "checkpoint": "checkpoints/quality_v1_unet2_ds4x2_k64/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    64,
+    64
+  ],
+  "results": {
+    "0": {
+      "ms_ssim": 0.9700277310379303,
+      "psnr": 29.79753444592158
+    }
+  }
+}

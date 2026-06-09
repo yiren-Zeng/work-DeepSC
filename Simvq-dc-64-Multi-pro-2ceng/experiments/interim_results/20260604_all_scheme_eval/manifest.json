@@ -1,0 +1,526 @@
+[
+  {
+    "experiment": "quality_v2_A_curriculum_unet2_ds8x2_k16-32",
+    "label": "A",
+    "codebook": "[16,32]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_A_curriculum_unet2_ds8x2_k16-32_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_A_curriculum_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "A",
+      "SIMVQ_EXP_FAMILY": "quality_v2_A_curriculum",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_A_curriculum_unet2_ds8x2_k16-32",
+    "label": "A",
+    "codebook": "[16,32]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_A_curriculum_unet2_ds8x2_k16-32_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_A_curriculum_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "A",
+      "SIMVQ_EXP_FAMILY": "quality_v2_A_curriculum",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_backbone_unet2_ds8x2_k16-32",
+    "label": "B",
+    "codebook": "[16,32]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_backbone_unet2_ds8x2_k16-32_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_backbone_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_backbone_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_backbone",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_backbone_unet2_ds8x2_k16-32",
+    "label": "B",
+    "codebook": "[16,32]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_backbone_unet2_ds8x2_k16-32_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_backbone_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_backbone_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_backbone",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_C_full_unet2_ds8x2_k16-32",
+    "label": "C",
+    "codebook": "[16,32]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_C_full_unet2_ds8x2_k16-32_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_C_full_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "C",
+      "SIMVQ_EXP_FAMILY": "quality_v2_C_full",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_C_full_unet2_ds8x2_k16-32",
+    "label": "C",
+    "codebook": "[16,32]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_C_full_unet2_ds8x2_k16-32_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_C_full_unet2_ds8x2_k16-32_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "C",
+      "SIMVQ_EXP_FAMILY": "quality_v2_C_full",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16,32",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_A_curriculum_unet2_ds8x2_k64-256",
+    "label": "A",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_A_curriculum_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_A_curriculum_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "A",
+      "SIMVQ_EXP_FAMILY": "quality_v2_A_curriculum",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_A_curriculum_unet2_ds8x2_k64-256",
+    "label": "A",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_A_curriculum_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_A_curriculum_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_A_curriculum_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "A",
+      "SIMVQ_EXP_FAMILY": "quality_v2_A_curriculum",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_backbone_unet2_ds8x2_k64-256",
+    "label": "B",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_backbone_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_backbone_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_backbone_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_backbone",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_backbone_unet2_ds8x2_k64-256",
+    "label": "B",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_backbone_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_backbone_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_backbone_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_backbone",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_C_full_unet2_ds8x2_k64-256",
+    "label": "C",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_C_full_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_C_full_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_C_full_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "C",
+      "SIMVQ_EXP_FAMILY": "quality_v2_C_full",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_C_full_unet2_ds8x2_k64-256",
+    "label": "C",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_C_full_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_C_full_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_C_full_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "C",
+      "SIMVQ_EXP_FAMILY": "quality_v2_C_full",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_LPIPS_unet2_ds8x2_k64-256",
+    "label": "B-LPIPS",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_LPIPS_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_LPIPS_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_LPIPS_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_LPIPS",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_LPIPS_unet2_ds8x2_k64-256",
+    "label": "B-LPIPS",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_LPIPS_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_LPIPS_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_LPIPS_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_LPIPS",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256",
+    "label": "B-SwinEnhance",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_SwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "4",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256",
+    "label": "B-SwinEnhance",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_SwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "4",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256",
+    "label": "B-DynSwinEnhance",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_DynSwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "6",
+      "SIMVQ_BASE_CHANNELS": "96",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256",
+    "label": "B-DynSwinEnhance",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_DynSwinEnhance_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_DynSwinEnhance",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_USE_SWINIR_ENHANCE": "1",
+      "SIMVQ_SWINIR_ENHANCE_BLOCKS": "6",
+      "SIMVQ_BASE_CHANNELS": "96",
+      "SIMVQ_TOTAL_BATCH_SIZE": "8",
+      "SIMVQ_MICRO_BATCH_SIZE": "8"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "label": "B-larger",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_unet2_ds8x2_k64-256",
+    "label": "B-larger",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256",
+    "label": "B-larger-ViTvqNoCompress",
+    "codebook": "[64,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_ViTvqNoCompress",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "vitvq_nocompress",
+      "SIMVQ_VITVQ_QBRIDGE_TYPE": "QBridgeNoCompress-S",
+      "SIMVQ_VITVQ_EMB_NOGRAD": "0"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256",
+    "label": "B-larger-ViTvqNoCompress",
+    "codebook": "[64,256]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_ViTvqNoCompress",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "vitvq_nocompress",
+      "SIMVQ_VITVQ_QBRIDGE_TYPE": "QBridgeNoCompress-S",
+      "SIMVQ_VITVQ_EMB_NOGRAD": "0"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16",
+    "label": "B-larger-cb128-16",
+    "codebook": "[128,16]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb128-16",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "128,16",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "simvq"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16",
+    "label": "B-larger-cb128-16",
+    "codebook": "[128,16]",
+    "test": "bpsk_snr0",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16_bpsk_snr0.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb128-16",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "128,16",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "simvq"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_NoQuant_unet2_ds8x2_k64-256",
+    "label": "B-larger-NoQuant",
+    "codebook": "none",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_NoQuant_unet2_ds8x2_k64-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_NoQuant_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_NoQuant_unet2_ds8x2_k64-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_NoQuant",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "64,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4",
+      "SIMVQ_QUANTIZER_TYPE": "none"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256",
+    "label": "B-larger-cb16384-256",
+    "codebook": "[16384,256]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb16384-256",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16384,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256",
+    "label": "B-larger-cb16384-256",
+    "codebook": "[16384,256]",
+    "test": "qpsk_snr4",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256_qpsk_snr4.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb16384-256",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "16384,256",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536",
+    "label": "B-larger-cb4096-65536",
+    "codebook": "[4096,65536]",
+    "test": "no_channel",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536_no_channel.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb4096-65536",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "4096,65536",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  },
+  {
+    "experiment": "quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536",
+    "label": "B-larger-cb4096-65536",
+    "codebook": "[4096,65536]",
+    "test": "qpsk_snr4",
+    "json": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/interim_results/20260604_all_scheme_eval/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536_qpsk_snr4.json",
+    "checkpoint": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/checkpoints/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536/best_vq_deepsc.pth",
+    "metrics": "/workspace/yi/work/Simvq-dc-64-Multi-pro-2ceng/experiments/quality_v2_B_larger_cb4096-65536_unet2_ds8x2_k4096-65536_epoch_metrics.csv",
+    "env": {
+      "SIMVQ_EXPERIMENT_STAGE": "B",
+      "SIMVQ_EXP_FAMILY": "quality_v2_B_larger_cb4096-65536",
+      "SIMVQ_NUM_EMBEDDINGS_LIST": "4096,65536",
+      "SIMVQ_DOWNSAMPLE_STRIDES": "8,2",
+      "SIMVQ_UNET_DEPTH": "2",
+      "SIMVQ_BASE_CHANNELS": "128",
+      "SIMVQ_ENCODER_RES_BLOCKS": "4",
+      "SIMVQ_DECODER_RES_BLOCKS": "4"
+    }
+  }
+]

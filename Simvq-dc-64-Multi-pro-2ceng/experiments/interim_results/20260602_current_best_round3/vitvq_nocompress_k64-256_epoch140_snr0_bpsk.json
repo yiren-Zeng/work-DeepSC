@@ -1,0 +1,15 @@
+{
+  "checkpoint": "experiments/interim_results/20260602_current_best_round3/checkpoints/vitvq_nocompress_k64-256_best_epoch140.pth",
+  "num_embeddings_list": [
+    64,
+    256
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.9418151887851108,
+      "psnr": 27.136475543181103
+    }
+  }
+}
