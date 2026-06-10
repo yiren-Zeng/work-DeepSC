@@ -1,9 +1,7 @@
 import argparse
 import json
 import os
-
 import torch
-
 from config import Config
 from data.datasets import get_dataloader
 from evaluation.quality import evaluate_ldpc_channel, evaluate_no_channel

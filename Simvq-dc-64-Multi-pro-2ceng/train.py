@@ -7,11 +7,7 @@ from config import Config
 from models.deepsc import DeepSC
 from losses.deepsc_loss import DeepSCLoss
 from data.datasets import get_dataloader
-from monitoring.codebook import (
-    compute_codebook_utilization,
-    print_codebook_utilization,
-    write_codebook_tensorboard,
-)
+from monitoring.codebook import (compute_codebook_utilization, print_codebook_utilization, write_codebook_tensorboard,)
 from training.schedules import compute_schedule
 from utils.experiment_io import append_codebook_records, append_epoch_record
 from utils.reproducibility import setup_seed
