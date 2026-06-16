@@ -29,7 +29,7 @@ export SIMVQ_DECODER_RES_BLOCKS="4"    # 2 -> 4
 # 注意: 由于模型结构变化(通道数和res_blocks不同)，预训练权重仅部分匹配
 # load_pretrained_weights 会自动跳过形状不匹配的参数
 
-# exportSIMVQ_PRETRAINED_CHECKPOINT="checkpoints/quality_v2_B_backbone_unet2_ds8x2_k64-256/best_vq_deepsc.pth"
+# export SIMVQ_PRETRAINED_CHECKPOINT="checkpoints/quality_v2_B_backbone_unet2_ds8x2_k64-256/best_vq_deepsc.pth"
 
 # ---- GPU ----
 export GPU_ID="${GPU_ID:-0}"

@@ -14,24 +14,24 @@ from utils.reproducibility import setup_seed
 from utils.checkpoint_utils import load_model_state_dict
 
 
-# def load_pretrained_weights(model, pretrained_path, device):
-#     """加载预训练权重，仅加载兼容的参数（忽略形状不匹配的键）"""
-#     if not pretrained_path or not os.path.exists(pretrained_path):
-#         print(f"[Warning] 预训练权重路径不存在: {pretrained_path}，将从头训练")
-#         return 0
-#     pretrained_state = load_model_state_dict(pretrained_path, device)
-#     model_state = model.state_dict()
-#     loaded = 0
-#     skipped = 0
-#     for key, value in pretrained_state.items():
-#         if key in model_state and model_state[key].shape == value.shape:
-#             model_state[key] = value
-#             loaded += 1
-#         else:
-#             skipped += 1
-#     model.load_state_dict(model_state)
-#     print(f"[Info] 从预训练权重加载: {loaded} 个参数匹配, {skipped} 个跳过")
-#     return loaded
+def load_pretrained_weights(model, pretrained_path, device):
+    """加载预训练权重，仅加载兼容的参数（忽略形状不匹配的键）"""
+    if not pretrained_path or not os.path.exists(pretrained_path):
+        print(f"[Warning] 预训练权重路径不存在: {pretrained_path}，将从头训练")
+        return 0
+    pretrained_state = load_model_state_dict(pretrained_path, device)
+    model_state = model.state_dict()
+    loaded = 0
+    skipped = 0
+    for key, value in pretrained_state.items():
+        if key in model_state and model_state[key].shape == value.shape:
+            model_state[key] = value
+            loaded += 1
+        else:
+            skipped += 1
+    model.load_state_dict(model_state)
+    print(f"[Info] 从预训练权重加载: {loaded} 个参数匹配, {skipped} 个跳过")
+    return loaded
 
 
 def main():

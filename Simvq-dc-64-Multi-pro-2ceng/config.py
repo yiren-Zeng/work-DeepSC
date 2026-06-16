@@ -1,3 +1,6 @@
+# 大部分实验参数都从这里读取，并支持环境变量覆盖
+
+
 import torch
 import os
 import math
@@ -216,7 +219,7 @@ class Config:
     VITVQ_QBRIDGE_TYPE = _env_str("SIMVQ_VITVQ_QBRIDGE_TYPE", "QBridgeNoCompress-S")
     VITVQ_EMB_NOGRAD = _env_int("SIMVQ_VITVQ_EMB_NOGRAD", 0) == 1
     DOWNSAMPLE_STRIDES = _env_int_list("SIMVQ_DOWNSAMPLE_STRIDES", [8, 2])
-    QUANTIZER_AXIS_LIST = _env_str_list("SIMVQ_QUANTIZER_AXIS_LIST", ["patch"] * UNET_DEPTH)
+    QUANTIZER_AXIS_LIST = _env_str_list("SIMVQ_QUANTIZER_AXIS_LIST", ["patch"] * UNET_DEPTH) # 量化轴
     CVQ_CODEWORD_SHAPES = _env_shape_list(
         "SIMVQ_CVQ_CODEWORD_SHAPES", _default_cvq_codeword_shapes(DOWNSAMPLE_STRIDES)
     )
