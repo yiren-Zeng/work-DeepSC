@@ -25,10 +25,10 @@ def main():
 
     # ================= 参数配置 =================
     # 原始未压缩图片所在的文件夹路径
-    ori_path = '/workspace/yi/work/JPEG/kodak'
+    ori_path = '/workspace/yi/work/Kodak-256to768-transform-resize'
 
     # 已经解压完毕的图片文件夹路径
-    rx_path = '/workspace/yi/work/JPEG/kodak-jpeg-0.5-bpsk-ratio-0.28'
+    rx_path = '/workspace/yi/work/JPEG/output_jpeg'
 
     psnr_scores = [] # 用于保存 24 张图的 PSNR 得分
     msssim_scores = [] # 用于保存 24 张图的 MS-SSIM 得分
@@ -42,7 +42,7 @@ def main():
     # 内层循环：遍历 24 张图片
     for k in tqdm(range(1, 25), desc="Evaluating"):
         # 【补全2】拼接出当前循环的具体文件名
-        img_name = f'val_0000{k:02d}.png'
+        img_name = f'kodim{k:02d}.png'
         img_name2 = f'val_0000{k:02d}.jp2'
         ori_file = os.path.join(ori_path, img_name)
         rx_jpeg_file = os.path.join(rx_path, img_name2)

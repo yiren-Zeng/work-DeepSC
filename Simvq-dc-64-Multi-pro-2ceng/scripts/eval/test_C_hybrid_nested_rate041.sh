@@ -15,8 +15,14 @@ export SIMVQ_QUANTIZER_TYPE="simvq"
 export SIMVQ_QUANTIZER_AXIS_LIST="channel,patch"
 export SIMVQ_CVQ_CODEWORD_SHAPES="32x32,patch"
 export SIMVQ_NESTED_CHANNEL_DROPOUT_ALPHA="0.25"
+export SIMVQ_TEST_DATASET_PATH="/workspace/yi/work/Kodak-256-transform-resize"
+export SIMVQ_TEST_NO_RESIZE="1"
 
-PYTHON_CMD=(python -u)
+
+
+PYTHON_CMD=(python -u) # 不设调试 → 默认：PYTHON_CMD 保持初始值 (python -u)
+
+# 下面是调试选项，优先级：DEBUGPY < DEBUG_PDB
 if [ "${DEBUG_PDB:-0}" = "1" ]; then
   PYTHON_CMD=(python -m pdb)
 elif [ "${DEBUGPY:-0}" = "1" ]; then
@@ -25,11 +31,14 @@ elif [ "${DEBUGPY:-0}" = "1" ]; then
   echo "Waiting for debugger attach on port ${DEBUGPY_PORT}..."
 fi
 
-if [ "$#" -eq 0 ]; then
+if [ "$#" -eq 0 ]; then 
+  # 数值比较，"$#" 是传递给脚本的参数数量（integer），而-eq 是用于比较整数的操作符。这里的条件是检查是否没有传递任何参数给脚本。
+  # "${PYTHON_CMD[@]}"	数组展开，每个元素作为一个独立参数。[python, -u] 展开为 python -u
   "${PYTHON_CMD[@]}" test_real.py \
     --checkpoint checkpoints/quality_v2_B_larger_rate041_C_hybridcvq_nested_cb65536-8192_unet2_ds8x2_k65536-8192/best_vq_deepsc.pth \
     --snrs 0 \
     --modulation bpsk
 else
-  "${PYTHON_CMD[@]}" test_real.py "$@"
+  # "$@"	将所有传入脚本的参数原样转发给 test_real.py
+  "${PYTHON_CMD[@]}" test_real.py "$@" 
 fi

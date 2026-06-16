@@ -15,12 +15,29 @@ export SIMVQ_QUANTIZER_TYPE="simvq"
 export SIMVQ_QUANTIZER_AXIS_LIST="channel,patch"
 export SIMVQ_CVQ_CODEWORD_SHAPES="32x32,patch"
 export SIMVQ_NESTED_CHANNEL_DROPOUT_ALPHA="0.0"
+export SIMVQ_TEST_DATASET_PATH="/workspace/yi/work/Kodak-256-transform-resize"
+export SIMVQ_TEST_NO_RESIZE="1"
+
+
+
+PYTHON_CMD=(python -u) # 不设调试 → 默认：PYTHON_CMD 保持初始值 (python -u)
+
+# 下面是调试选项，优先级：DEBUGPY < DEBUG_PDB
+if [ "${DEBUG_PDB:-0}" = "1" ]; then
+  PYTHON_CMD=(python -m pdb)
+elif [ "${DEBUGPY:-0}" = "1" ]; then
+  DEBUGPY_PORT="${DEBUGPY_PORT:-5678}"
+  PYTHON_CMD=(python -m debugpy --listen "0.0.0.0:${DEBUGPY_PORT}" --wait-for-client)
+  echo "Waiting for debugger attach on port ${DEBUGPY_PORT}..."
+fi
+
 
 if [ "$#" -eq 0 ]; then
-  python -u test_real.py \
+  "${PYTHON_CMD[@]}" test_real.py \
     --checkpoint checkpoints/quality_v2_B_larger_rate041_B_hybridcvq_cb65536-8192_unet2_ds8x2_k65536-8192/best_vq_deepsc.pth \
     --snrs 0 \
     --modulation bpsk
 else
-  python -u test_real.py "$@"
+  "${PYTHON_CMD[@]}" test_real.py "$@"
 fi
+

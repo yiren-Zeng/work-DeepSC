@@ -3,15 +3,15 @@ import os
 import math
 
 
-def _default_downsample_strides(depth):
-    """Return a conservative default downsampling plan for a U-Net depth."""
-    if depth < 1:
-        raise ValueError("UNET_DEPTH must be >= 1")
-    if depth == 1:
-        return [8]
-    # Keep the existing 2-layer behavior and append extra 2x stages for
-    # deeper variants. This keeps the source rate close to the 2-layer setup.
-    return [4] + [2] * (depth - 1)
+# def _default_downsample_strides(depth):
+#     """Return a conservative default downsampling plan for a U-Net depth."""
+#     if depth < 1:
+#         raise ValueError("UNET_DEPTH must be >= 1")
+#     if depth == 1:
+#         return [8]
+#     # Keep the existing 2-layer behavior and append extra 2x stages for
+#     # deeper variants. This keeps the source rate close to the 2-layer setup.
+#     return [4] + [2] * (depth - 1)
 
 
 def _default_embedding_dims(base_channels, depth):
@@ -28,30 +28,30 @@ def _expand_to_depth(value, depth, name):
 
 
 def _default_loss_weights_init(depth):
-    return [0.25 * (i + 1) for i in range(depth)]
+    return [0.25 * (i + 1) for i in range(depth)] # [0.25, 0.50, 0.75, ...]
 
 
 def _default_loss_weights_final(depth):
-    return [0.25 for _ in range(depth)]
+    return [0.25 for _ in range(depth)] # [0.25, 0.25, 0.25, ...]
 
 
 def _default_skip_dropout_init(depth):
-    return [0.1 for _ in range(max(depth - 1, 0))]
+    return [0.1 for _ in range(max(depth - 1, 0))] # [0.1, 0.1, ...]  (depth-1 个)
 
 
 def _default_skip_dropout_final(depth):
-    return [0.0 for _ in range(max(depth - 1, 0))]
+    return [0.0 for _ in range(max(depth - 1, 0))] # [0.0, 0.0, ...]  (depth-1 个)
 
 
-def _format_k_list(num_embeddings_list):
+def _format_k_list(num_embeddings_list): 
     unique_values = sorted(set(num_embeddings_list))
     if len(unique_values) == 1:
         return f"k{unique_values[0]}"
-    return "k" + "-".join(str(v) for v in num_embeddings_list)
+    return "k" + "-".join(str(v) for v in num_embeddings_list) # [65536, 8192] → "k65536-8192"
 
 
 def _experiment_name(family, depth, strides, num_embeddings_list):
-    stride_part = "x".join(str(v) for v in strides)
+    stride_part = "x".join(str(v) for v in strides) # [8,2] → "8x2"
     return f"{family}_unet{depth}_ds{stride_part}_{_format_k_list(num_embeddings_list)}"
 
 
@@ -72,9 +72,9 @@ def _source_bpp(strides, num_embeddings_list, quantizer_axis_list=None,
             bpp += bits / (cumulative_downsample ** 2)
     return bpp
 
-
+# 环境变量读取
 def _env_int(name, default):
-    value = os.environ.get(name)
+    value = os.environ.get(name) # os.environ 是 dict，存所有环境变量
     return int(value) if value else default
 
 
@@ -99,20 +99,20 @@ def _env_int_list(name, default):
     value = os.environ.get(name)
     if not value:
         return list(default)
-    return [int(item.strip()) for item in value.split(",") if item.strip()]
+    return [int(item.strip()) for item in value.split(",") if item.strip()] # .split(",")，按照逗号切分字符串
 
 
 def _resize_tuple_from_env(name, default):
     value = os.environ.get(name)
     if not value:
         return default
-    parts = [part.strip() for part in value.replace("x", ",").split(",") if part.strip()]
+    parts = [part.strip() for part in value.replace("x", ",").split(",") if part.strip()] # .replace("x", ",") 把字符串里的小写字母 "x" 替换成逗号 ","
     if len(parts) != 2:
         raise ValueError(f"{name} must be formatted as H,W, for example 256,256")
-    return int(parts[0]), int(parts[1])
+    return int(parts[0]), int(parts[1]) # tuple[int, int], 如(H, W)
 
 
-def _default_cvq_codeword_shapes(strides):
+def _default_cvq_codeword_shapes(strides): # CVQ 码字形状：每层下采样后特征图的空间维度，除非通过环境变量覆盖。对于 patch-wise CVQ，使用 None。 
     train_h, train_w = _resize_tuple_from_env("SIMVQ_TRAIN_RESIZE", (256, 256))
     shapes = []
     cumulative = 1
@@ -122,7 +122,7 @@ def _default_cvq_codeword_shapes(strides):
     return shapes
 
 
-def _env_shape_list(name, default):
+def _env_shape_list(name, default): # 这个也是生成形状的
     value = os.environ.get(name)
     if not value:
         return list(default)
@@ -140,7 +140,7 @@ def _env_shape_list(name, default):
 
 
 def _stage_settings(stage):
-    stage = (stage or "c").lower()
+    stage = (stage or "c").lower() # 默认阶段为 C，使用 lower() 以实现大写变小写
     settings = {
         "a": {
             "family": "quality_v2_A_curriculum",
@@ -193,8 +193,8 @@ def _stage_settings(stage):
     return settings[stage]
 
 
-_STAGE = os.environ.get("SIMVQ_EXPERIMENT_STAGE", "C")
-_STAGE_SETTINGS = _stage_settings(_STAGE)
+_STAGE = os.environ.get("SIMVQ_EXPERIMENT_STAGE", "C") # 读环境变量，默认 "C"
+_STAGE_SETTINGS = _stage_settings(_STAGE) # 查字典，拿到对应配置
 
 
 class Config:
@@ -209,7 +209,6 @@ class Config:
     NUM_DOWNSAMPLE_BLOCKS = UNET_DEPTH
     BASE_CHANNELS = _env_int("SIMVQ_BASE_CHANNELS", 64)
     EMBEDDING_DIM_LIST = _default_embedding_dims(BASE_CHANNELS, UNET_DEPTH)
-    # 0.083-BPP target configuration: 4/64 + 5/256 = 0.0820 BPP.
     NUM_EMBEDDINGS_PER_LAYER = None
     NUM_EMBEDDINGS_LIST = _env_int_list("SIMVQ_NUM_EMBEDDINGS_LIST", [64, 256])
     COMMITMENT_COST = 0.25

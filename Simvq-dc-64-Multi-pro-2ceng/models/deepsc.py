@@ -64,6 +64,8 @@ class DeepSC(nn.Module):
         if len(cvq_codeword_shapes) != num_downsample_blocks:
             raise ValueError("cvq_codeword_shapes length must match num_downsample_blocks")
 
+
+        # 把输入图像 x 编码成多层特征 encoder_features
         self.semantic_encoder = SemanticEncoder(
             in_channels, num_downsample_blocks, base_channels, strides=strides,
             norm_type=norm_type,
@@ -72,10 +74,13 @@ class DeepSC(nn.Module):
             num_res_blocks=encoder_res_blocks,
             use_cascade_downsample=use_cascade_downsample,
         )
+        
         if strides is not None:
             upsample_scales = list(reversed(strides))
         else:
             upsample_scales = None
+
+        # 把量化后的多层特征重新解码成图像
         self.semantic_decoder = SemanticDecoder(
             embedding_dim_list, out_channels,
             up_mode=upsample_mode,
@@ -93,7 +98,7 @@ class DeepSC(nn.Module):
                 num_groups=norm_groups,
             )
         else:
-            self.bottleneck_attention = nn.Identity()
+            self.bottleneck_attention = nn.Identity() # nn.Identity() 的意思是什么都不做，输入什么就输出什么
         self.quantizer_type = quantizer_type
         self.quantizer_axis_list = list(quantizer_axis_list)
         self.nested_channel_dropout_alpha = float(nested_channel_dropout_alpha)
@@ -164,7 +169,7 @@ class DeepSC(nn.Module):
         dropped[:, c_keep:, :, :] = 0
         return dropped
 
-    def enable_model_parallel(self, encoder_device, decoder_device):
+    def enable_model_parallel(self, encoder_device, decoder_device): # 用来把模型拆到多张 GPU 上
         self.encoder_device = torch.device(encoder_device)
         self.decoder_device = torch.device(decoder_device)
         self.device = self.encoder_device

@@ -22,7 +22,7 @@ def test_real(
     setup_seed(42)
 
     device = torch.device(cfg.DEVICE)
-    test_snrs = test_snrs or [0, 3, 6, 9, 12]
+    test_snrs = test_snrs
     checkpoint_path = checkpoint_path or os.path.join(cfg.CHECKPOINT_DIR, "best_vq_deepsc.pth")
 
     print("=" * 40)
