@@ -51,8 +51,8 @@ class DeepSC(nn.Module):
                  vitvq_emb_nograd=False,
                  use_raq=False,
                  raq_target_list=None,
-                 raq_min_trg=2,
-                 raq_max_trg=16,
+                 raq_min_trg=None,
+                 raq_max_trg=None,
                  ):
         super(DeepSC, self).__init__()
         if len(num_embeddings_list) != num_downsample_blocks:
@@ -139,15 +139,24 @@ class DeepSC(nn.Module):
             self.vector_quantizers.append(quantizer)
 
         self.use_raq = bool(use_raq)
-        self.raq_min_trg = int(raq_min_trg)
-        self.raq_max_trg = int(raq_max_trg)
-        self.raq_target_list = list(raq_target_list or num_embeddings_list)
+        self.raq_min_trg = None
+        self.raq_max_trg = None
+        self.raq_target_list = list(raq_target_list) if raq_target_list is not None else list(num_embeddings_list)
         self.raqs = nn.ModuleList()
         if self.use_raq:
+            if raq_target_list is None:
+                raise ValueError("RAQ enabled but raq_target_list is not configured.")
+            if raq_min_trg is None or raq_max_trg is None:
+                raise ValueError("RAQ enabled but raq_min_trg/raq_max_trg is not configured.")
             if quantizer_type != "simvq":
                 raise ValueError("RAQ integration requires SIMVQ quantizers.")
             if any(axis != "patch" for axis in self.quantizer_axis_list):
                 raise ValueError("RAQ integration currently supports patch-wise quantizers only.")
+            self.raq_min_trg = int(raq_min_trg)
+            self.raq_max_trg = int(raq_max_trg)
+            self.raq_target_list = list(raq_target_list)
+            if len(self.raq_target_list) != num_downsample_blocks:
+                raise ValueError("raq_target_list length must match num_downsample_blocks")
             for Ki, Di in zip(num_embeddings_list, embedding_dim_list):
                 self.raqs.append(
                     RAQ(

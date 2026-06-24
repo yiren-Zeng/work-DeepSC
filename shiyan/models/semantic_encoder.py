@@ -10,12 +10,13 @@ from .blocks import ResidualBlock, make_norm, make_activation
 class DownSampleBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int, stride: int = 2,
                  norm_type="batch", num_groups=32, activation="prelu",
-                 num_res_blocks=1, use_cascade_downsample=True):
+                 num_res_blocks=1, use_cascade_downsample=True): 
         """
         下采样块
         :param in_ch: 输入通道数
         :param out_ch: 输出通道数
         :param stride: 下采样步幅（2=2倍下采样，4=4倍下采样）
+        :param use_cascade_downsample: 是否使用“级联下采样”来替代一次性大步幅卷积下采样
         """
         super().__init__()
         self.res1 = nn.Sequential(*[

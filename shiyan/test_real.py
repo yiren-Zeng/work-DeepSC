@@ -19,6 +19,7 @@ def test_real(
     modulation="bpsk",
 ):
     cfg = Config()
+    cfg.validate()
     setup_seed(42)
 
     device = torch.device(cfg.DEVICE)

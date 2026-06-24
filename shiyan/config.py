@@ -1,6 +1,4 @@
 # 大部分实验参数都从这里读取，并支持环境变量覆盖
-
-
 import torch
 import os
 import math
@@ -81,9 +79,19 @@ def _env_int(name, default):
     return int(value) if value else default
 
 
+def _env_int_optional(name):
+    value = os.environ.get(name)
+    return int(value) if value else None
+
+
 def _env_float(name, default):
     value = os.environ.get(name)
     return float(value) if value else default
+
+
+def _env_float_optional(name):
+    value = os.environ.get(name)
+    return float(value) if value else None
 
 
 def _env_str(name, default):
@@ -102,7 +110,14 @@ def _env_int_list(name, default):
     value = os.environ.get(name)
     if not value:
         return list(default)
-    return [int(item.strip()) for item in value.split(",") if item.strip()] # .split(",")，按照逗号切分字符串
+    return [int(item.strip()) for item in value.split(",") if item.strip()] # .split(",")，按照逗号切分字符串，并且自动返回一个列表
+
+
+def _env_int_list_optional(name):
+    value = os.environ.get(name)
+    if not value:
+        return None
+    return [int(item.strip()) for item in value.split(",") if item.strip()]
 
 
 def _resize_tuple_from_env(name, default):
@@ -125,10 +140,11 @@ def _default_cvq_codeword_shapes(strides): # CVQ 码字形状：每层下采样�
     return shapes
 
 
-def _env_shape_list(name, default): # 这个也是生成形状的
+def _env_shape_list(name, default=None): # 这个也是生成形状的
     value = os.environ.get(name)
+    
     if not value:
-        return list(default)
+        return None if default is None else list(default)
     shapes = []
     for item in value.split(","):
         item = item.strip().lower()
@@ -219,17 +235,18 @@ class Config:
     NUM_EMBEDDINGS_LIST = _env_int_list("SIMVQ_NUM_EMBEDDINGS_LIST", [16, 2])
     COMMITMENT_COST = 0.25
     QUANTIZER_TYPE = _env_str("SIMVQ_QUANTIZER_TYPE", "simvq").lower()
-    USE_RAQ = _env_int("SIMVQ_USE_RAQ", 1) == 1
-    RAQ_TARGET_LIST = _env_int_list("SIMVQ_RAQ_TARGET_LIST", [16, 2])
-    RAQ_MIN_TRG = _env_int("SIMVQ_RAQ_MIN_TRG", 2)
-    RAQ_MAX_TRG = _env_int("SIMVQ_RAQ_MAX_TRG", 16)
-    RAQ_REPULSION_WEIGHT = _env_float("SIMVQ_RAQ_REPULSION_WEIGHT", 0.05)
+    _USE_RAQ_VALUE = _env_int_optional("SIMVQ_USE_RAQ")
+    USE_RAQ = (_USE_RAQ_VALUE == 1) if _USE_RAQ_VALUE is not None else False
+    RAQ_TARGET_LIST = _env_int_list_optional("SIMVQ_RAQ_TARGET_LIST")
+    RAQ_MIN_TRG = _env_int_optional("SIMVQ_RAQ_MIN_TRG")
+    RAQ_MAX_TRG = _env_int_optional("SIMVQ_RAQ_MAX_TRG")
+    RAQ_REPULSION_WEIGHT = _env_float_optional("SIMVQ_RAQ_REPULSION_WEIGHT")
     VITVQ_QBRIDGE_TYPE = _env_str("SIMVQ_VITVQ_QBRIDGE_TYPE", "QBridgeNoCompress-S")
     VITVQ_EMB_NOGRAD = _env_int("SIMVQ_VITVQ_EMB_NOGRAD", 0) == 1
     DOWNSAMPLE_STRIDES = _env_int_list("SIMVQ_DOWNSAMPLE_STRIDES", [8, 2])
     QUANTIZER_AXIS_LIST = _env_str_list("SIMVQ_QUANTIZER_AXIS_LIST", ["patch"] * UNET_DEPTH) # 量化轴
     CVQ_CODEWORD_SHAPES = _env_shape_list(
-        "SIMVQ_CVQ_CODEWORD_SHAPES", _default_cvq_codeword_shapes(DOWNSAMPLE_STRIDES)
+        "SIMVQ_CVQ_CODEWORD_SHAPES", [None] * UNET_DEPTH
     )
     NESTED_CHANNEL_DROPOUT_ALPHA = _env_float("SIMVQ_NESTED_CHANNEL_DROPOUT_ALPHA", 0.0)
     # The baseline's VQ term dominated its reconstruction loss during early training.
@@ -276,7 +293,7 @@ class Config:
     PIN_MEMORY = True
     TRAIN_DATASET_PATH = _env_str("SIMVQ_TRAIN_DATASET_PATH", "/workspace/yi/work/Cars196/train_data")
     VAL_DATASET_PATH = _env_str("SIMVQ_VAL_DATASET_PATH", "/workspace/yi/work/Cars196/val_data")
-    TEST_DATASET_PATH = _env_str("SIMVQ_TEST_DATASET_PATH", "/workspace/yi/work/Kodak")
+    TEST_DATASET_PATH = _env_str("SIMVQ_TEST_DATASET_PATH", "/workspace/yi/work/Kodak-256-transform-resize")
     DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
     MODEL_PARALLEL = _env_int("SIMVQ_MODEL_PARALLEL", 0) == 1
     ENCODER_DEVICE = _env_str("SIMVQ_ENCODER_DEVICE", DEVICE)
@@ -298,8 +315,16 @@ class Config:
         EMBEDDING_DIM_LIST,
         _resize_tuple_from_env("SIMVQ_TEST_RESIZE", (768, 512)),
     )
+    _RAQ_BPP_K_LIST = RAQ_TARGET_LIST if (USE_RAQ and RAQ_TARGET_LIST is not None) else NUM_EMBEDDINGS_LIST
+    ESTIMATED_RAQ_TARGET_BPP = _source_bpp(
+        DOWNSAMPLE_STRIDES,
+        _RAQ_BPP_K_LIST,
+        QUANTIZER_AXIS_LIST,
+        EMBEDDING_DIM_LIST,
+        _resize_tuple_from_env("SIMVQ_TEST_RESIZE", (768, 512)),
+    )
     ESTIMATED_TEST_TRANSMISSION_RATIO = (
-        ESTIMATED_TEST_SOURCE_BPP / (CHANNEL_CODING_RATE_VAL * 1 * 3)
+        ESTIMATED_RAQ_TARGET_BPP / (CHANNEL_CODING_RATE_VAL * 1 * 3)
     )
     CHECKPOINT_DIR = os.path.join("./checkpoints", EXPERIMENT_NAME)
     LOG_DIR = os.path.join("./experiments/tensorboard", EXPERIMENT_NAME)
@@ -323,6 +348,7 @@ class Config:
             "CVQ_CODEWORD_SHAPES": cls.CVQ_CODEWORD_SHAPES,
         }
         for name, value in checks.items():
+
             if len(value) != cls.UNET_DEPTH:
                 raise ValueError(f"{name} length ({len(value)}) must equal UNET_DEPTH ({cls.UNET_DEPTH})")
 
@@ -342,6 +368,17 @@ class Config:
         if cls.QUANTIZER_TYPE != "simvq" and any(axis == "channel" for axis in cls.QUANTIZER_AXIS_LIST):
             raise ValueError("channel-wise CVQ is currently implemented for SIMVQ_QUANTIZER_TYPE=simvq")
         if cls.USE_RAQ:
+            required_raq_envs = {
+                "SIMVQ_RAQ_TARGET_LIST": cls.RAQ_TARGET_LIST,
+                "SIMVQ_RAQ_MIN_TRG": cls.RAQ_MIN_TRG,
+                "SIMVQ_RAQ_MAX_TRG": cls.RAQ_MAX_TRG,
+                "SIMVQ_RAQ_REPULSION_WEIGHT": cls.RAQ_REPULSION_WEIGHT,
+            }
+            missing = [name for name, value in required_raq_envs.items() if value is None]
+            if missing:
+                raise ValueError(
+                    "SIMVQ_USE_RAQ=1 requires explicit env vars: " + ", ".join(missing)
+                )
             if cls.QUANTIZER_TYPE != "simvq":
                 raise ValueError("RAQ integration requires SIMVQ_QUANTIZER_TYPE=simvq")
             if any(axis != "patch" for axis in cls.QUANTIZER_AXIS_LIST):
@@ -364,11 +401,12 @@ class Config:
             "total_downsample": math.prod(cls.DOWNSAMPLE_STRIDES),
             "estimated_source_bpp": cls.ESTIMATED_SOURCE_BPP,
             "estimated_test_source_bpp": cls.ESTIMATED_TEST_SOURCE_BPP,
+            "estimated_raq_target_bpp": cls.ESTIMATED_RAQ_TARGET_BPP,
             "estimated_test_transmission_ratio": cls.ESTIMATED_TEST_TRANSMISSION_RATIO,
             "embedding_dim_list": list(cls.EMBEDDING_DIM_LIST),
             "num_embeddings_list": list(cls.NUM_EMBEDDINGS_LIST),
             "use_raq": cls.USE_RAQ,
-            "raq_target_list": list(cls.RAQ_TARGET_LIST),
+            "raq_target_list": list(cls.RAQ_TARGET_LIST) if cls.RAQ_TARGET_LIST is not None else None,
             "raq_min_trg": cls.RAQ_MIN_TRG,
             "raq_max_trg": cls.RAQ_MAX_TRG,
             "raq_repulsion_weight": cls.RAQ_REPULSION_WEIGHT,

@@ -21,11 +21,14 @@
 4. 测试时默认发送 RAQ 目标码本索引。
 5. 默认不加载任何预训练权重，从零开始训练。
 
-## 默认实验配置
+## 实验脚本配置
 
-默认配置已经写在 `config.py`，直接运行就是本实验：
+RAQ 相关参数不再在 `config.py` 里隐藏默认值。直接导入配置且不传
+`SIMVQ_USE_RAQ` 时，RAQ 默认为关闭；如果设置 `SIMVQ_USE_RAQ=1`，必须显式传入
+`SIMVQ_RAQ_TARGET_LIST`、`SIMVQ_RAQ_MIN_TRG`、`SIMVQ_RAQ_MAX_TRG`、
+`SIMVQ_RAQ_REPULSION_WEIGHT`。当前固定实验入口会在 shell 脚本中写明这些值：
 
-| 项目 | 默认值 |
+| 项目 | 脚本显式值 |
 | --- | --- |
 | 实验名 | `shiyan_raq_quality_v2_B_larger_rate044_A_patch_cb16-2_ch512-1024_unet2_ds8x2_k16-2` |
 | Stage | `B` |
@@ -36,9 +39,10 @@
 | 特征通道 | `[512, 1024]` |
 | 源码本大小 | `[16, 2]` |
 | 量化方式 | patch-wise SimVQ |
-| RAQ | 默认开启 |
+| RAQ | `SIMVQ_USE_RAQ=1` |
 | RAQ 训练目标 K | 从 `[2, 4, 8, 16]` 中按层随机采样 |
 | RAQ 测试目标 K | `[16, 2]` |
+| RAQ codebook repulsion | `0.05` |
 | 估计源端 bpp | `0.06640625` |
 | LDPC1/2+BPSK 传输比 | `0.04427083` |
 | 预训练 | 默认禁用 |
@@ -48,7 +52,7 @@
 
 ```text
 shiyan/
-  config.py                         实验配置，默认就是本 RAQ 实验
+  config.py                         实验配置；RAQ 参数必须由脚本/环境变量显式传入
   train.py                          训练入口，从零训练，source/RAQ 双支路 loss
   test_real.py                      真实链路/无信道评估入口
   models/
@@ -256,7 +260,7 @@ python -u test_real.py \
 ## 注意事项
 
 1. 当前 RAQ 接入只支持 `SIMVQ_QUANTIZER_TYPE=simvq` 且 `SIMVQ_QUANTIZER_AXIS_LIST=patch,patch`。
-2. 默认 RAQ 评估目标 K 为 `[16,2]`，所以传输比仍对应 rate-0.044 方案。
+2. 固定训练脚本显式设置 RAQ 评估目标 K 为 `[16,2]`，所以传输比仍对应 rate-0.044 方案。
 3. 如果把 `SIMVQ_RAQ_TARGET_LIST` 改大，真实传输比也会改变。
 4. `SIMVQ_ALLOW_PRETRAINED=1` 才会允许 `SIMVQ_PRETRAINED_CHECKPOINT` 生效；默认忽略预训练。
 5. 若需要完全关闭 RAQ 做对照，可设置 `SIMVQ_USE_RAQ=0`，模型会退回原单支路 SimVQ 训练/测试。

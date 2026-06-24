@@ -48,22 +48,27 @@ def main():
     device = torch.device(cfg.DEVICE)
     visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES", "<not set>")
     print(f"Start training on logical device: {device}")
-    print(f"[Info] CUDA_VISIBLE_DEVICES: {visible_devices}")
+    print(f"CUDA_VISIBLE_DEVICES: {visible_devices}")
+
+    # 在使用 CUDA/GPU 时，打印 PyTorch 里的逻辑 GPU 编号对应服务器上的物理 GPU 编号
     if device.type == "cuda":
-        logical_index = device.index if device.index is not None else torch.cuda.current_device()
+        logical_index = device.index if device.index is not None else torch.cuda.current_device() # 得到当前 PyTorch 使用的 逻辑 GPU 编号
         visible_device_ids = [
-            value.strip() for value in visible_devices.split(",") if value.strip()
+            value.strip() for value in visible_devices.split(",") if value.strip() # .split(",")会把字符串按逗号分开,并且用列表形成，如"2,3"变成["2","3"]
         ]
+
+        # 映射逻辑 GPU 到物理 GPU
         mapped_physical_device = (
             visible_device_ids[logical_index]
             if visible_devices != "<not set>" and logical_index < len(visible_device_ids)
             else str(logical_index)
         )
         print(
-            f"[Info] GPU mapping: logical cuda:{logical_index} -> "
-            f"physical GPU {mapped_physical_device} "
+            f"GPU mapping: logical cuda:{logical_index} -> "
+            f"physical GPU {mapped_physical_device}"
             f"({torch.cuda.get_device_name(logical_index)})"
         )
+    
     print(f"[Info] Experiment name: {cfg.EXPERIMENT_NAME}")
     print(f"[Info] Experiment stage: {cfg.EXPERIMENT_STAGE}")
     print(f"[Info] Experiment run ID: {run_id}")
@@ -90,6 +95,7 @@ def main():
     print(f"  - 总下采样倍率: {cfg.architecture_summary()['total_downsample']}x")
     print(f"  - 估算训练源端BPP: {cfg.ESTIMATED_SOURCE_BPP:.6f}")
     print(f"  - 估算测试源端BPP: {cfg.ESTIMATED_TEST_SOURCE_BPP:.6f}")
+    print(f"  - 估算RAQ目标端BPP: {cfg.ESTIMATED_RAQ_TARGET_BPP:.6f}")
     print(f"  - 估算测试传输压缩率(LDPC1/2+BPSK): {cfg.ESTIMATED_TEST_TRANSMISSION_RATIO:.8f}")
     print(f"  - 每层特征维度: {cfg.EMBEDDING_DIM_LIST}")
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")

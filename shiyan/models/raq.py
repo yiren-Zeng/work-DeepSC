@@ -5,8 +5,14 @@ from .vector_quantizer import ProjectedEmbedding
 
 
 class RAQ(nn.Module):
-    def __init__(self, embedding_dim: int, n_embed_src: int, n_embed_min_trg: int, n_embed_max_trg: int,
-                 device: str = "cuda:2"):
+    def __init__(
+        self,
+        embedding_dim: int,
+        n_embed_src: int,
+        n_embed_min_trg: int,
+        n_embed_max_trg: int,
+        device: str = "cuda:2",
+    ):
         super().__init__()
         self.device = torch.device(device)
         self.embedding_dim = embedding_dim  # [128, 256, 512, 1024]

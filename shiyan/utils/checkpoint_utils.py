@@ -98,9 +98,9 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         vitvq_qbridge_type=cfg.VITVQ_QBRIDGE_TYPE,
         vitvq_emb_nograd=cfg.VITVQ_EMB_NOGRAD,
         use_raq=getattr(cfg, "USE_RAQ", False),
-        raq_target_list=getattr(cfg, "RAQ_TARGET_LIST", inferred["num_embeddings_list"]),
-        raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", 2),
-        raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", max(inferred["num_embeddings_list"])),
+        raq_target_list=getattr(cfg, "RAQ_TARGET_LIST", None),
+        raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", None),
+        raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", None),
     ).to(device)
     model.load_state_dict(state_dict)
     if getattr(cfg, "MODEL_PARALLEL", False):

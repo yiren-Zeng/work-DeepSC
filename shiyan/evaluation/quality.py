@@ -1,8 +1,6 @@
 import random
-
 import numpy as np
 import torch
-
 from communications.channel import awgn_channel
 from communications.modulation import (
     bpsk_demodulate,
@@ -13,15 +11,7 @@ from communications.modulation import (
 )
 from utils.bit_utils import bits_to_indices, indices_to_bits
 from utils.metrics import calculate_ms_ssim
-
-
-def _reset_eval_seed(seed=42):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
+from utils.reproducibility import _reset_eval_seed
 
 def _image_quality(real_image, reconstructed_images):
     if real_image.device != reconstructed_images.device:
