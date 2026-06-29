@@ -59,7 +59,7 @@ class VectorQuantizer(nn.Module):
             indices.append(torch.argmin(distances, dim=1))
         return torch.cat(indices, dim=0)
 
-    def forward(self, inputs: torch.Tensor):
+    def forward(self, inputs: torch.Tensor, return_raw: bool = False):
         inputs_bhwc = inputs.permute(0, 2, 3, 1).contiguous()
         embed_weight = self.transformed_weight()
 
@@ -71,6 +71,7 @@ class VectorQuantizer(nn.Module):
         encoding_idx = self._nearest_code_indices(flat, embed_weight)
         quantized_flat = F.embedding(encoding_idx, embed_weight)
         quantized_bhwc = quantized_flat.view(B, H, W, C)
+        quantized_raw = quantized_bhwc.permute(0, 3, 1, 2).contiguous()
 
         e_latent_loss = F.mse_loss(quantized_bhwc.detach(), inputs_bhwc)
         q_latent_loss = F.mse_loss(quantized_bhwc, inputs_bhwc.detach())
@@ -79,9 +80,17 @@ class VectorQuantizer(nn.Module):
         quantized_bhwc = inputs_bhwc + (quantized_bhwc - inputs_bhwc).detach()
 
         quantized = quantized_bhwc.permute(0, 3, 1, 2).contiguous()
+        if return_raw:
+            return vq_loss, quantized, encoding_idx.view(B, H, W), quantized_raw
         return vq_loss, quantized, encoding_idx.view(B, H, W)
 
-    def forward_raq(self, inputs: torch.Tensor, embed_weight: torch.Tensor):
+    def forward_raq(
+        self,
+        inputs: torch.Tensor,
+        embed_weight: torch.Tensor,
+        return_raw: bool = False,
+        recon_grad_mode: str = "ste",
+    ):
         """
         Quantize patch-wise features with an externally generated RAQ codebook.
 
@@ -97,13 +106,25 @@ class VectorQuantizer(nn.Module):
         encoding_idx = self._nearest_code_indices(flat, embed_weight)
         quantized_flat = F.embedding(encoding_idx, embed_weight)
         quantized_bhwc = quantized_flat.view(B, H, W, C)
+        quantized_raw = quantized_bhwc.permute(0, 3, 1, 2).contiguous()
 
         e_latent_loss = F.mse_loss(quantized_bhwc.detach(), inputs_bhwc)
         q_latent_loss = F.mse_loss(quantized_bhwc, inputs_bhwc.detach())
         vq_loss = q_latent_loss + self.commitment_cost * e_latent_loss
 
-        quantized_bhwc = inputs_bhwc + (quantized_bhwc - inputs_bhwc).detach()
+        if recon_grad_mode == "ste":
+            quantized_bhwc = inputs_bhwc + (quantized_bhwc - inputs_bhwc).detach()
+        elif recon_grad_mode == "dual":
+            quantized_bhwc = (
+                inputs_bhwc
+                + (quantized_bhwc - inputs_bhwc).detach()
+                + (quantized_bhwc - quantized_bhwc.detach())
+            )
+        else:
+            raise ValueError(f"Unknown RAQ reconstruction gradient mode: {recon_grad_mode}")
         quantized = quantized_bhwc.permute(0, 3, 1, 2).contiguous()
+        if return_raw:
+            return vq_loss, quantized, encoding_idx.view(B, H, W), quantized_raw
         return vq_loss, quantized, encoding_idx.view(B, H, W)
 
     @torch.no_grad()

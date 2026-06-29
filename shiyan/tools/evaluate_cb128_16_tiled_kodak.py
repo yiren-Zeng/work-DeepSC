@@ -2,13 +2,11 @@
 """Evaluate B larger [128,16] on original Kodak by 256x256 tiling."""
 
 from __future__ import annotations
-
 import argparse
 import json
 import os
 import sys
 from pathlib import Path
-
 import numpy as np
 import torch
 from PIL import Image

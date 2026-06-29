@@ -2,6 +2,7 @@ import torch
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import os
+import random
 from datetime import datetime
 from config import Config
 from models.deepsc import DeepSC
@@ -33,6 +34,94 @@ def load_pretrained_weights(model, pretrained_path, device):
     model.load_state_dict(model_state)
     print(f"[Info] 从预训练权重加载: {loaded} 个参数匹配, {skipped} 个跳过")
     return loaded
+
+
+def scheduled_src_codebook_repulsion_weight(epoch, cfg):
+    target = float(cfg.SRC_CODEBOOK_REPULSION_WEIGHT)
+    if target <= 0:
+        return 0.0
+    start = int(cfg.SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH)
+    end = int(cfg.SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH)
+    if epoch < start:
+        return 0.0
+    if epoch >= end or end == start:
+        return target
+    return target * float(epoch - start) / float(end - start)
+
+
+def scheduled_raq_distill_weight(epoch, cfg):
+    start_weight = float(cfg.RAQ_LATENT_DISTILL_WEIGHT)
+    final_weight = cfg.RAQ_LATENT_DISTILL_FINAL_WEIGHT
+    if final_weight is None:
+        return start_weight
+    final_weight = float(final_weight)
+    start = int(cfg.RAQ_LATENT_DISTILL_DECAY_START_EPOCH)
+    end = cfg.RAQ_LATENT_DISTILL_DECAY_END_EPOCH
+    end = int(cfg.NUM_EPOCHS if end is None else end)
+    if epoch < start:
+        return start_weight
+    if epoch >= end or end == start:
+        return final_weight
+    progress = float(epoch - start) / float(end - start)
+    return start_weight + (final_weight - start_weight) * progress
+
+
+def raq_curriculum_values_for_epoch(epoch, cfg):
+    if not cfg.RAQ_USE_CURRICULUM:
+        return None, "uniform"
+    phase1_end = int(cfg.PHASE1_END * cfg.NUM_EPOCHS)
+    phase2_end = int(cfg.PHASE2_END * cfg.NUM_EPOCHS)
+    if epoch < phase1_end:
+        return list(cfg.RAQ_CURRICULUM_EARLY_LIST), "early"
+    if epoch < phase2_end:
+        return list(cfg.RAQ_CURRICULUM_MIDDLE_LIST), "middle"
+    return list(cfg.RAQ_CURRICULUM_LATE_LIST), "late"
+
+
+def sample_raq_target_list_for_epoch(epoch, cfg):
+    values, phase = raq_curriculum_values_for_epoch(epoch, cfg)
+    if values is None:
+        return [
+            sample_trg(cfg.RAQ_MIN_TRG, cfg.RAQ_MAX_TRG)
+            for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)
+        ], phase
+    return [random.choice(values) for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)], phase
+
+
+RAQ_ONLY_BRANCHES = {"raq_warmup", "raq_finetune", "raq_channel"}
+
+
+def uses_raq_only_loss(cfg):
+    return cfg.USE_RAQ and cfg.TRAIN_BRANCH in RAQ_ONLY_BRANCHES
+
+
+def set_module_trainable(module, trainable):
+    for param in module.parameters():
+        param.requires_grad = trainable
+
+
+def configure_trainable_parameters(model, cfg):
+    branch = cfg.TRAIN_BRANCH
+    if branch in {"joint", "src"}:
+        print(f"[Info] Train branch: {branch} (default trainable parameters)")
+        return
+
+    set_module_trainable(model, False)
+    set_module_trainable(model.raqs, True)
+
+    if branch in {"raq_finetune", "raq_channel"}:
+        if cfg.RAQ_TRAIN_ENCODER:
+            set_module_trainable(model.semantic_encoder, True)
+            set_module_trainable(model.bottleneck_attention, True)
+        set_module_trainable(model.semantic_decoder, True)
+        set_module_trainable(model.swinir_enhance, True)
+
+    total_params = sum(p.numel() for p in model.parameters())
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print(
+        f"[Info] Train branch: {branch}; trainable params "
+        f"{trainable_params:,}/{total_params:,}"
+    )
 
 
 def main():
@@ -72,6 +161,7 @@ def main():
     print(f"[Info] Experiment name: {cfg.EXPERIMENT_NAME}")
     print(f"[Info] Experiment stage: {cfg.EXPERIMENT_STAGE}")
     print(f"[Info] Experiment run ID: {run_id}")
+    print(f"[Info] Train branch: {cfg.TRAIN_BRANCH}")
     print(f"[Info] Epoch metrics file: {metrics_path}")
     print(f"[Info] Checkpoint directory: {cfg.CHECKPOINT_DIR}")
     print(f"[Info] Resume checkpoint: {cfg.RESUME_PATH}")
@@ -101,6 +191,11 @@ def main():
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
     print(f"  - RAQ动态目标码本: {cfg.USE_RAQ}, train K范围=[{cfg.RAQ_MIN_TRG},{cfg.RAQ_MAX_TRG}], "
           f"eval K={cfg.RAQ_TARGET_LIST}, repulsion={cfg.RAQ_REPULSION_WEIGHT}")
+    print(f"  - RAQ课程采样: {cfg.RAQ_USE_CURRICULUM}, "
+          f"early={cfg.RAQ_CURRICULUM_EARLY_LIST}, "
+          f"middle={cfg.RAQ_CURRICULUM_MIDDLE_LIST}, "
+          f"late={cfg.RAQ_CURRICULUM_LATE_LIST}")
+    print(f"  - 训练分支模式: {cfg.TRAIN_BRANCH}")
     print(f"  - 量化器类型: {cfg.QUANTIZER_TYPE}")
     print(f"  - 逐层量化轴: {cfg.QUANTIZER_AXIS_LIST}")
     print(f"  - CVQ codeword shape: {cfg.CVQ_CODEWORD_SHAPES}")
@@ -118,6 +213,18 @@ def main():
     print(f"  - SwinIR Enhance: {cfg.USE_SWINIR_ENHANCE}, blocks={cfg.SWINIR_ENHANCE_BLOCKS}")
     print(f"  - Swin Backbone: {cfg.USE_SWIN_BACKBONE}")
     print(f"  - 重建损失: MSE*{cfg.MSE_LOSS_WEIGHT} + MS-SSIM*{cfg.MS_SSIM_LOSS_WEIGHT} + LPIPS*{cfg.LPIPS_LOSS_WEIGHT}")
+    print(f"  - RAQ隐空间蒸馏: weight={cfg.RAQ_LATENT_DISTILL_WEIGHT}")
+    if cfg.RAQ_LATENT_DISTILL_FINAL_WEIGHT is not None:
+        print(f"  - RAQ隐空间蒸馏衰减: final={cfg.RAQ_LATENT_DISTILL_FINAL_WEIGHT}, "
+              f"epoch=[{cfg.RAQ_LATENT_DISTILL_DECAY_START_EPOCH},"
+              f"{cfg.RAQ_LATENT_DISTILL_DECAY_END_EPOCH or cfg.NUM_EPOCHS}]")
+    print(f"  - RAQ重建梯度模式: {cfg.RAQ_RECON_GRAD_MODE}, "
+          f"RAQ阶段解冻encoder={cfg.RAQ_TRAIN_ENCODER}")
+    print(f"  - SRC码本排斥: target_weight={cfg.SRC_CODEBOOK_REPULSION_WEIGHT}, "
+          f"margin={cfg.SRC_CODEBOOK_REPULSION_MARGIN}, "
+          f"normalize={cfg.SRC_CODEBOOK_REPULSION_NORMALIZE}, "
+          f"warmup=[{cfg.SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH},"
+          f"{cfg.SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH}]")
     print(f"  - 信道课程: epoch<{cfg.CHANNEL_PROB_START_EPOCH}:0, "
           f"{cfg.CHANNEL_PROB_START_EPOCH}-{cfg.CHANNEL_PROB_END_EPOCH}:线性升至1, "
           f">={cfg.CHANNEL_PROB_END_EPOCH}:1")
@@ -171,6 +278,7 @@ def main():
         raq_target_list=cfg.RAQ_TARGET_LIST,
         raq_min_trg=cfg.RAQ_MIN_TRG,
         raq_max_trg=cfg.RAQ_MAX_TRG,
+        raq_recon_grad_mode=cfg.RAQ_RECON_GRAD_MODE,
     ).to(device)
 
     # 加载预训练权重默认禁用；本实验要求从零开始训练。
@@ -185,6 +293,8 @@ def main():
             f"[Info] Model parallel enabled: encoder/quantizer/channel on {cfg.ENCODER_DEVICE}, "
             f"decoder/enhance on {cfg.DECODER_DEVICE}"
         )
+
+    configure_trainable_parameters(deepsc_model, cfg)
 
     # BN 动量调整
     if accumulation_steps > 1:
@@ -201,9 +311,13 @@ def main():
         ms_ssim_weight=cfg.MS_SSIM_LOSS_WEIGHT,
         lpips_weight=cfg.LPIPS_LOSS_WEIGHT,
         raq_repulsion_weight=cfg.RAQ_REPULSION_WEIGHT if cfg.USE_RAQ else 0.0,
+        raq_latent_distill_weight=cfg.RAQ_LATENT_DISTILL_WEIGHT if cfg.USE_RAQ else 0.0,
+        src_codebook_repulsion_weight=0.0,
+        src_codebook_repulsion_margin=cfg.SRC_CODEBOOK_REPULSION_MARGIN,
+        src_codebook_repulsion_normalize=cfg.SRC_CODEBOOK_REPULSION_NORMALIZE,
     ).to(deepsc_model.decoder_device if cfg.MODEL_PARALLEL else device)
 
-    # SimVQ projection and ViTvq QBridge transformations use the codebook LR.
+    # 把模型参数分成两组，用不同学习率训练，然后创建 Adam 优化器和 StepLR 学习率调度器.
     proj_params = []
     other_params = []
     for name, param in deepsc_model.named_parameters():
@@ -267,14 +381,21 @@ def main():
     for epoch in range(start_epoch, cfg.NUM_EPOCHS):
         # === 调度：更新 Dropout 概率和损失权重 ===
         dropout_p, loss_weights, channel_prob, phase_desc = compute_schedule(epoch, cfg.NUM_EPOCHS, cfg)
+        _, raq_sampling_phase = raq_curriculum_values_for_epoch(epoch, cfg)
         deepsc_model.semantic_decoder.set_skip_dropout_p(dropout_p)
         deepsc_model.set_channel_prob(channel_prob)
         deepsc_loss_fn.set_layer_weights(loss_weights)
+        src_repulsion_weight = scheduled_src_codebook_repulsion_weight(epoch, cfg)
+        deepsc_loss_fn.set_src_codebook_repulsion_weight(src_repulsion_weight)
+        raq_distill_weight = scheduled_raq_distill_weight(epoch, cfg) if cfg.USE_RAQ else 0.0
+        deepsc_loss_fn.set_raq_latent_distill_weight(raq_distill_weight)
 
         deepsc_model.train()
 
         total_recon_losses = 0
         total_vq_losses = 0
+        total_distill_losses = 0
+        total_src_repulsion_losses = 0
 
         optimizer_g.zero_grad()
         steps_per_epoch = len(train_dataloader)
@@ -284,30 +405,42 @@ def main():
 
             do_step = ((i + 1) % accumulation_steps == 0) or ((i + 1) == len(train_dataloader))
             if cfg.USE_RAQ and i % accumulation_steps == 0:
-                current_raq_trg_list = [
-                    sample_trg(cfg.RAQ_MIN_TRG, cfg.RAQ_MAX_TRG)
-                    for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)
-                ]
+                current_raq_trg_list, raq_sampling_phase = sample_raq_target_list_for_epoch(epoch, cfg)
 
             out = deepsc_model.forward_train(
                 real_images,
                 raq_trg_list=current_raq_trg_list if cfg.USE_RAQ else None,
             )
 
-            if cfg.USE_RAQ:
-                recon_loss, vq_loss = deepsc_loss_fn(
+            if uses_raq_only_loss(cfg):
+                recon_loss, vq_loss, loss_details = deepsc_loss_fn.forward_raq_only(
+                    real_images,
+                    out["reconstructed_images_raq"],
+                    out["vq_losses_raq"],
+                    out["W_trg_list"],
+                    out["z_q_src_list"],
+                    out["z_q_raq_list"],
+                    return_details=True,
+                )
+            elif cfg.USE_RAQ:
+                recon_loss, vq_loss, loss_details = deepsc_loss_fn(
                     real_images,
                     out["reconstructed_images_src"],
                     out["vq_losses_src"],
                     out["reconstructed_images_raq"],
                     out["vq_losses_raq"],
                     out["W_trg_list"],
+                    out["z_q_src_list"],
+                    out["z_q_raq_list"],
+                    out["source_codebooks_list"],
+                    return_details=True,
                 )
             else:
-                recon_loss, vq_loss = deepsc_loss_fn(
+                recon_loss, vq_loss, loss_details = deepsc_loss_fn(
                     real_images,
                     out["reconstructed_images"],
-                    out["vq_losses"]
+                    out["vq_losses"],
+                    return_details=True,
                 )
 
             loss = (recon_loss + vq_loss) / accumulation_steps
@@ -315,6 +448,8 @@ def main():
 
             total_recon_losses += recon_loss.item()
             total_vq_losses += vq_loss.item()
+            total_distill_losses += loss_details["latent_distill_loss"].item()
+            total_src_repulsion_losses += loss_details["src_codebook_repulsion_loss"].item()
 
             current_snr = out.get("current_snr")
             snr_desc = "clean" if current_snr is None else f"{current_snr:.2f} dB"
@@ -326,13 +461,23 @@ def main():
 
             if i % (accumulation_steps * 10) == 0:
                 print(f"Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], Step [{i + 1}/{steps_per_epoch}], "
-                      f"Recon: {recon_loss.item():.4f}, VQ: {vq_loss.item():.4f}, "
+                      f"Recon: {recon_loss.item():.4f}, Aux: {vq_loss.item():.4f}, "
+                      f"Distill: {loss_details['latent_distill_loss'].item():.4f}, "
+                      f"DistillW: {raq_distill_weight:.6g}, "
+                      f"SrcRep: {loss_details['src_codebook_repulsion_loss'].item():.6f}, "
+                      f"SrcRepW: {src_repulsion_weight:.6g}, "
                       f"ChannelProb: {channel_prob:.2f}, SNR: {snr_desc}")
                 if cfg.USE_RAQ:
-                    print(f"  RAQ target K this accumulation: {out['raq_target_list']}")
+                    print(f"  RAQ target K this accumulation: {out['raq_target_list']} "
+                          f"(sampling={raq_sampling_phase})")
                 if current_snr is not None:
                     writer.add_scalar("Train/SNR", current_snr, global_step)
                 writer.add_scalar("Train/Loss_Step", recon_loss.item() + vq_loss.item(), global_step)
+                writer.add_scalar("Train/LatentDistill_Step", loss_details["latent_distill_loss"].item(), global_step)
+                writer.add_scalar("Train/LatentDistillRaw_Step", loss_details["latent_distill_raw_loss"].item(), global_step)
+                writer.add_scalar("Train/SrcCodebookRepulsion_Step", loss_details["src_codebook_repulsion_loss"].item(), global_step)
+                writer.add_scalar("Train/SrcCodebookRepulsionRaw_Step", loss_details["src_codebook_repulsion_raw_loss"].item(), global_step)
+                writer.add_scalar("Train/SrcCodebookRepulsionWeight", src_repulsion_weight, global_step)
                 writer.add_scalar("Train/ChannelProb", channel_prob, global_step)
 
             global_step += 1
@@ -341,17 +486,26 @@ def main():
 
         avg_recon = total_recon_losses / steps_per_epoch
         avg_vq = total_vq_losses / steps_per_epoch
+        avg_distill = total_distill_losses / steps_per_epoch
+        avg_src_repulsion = total_src_repulsion_losses / steps_per_epoch
 
         print(f"[{phase_desc}] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], "
-              f"Recon: {avg_recon:.4f}, VQ: {avg_vq:.4f}, "
-              f"ChannelProb: {channel_prob:.2f}, "
+              f"Recon: {avg_recon:.4f}, Aux: {avg_vq:.4f}, Distill: {avg_distill:.4f}, "
+              f"DistillW: {raq_distill_weight:.6g}, "
+              f"SrcRep: {avg_src_repulsion:.6f}, SrcRepW: {src_repulsion_weight:.6g}, "
+              f"ChannelProb: {channel_prob:.2f}, RAQSampling: {raq_sampling_phase}, "
               f"Dropout: {[f'{p:.2f}' for p in dropout_p]}, "
               f"LossW: {[f'{w:.1f}' for w in loss_weights]}")
 
         writer.add_scalar("Loss/Train/Recon", avg_recon, epoch)
         writer.add_scalar("Loss/Train/VQ", avg_vq, epoch)
+        writer.add_scalar("Loss/Train/LatentDistill", avg_distill, epoch)
+        writer.add_scalar("Schedule/RAQLatentDistillWeight", raq_distill_weight, epoch)
+        writer.add_scalar("Loss/Train/SrcCodebookRepulsion", avg_src_repulsion, epoch)
+        writer.add_scalar("Schedule/SrcCodebookRepulsionWeight", src_repulsion_weight, epoch)
         writer.add_scalar("Loss/Train/Total", avg_recon + avg_vq, epoch)
         writer.add_scalar("Schedule/ChannelProb", channel_prob, epoch)
+        writer.add_text("Schedule/RAQSamplingPhase", raq_sampling_phase, epoch)
         # 记录调度参数
         for li, p in enumerate(dropout_p):
             writer.add_scalar(f"Schedule/Dropout_L{li}", p, epoch)
@@ -361,30 +515,54 @@ def main():
         # 验证
         deepsc_model.eval()
         val_loss_sum = 0
+        val_distill_sum = 0
+        val_src_repulsion_sum = 0
         with torch.no_grad():
             for real_images in val_dataloader:
                 real_images = real_images.to(device, non_blocking=True)
                 out = deepsc_model.forward_val(real_images)
-                if cfg.USE_RAQ:
-                    recon_loss_val, _ = deepsc_loss_fn(
+                if uses_raq_only_loss(cfg):
+                    recon_loss_val, _, val_details = deepsc_loss_fn.forward_raq_only(
+                        real_images,
+                        out["reconstructed_images_raq"],
+                        out["vq_losses_raq"],
+                        out["W_trg_list"],
+                        out["z_q_src_list"],
+                        out["z_q_raq_list"],
+                        return_details=True,
+                    )
+                elif cfg.USE_RAQ:
+                    recon_loss_val, _, val_details = deepsc_loss_fn(
                         real_images,
                         out["reconstructed_images_src"],
                         out["vq_losses_src"],
                         out["reconstructed_images_raq"],
                         out["vq_losses_raq"],
                         out["W_trg_list"],
+                        out["z_q_src_list"],
+                        out["z_q_raq_list"],
+                        out["source_codebooks_list"],
+                        return_details=True,
                     )
                 else:
-                    recon_loss_val, _ = deepsc_loss_fn(
+                    recon_loss_val, _, val_details = deepsc_loss_fn(
                         real_images,
                         out["reconstructed_images"],
-                        out["vq_losses"]
+                        out["vq_losses"],
+                        return_details=True,
                     )
                 val_loss_sum += recon_loss_val.item()
+                val_distill_sum += val_details["latent_distill_loss"].item()
+                val_src_repulsion_sum += val_details["src_codebook_repulsion_loss"].item()
 
         avg_val_loss = val_loss_sum / len(val_dataloader)
-        print(f"[VAL] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], Val Recon Loss: {avg_val_loss:.4f}")
+        avg_val_distill = val_distill_sum / len(val_dataloader)
+        avg_val_src_repulsion = val_src_repulsion_sum / len(val_dataloader)
+        print(f"[VAL] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], Val Recon Loss: {avg_val_loss:.4f}, "
+              f"Val Distill: {avg_val_distill:.4f}, Val SrcRep: {avg_val_src_repulsion:.6f}")
         writer.add_scalar("Loss/Val/Recon", avg_val_loss, epoch)
+        writer.add_scalar("Loss/Val/LatentDistill", avg_val_distill, epoch)
+        writer.add_scalar("Loss/Val/SrcCodebookRepulsion", avg_val_src_repulsion, epoch)
 
         # === 每 N 个 epoch 统计一次码本利用率 ===
         codebook_monitor_interval = 10
@@ -419,7 +597,13 @@ def main():
             "epoch": epoch + 1,
             "train_recon": f"{avg_recon:.8f}",
             "train_vq": f"{avg_vq:.8f}",
+            "train_distill": f"{avg_distill:.8f}",
+            "train_src_repulsion": f"{avg_src_repulsion:.8f}",
             "val_recon": f"{avg_val_loss:.8f}",
+            "val_distill": f"{avg_val_distill:.8f}",
+            "val_src_repulsion": f"{avg_val_src_repulsion:.8f}",
+            "src_repulsion_weight": f"{src_repulsion_weight:.10g}",
+            "raq_distill_weight": f"{raq_distill_weight:.10g}",
             "best_val_recon": f"{best_val_loss:.8f}",
             "is_best": int(is_best),
             "phase": phase_desc,

@@ -101,6 +101,7 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         raq_target_list=getattr(cfg, "RAQ_TARGET_LIST", None),
         raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", None),
         raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", None),
+        raq_recon_grad_mode=getattr(cfg, "RAQ_RECON_GRAD_MODE", "ste"),
     ).to(device)
     model.load_state_dict(state_dict)
     if getattr(cfg, "MODEL_PARALLEL", False):

@@ -3,18 +3,6 @@ import torch
 import os
 import math
 
-
-# def _default_downsample_strides(depth):
-#     """Return a conservative default downsampling plan for a U-Net depth."""
-#     if depth < 1:
-#         raise ValueError("UNET_DEPTH must be >= 1")
-#     if depth == 1:
-#         return [8]
-#     # Keep the existing 2-layer behavior and append extra 2x stages for
-#     # deeper variants. This keeps the source rate close to the 2-layer setup.
-#     return [4] + [2] * (depth - 1)
-
-
 def _default_embedding_dims(base_channels, depth):
     return [base_channels * (2 ** (i + 1)) for i in range(depth)]
 
@@ -130,14 +118,14 @@ def _resize_tuple_from_env(name, default):
     return int(parts[0]), int(parts[1]) # tuple[int, int], 如(H, W)
 
 
-def _default_cvq_codeword_shapes(strides): # CVQ 码字形状：每层下采样后特征图的空间维度，除非通过环境变量覆盖。对于 patch-wise CVQ，使用 None。 
-    train_h, train_w = _resize_tuple_from_env("SIMVQ_TRAIN_RESIZE", (256, 256))
-    shapes = []
-    cumulative = 1
-    for stride in strides:
-        cumulative *= stride
-        shapes.append((train_h // cumulative, train_w // cumulative))
-    return shapes
+# def _default_cvq_codeword_shapes(strides): # CVQ 码字形状：每层下采样后特征图的空间维度，除非通过环境变量覆盖。对于 patch-wise CVQ，使用 None。 
+#     train_h, train_w = _resize_tuple_from_env("SIMVQ_TRAIN_RESIZE", (256, 256))
+#     shapes = []
+#     cumulative = 1
+#     for stride in strides:
+#         cumulative *= stride
+#         shapes.append((train_h // cumulative, train_w // cumulative))
+#     return shapes
 
 
 def _env_shape_list(name, default=None): # 这个也是生成形状的
@@ -219,11 +207,11 @@ _STAGE_SETTINGS = _stage_settings(_STAGE) # 查字典，拿到对应配置
 class Config:
     EXPERIMENT_STAGE = _STAGE
     # Allow env override of experiment family (for variant experiments)
-    _FAMILY_OVERRIDE = _env_str(
+    FAMILY_OVERRIDE = _env_str(
         "SIMVQ_EXP_FAMILY",
         "shiyan_raq_quality_v2_B_larger_rate044_A_patch_cb16-2_ch512-1024",
     )
-    EXPERIMENT_FAMILY = _FAMILY_OVERRIDE if _FAMILY_OVERRIDE else _STAGE_SETTINGS["family"]
+    EXPERIMENT_FAMILY = FAMILY_OVERRIDE if FAMILY_OVERRIDE else _STAGE_SETTINGS["family"]
     IN_CHANNELS = 3
     OUT_CHANNELS = 3
     # Change this number to switch the model between 2/3/4-layer U-Net variants.
@@ -233,7 +221,6 @@ class Config:
     EMBEDDING_DIM_LIST = _default_embedding_dims(BASE_CHANNELS, UNET_DEPTH)
     NUM_EMBEDDINGS_PER_LAYER = None
     NUM_EMBEDDINGS_LIST = _env_int_list("SIMVQ_NUM_EMBEDDINGS_LIST", [16, 2])
-    COMMITMENT_COST = 0.25
     QUANTIZER_TYPE = _env_str("SIMVQ_QUANTIZER_TYPE", "simvq").lower()
     _USE_RAQ_VALUE = _env_int_optional("SIMVQ_USE_RAQ")
     USE_RAQ = (_USE_RAQ_VALUE == 1) if _USE_RAQ_VALUE is not None else False
@@ -241,6 +228,22 @@ class Config:
     RAQ_MIN_TRG = _env_int_optional("SIMVQ_RAQ_MIN_TRG")
     RAQ_MAX_TRG = _env_int_optional("SIMVQ_RAQ_MAX_TRG")
     RAQ_REPULSION_WEIGHT = _env_float_optional("SIMVQ_RAQ_REPULSION_WEIGHT")
+    RAQ_LATENT_DISTILL_WEIGHT = _env_float("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT", 0.0)
+    RAQ_LATENT_DISTILL_FINAL_WEIGHT = _env_float_optional("SIMVQ_RAQ_LATENT_DISTILL_FINAL_WEIGHT")
+    RAQ_LATENT_DISTILL_DECAY_START_EPOCH = _env_int("SIMVQ_RAQ_LATENT_DISTILL_DECAY_START_EPOCH", 0)
+    RAQ_LATENT_DISTILL_DECAY_END_EPOCH = _env_int_optional("SIMVQ_RAQ_LATENT_DISTILL_DECAY_END_EPOCH")
+    RAQ_USE_CURRICULUM = _env_int("SIMVQ_RAQ_USE_CURRICULUM", 0) == 1
+    RAQ_CURRICULUM_EARLY_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_EARLY_LIST", [32, 64])
+    RAQ_CURRICULUM_MIDDLE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST", [8, 16, 32, 64])
+    RAQ_CURRICULUM_LATE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_LATE_LIST", [2, 4, 8, 16, 32, 64])
+    RAQ_RECON_GRAD_MODE = _env_str("SIMVQ_RAQ_RECON_GRAD_MODE", "ste").lower()
+    RAQ_TRAIN_ENCODER = _env_int("SIMVQ_RAQ_TRAIN_ENCODER", 0) == 1
+    TRAIN_BRANCH = _env_str("SIMVQ_TRAIN_BRANCH", "joint").lower()
+    SRC_CODEBOOK_REPULSION_WEIGHT = _env_float("SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT", 0.0)
+    SRC_CODEBOOK_REPULSION_MARGIN = _env_float("SIMVQ_SRC_CODEBOOK_REPULSION_MARGIN", 0.5)
+    SRC_CODEBOOK_REPULSION_NORMALIZE = _env_int("SIMVQ_SRC_CODEBOOK_REPULSION_NORMALIZE", 1) == 1
+    SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH = _env_int("SIMVQ_SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH", 5)
+    SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH = _env_int("SIMVQ_SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH", 20)
     VITVQ_QBRIDGE_TYPE = _env_str("SIMVQ_VITVQ_QBRIDGE_TYPE", "QBridgeNoCompress-S")
     VITVQ_EMB_NOGRAD = _env_int("SIMVQ_VITVQ_EMB_NOGRAD", 0) == 1
     DOWNSAMPLE_STRIDES = _env_int_list("SIMVQ_DOWNSAMPLE_STRIDES", [8, 2])
@@ -249,25 +252,26 @@ class Config:
         "SIMVQ_CVQ_CODEWORD_SHAPES", [None] * UNET_DEPTH
     )
     NESTED_CHANNEL_DROPOUT_ALPHA = _env_float("SIMVQ_NESTED_CHANNEL_DROPOUT_ALPHA", 0.0)
-    # The baseline's VQ term dominated its reconstruction loss during early training.
+    
     LAYER_LOSS_WEIGHTS_INIT = _default_loss_weights_init(UNET_DEPTH)
     LAYER_LOSS_WEIGHTS_FINAL = _default_loss_weights_final(UNET_DEPTH)
-    # Retain robustness training without discarding half of the high-resolution path.
+    
     SKIP_DROPOUT_P_INIT = _default_skip_dropout_init(UNET_DEPTH)
     SKIP_DROPOUT_P_FINAL = _default_skip_dropout_final(UNET_DEPTH)
     PHASE1_END = _STAGE_SETTINGS["phase1_end"]
     PHASE2_END = _STAGE_SETTINGS["phase2_end"]
-    LEARNING_RATE_G = 5e-5
-    CODEBOOK_PROJ_LR = 2e-4
+    LEARNING_RATE_G = _env_float("SIMVQ_LEARNING_RATE_G", 5e-5)
+    CODEBOOK_PROJ_LR = _env_float("SIMVQ_CODEBOOK_PROJ_LR", 2e-4)
     BETAS = (0.5, 0.999)
+    COMMITMENT_COST = 0.25
     CHANNEL_CODING_RATE_TRAIN = 0.5
     CHANNEL_CODING_RATE_VAL = 0.5
     BLOCK_LENGTH = 256
     SNR_RANGE_DB = [0, 15]
     CHANNEL_TYPE = "AWGN"
     RICIAN_K_FACTOR = 10
-    CHANNEL_PROB_START_EPOCH = 80
-    CHANNEL_PROB_END_EPOCH = 120
+    CHANNEL_PROB_START_EPOCH = _env_int("SIMVQ_CHANNEL_PROB_START_EPOCH", 80)
+    CHANNEL_PROB_END_EPOCH = _env_int("SIMVQ_CHANNEL_PROB_END_EPOCH", 120)
     NORM_TYPE = _STAGE_SETTINGS["norm_type"]
     GROUP_NORM_GROUPS = 32
     ACTIVATION = _STAGE_SETTINGS["activation"]
@@ -275,7 +279,7 @@ class Config:
     ENCODER_RES_BLOCKS = _env_int("SIMVQ_ENCODER_RES_BLOCKS", 4)
     DECODER_RES_BLOCKS = _env_int("SIMVQ_DECODER_RES_BLOCKS", 4)
     UPSAMPLE_MODE = _STAGE_SETTINGS["upsample_mode"]
-    USE_CASCADE_DOWNSAMPLE = _STAGE_SETTINGS["use_cascade_downsample"]
+    USE_CASCADE_DOWNSAMPLE = _STAGE_SETTINGS["use_cascade_downsample"] # 是否采用级联方式进行下采样
     USE_BOTTLENECK_ATTENTION = _STAGE_SETTINGS["use_attention"]
     BOTTLENECK_ATTENTION_BLOCKS = _STAGE_SETTINGS["attention_blocks"]
     MSE_LOSS_WEIGHT = _STAGE_SETTINGS["mse_loss_weight"]
@@ -332,12 +336,12 @@ class Config:
     CODEBOOK_METRICS_PATH = os.path.join("./experiments", f"{EXPERIMENT_NAME}_codebook_metrics.csv")
     SCREENING_PATH = os.path.join("./experiments", f"{EXPERIMENT_NAME}_screening.csv")
     SNAPSHOT_DIR = os.path.join("./experiments/snapshots", EXPERIMENT_NAME)
-    NUM_EPOCHS = _env_int("SIMVQ_NUM_EPOCHS", 200)
+    NUM_EPOCHS = _env_int("NUM_EPOCHS", 200)
     RESUME = _env_int("SIMVQ_RESUME", 0) == 1
     RESUME_PATH = os.path.join(CHECKPOINT_DIR, "last_checkpoint.pth")
 
     @classmethod
-    def validate(cls):
+    def validate(cls): # validate() 是配置合法性检查函数
         checks = {
             "DOWNSAMPLE_STRIDES": cls.DOWNSAMPLE_STRIDES,
             "EMBEDDING_DIM_LIST": cls.EMBEDDING_DIM_LIST,
@@ -367,9 +371,35 @@ class Config:
                 raise ValueError("SIMVQ_QUANTIZER_AXIS_LIST entries must be patch or channel")
         if cls.QUANTIZER_TYPE != "simvq" and any(axis == "channel" for axis in cls.QUANTIZER_AXIS_LIST):
             raise ValueError("channel-wise CVQ is currently implemented for SIMVQ_QUANTIZER_TYPE=simvq")
+        valid_train_branches = {"joint", "src", "raq_warmup", "raq_finetune", "raq_channel"}
+        if cls.TRAIN_BRANCH not in valid_train_branches:
+            raise ValueError(
+                "SIMVQ_TRAIN_BRANCH must be one of: " + ", ".join(sorted(valid_train_branches))
+            )
+        if cls.TRAIN_BRANCH == "src" and cls.USE_RAQ:
+            raise ValueError("SIMVQ_TRAIN_BRANCH=src requires SIMVQ_USE_RAQ=0")
+        if cls.TRAIN_BRANCH.startswith("raq_") and not cls.USE_RAQ:
+            raise ValueError(f"SIMVQ_TRAIN_BRANCH={cls.TRAIN_BRANCH} requires SIMVQ_USE_RAQ=1")
+        if cls.RAQ_RECON_GRAD_MODE not in {"ste", "dual"}:
+            raise ValueError("SIMVQ_RAQ_RECON_GRAD_MODE must be ste or dual")
+        if cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT is not None and cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT < 0:
+            raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_FINAL_WEIGHT must be >= 0")
+        if cls.RAQ_LATENT_DISTILL_DECAY_START_EPOCH < 0:
+            raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_DECAY_START_EPOCH must be >= 0")
+        if (
+            cls.RAQ_LATENT_DISTILL_DECAY_END_EPOCH is not None
+            and cls.RAQ_LATENT_DISTILL_DECAY_END_EPOCH < cls.RAQ_LATENT_DISTILL_DECAY_START_EPOCH
+        ):
+            raise ValueError(
+                "SIMVQ_RAQ_LATENT_DISTILL_DECAY_END_EPOCH must be >= decay start"
+            )
+        if cls.CHANNEL_PROB_START_EPOCH < 0 or cls.CHANNEL_PROB_END_EPOCH < cls.CHANNEL_PROB_START_EPOCH:
+            raise ValueError(
+                "SIMVQ_CHANNEL_PROB_END_EPOCH must be >= SIMVQ_CHANNEL_PROB_START_EPOCH >= 0"
+            )
         if cls.USE_RAQ:
             required_raq_envs = {
-                "SIMVQ_RAQ_TARGET_LIST": cls.RAQ_TARGET_LIST,
+                # "SIMVQ_RAQ_TARGET_LIST": cls.RAQ_TARGET_LIST,
                 "SIMVQ_RAQ_MIN_TRG": cls.RAQ_MIN_TRG,
                 "SIMVQ_RAQ_MAX_TRG": cls.RAQ_MAX_TRG,
                 "SIMVQ_RAQ_REPULSION_WEIGHT": cls.RAQ_REPULSION_WEIGHT,
@@ -383,16 +413,46 @@ class Config:
                 raise ValueError("RAQ integration requires SIMVQ_QUANTIZER_TYPE=simvq")
             if any(axis != "patch" for axis in cls.QUANTIZER_AXIS_LIST):
                 raise ValueError("RAQ integration currently supports patch-wise quantizers only")
-            if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
-                raise ValueError("SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH")
+            # if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
+            #     raise ValueError("SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH")
             if cls.RAQ_MIN_TRG < 2 or cls.RAQ_MIN_TRG > cls.RAQ_MAX_TRG:
                 raise ValueError("RAQ target range must satisfy 2 <= RAQ_MIN_TRG <= RAQ_MAX_TRG")
-            for target in cls.RAQ_TARGET_LIST:
-                if target < cls.RAQ_MIN_TRG or target > cls.RAQ_MAX_TRG:
-                    raise ValueError("Every RAQ target K must be inside [RAQ_MIN_TRG, RAQ_MAX_TRG]")
+            if cls.RAQ_LATENT_DISTILL_WEIGHT < 0:
+                raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT must be >= 0")
+            if cls.RAQ_USE_CURRICULUM:
+                curriculum_lists = {
+                    "SIMVQ_RAQ_CURRICULUM_EARLY_LIST": cls.RAQ_CURRICULUM_EARLY_LIST,
+                    "SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST": cls.RAQ_CURRICULUM_MIDDLE_LIST,
+                    "SIMVQ_RAQ_CURRICULUM_LATE_LIST": cls.RAQ_CURRICULUM_LATE_LIST,
+                }
+                for name, values in curriculum_lists.items():
+                    if not values:
+                        raise ValueError(f"{name} must not be empty")
+                    for value in values:
+                        if value < cls.RAQ_MIN_TRG or value > cls.RAQ_MAX_TRG:
+                            raise ValueError(f"{name} contains {value}, outside RAQ target range")
+                        if value & (value - 1) != 0:
+                            raise ValueError(f"{name} contains {value}, which is not a power of two")
+            # for target in cls.RAQ_TARGET_LIST:
+            #     if target < cls.RAQ_MIN_TRG or target > cls.RAQ_MAX_TRG:
+            #         raise ValueError("Every RAQ target K must be inside [RAQ_MIN_TRG, RAQ_MAX_TRG]")
+        elif cls.RAQ_LATENT_DISTILL_WEIGHT > 0:
+            raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT requires SIMVQ_USE_RAQ=1")
+        elif cls.RAQ_USE_CURRICULUM:
+            raise ValueError("SIMVQ_RAQ_USE_CURRICULUM requires SIMVQ_USE_RAQ=1")
+        if cls.SRC_CODEBOOK_REPULSION_WEIGHT < 0:
+            raise ValueError("SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT must be >= 0")
+        if cls.SRC_CODEBOOK_REPULSION_MARGIN <= 0:
+            raise ValueError("SIMVQ_SRC_CODEBOOK_REPULSION_MARGIN must be > 0")
+        if cls.SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH < 0:
+            raise ValueError("SIMVQ_SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH must be >= 0")
+        if cls.SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH < cls.SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH:
+            raise ValueError(
+                "SIMVQ_SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH must be >= warmup start"
+            )
 
     @classmethod
-    def architecture_summary(cls):
+    def architecture_summary(cls): # cls 代表类本身，即Config
         return {
             "experiment_name": cls.EXPERIMENT_NAME,
             "experiment_stage": cls.EXPERIMENT_STAGE,
@@ -410,6 +470,22 @@ class Config:
             "raq_min_trg": cls.RAQ_MIN_TRG,
             "raq_max_trg": cls.RAQ_MAX_TRG,
             "raq_repulsion_weight": cls.RAQ_REPULSION_WEIGHT,
+            "raq_latent_distill_weight": cls.RAQ_LATENT_DISTILL_WEIGHT,
+            "raq_latent_distill_final_weight": cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT,
+            "raq_latent_distill_decay_start_epoch": cls.RAQ_LATENT_DISTILL_DECAY_START_EPOCH,
+            "raq_latent_distill_decay_end_epoch": cls.RAQ_LATENT_DISTILL_DECAY_END_EPOCH,
+            "raq_use_curriculum": cls.RAQ_USE_CURRICULUM,
+            "raq_curriculum_early_list": list(cls.RAQ_CURRICULUM_EARLY_LIST),
+            "raq_curriculum_middle_list": list(cls.RAQ_CURRICULUM_MIDDLE_LIST),
+            "raq_curriculum_late_list": list(cls.RAQ_CURRICULUM_LATE_LIST),
+            "raq_recon_grad_mode": cls.RAQ_RECON_GRAD_MODE,
+            "raq_train_encoder": cls.RAQ_TRAIN_ENCODER,
+            "train_branch": cls.TRAIN_BRANCH,
+            "src_codebook_repulsion_weight": cls.SRC_CODEBOOK_REPULSION_WEIGHT,
+            "src_codebook_repulsion_margin": cls.SRC_CODEBOOK_REPULSION_MARGIN,
+            "src_codebook_repulsion_normalize": cls.SRC_CODEBOOK_REPULSION_NORMALIZE,
+            "src_codebook_repulsion_warmup_start_epoch": cls.SRC_CODEBOOK_REPULSION_WARMUP_START_EPOCH,
+            "src_codebook_repulsion_warmup_end_epoch": cls.SRC_CODEBOOK_REPULSION_WARMUP_END_EPOCH,
             "quantizer_type": cls.QUANTIZER_TYPE,
             "quantizer_axis_list": list(cls.QUANTIZER_AXIS_LIST),
             "cvq_codeword_shapes": list(cls.CVQ_CODEWORD_SHAPES),

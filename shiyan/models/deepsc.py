@@ -53,6 +53,7 @@ class DeepSC(nn.Module):
                  raq_target_list=None,
                  raq_min_trg=None,
                  raq_max_trg=None,
+                 raq_recon_grad_mode="ste",
                  ):
         super(DeepSC, self).__init__()
         if len(num_embeddings_list) != num_downsample_blocks:
@@ -139,13 +140,16 @@ class DeepSC(nn.Module):
             self.vector_quantizers.append(quantizer)
 
         self.use_raq = bool(use_raq)
+        self.raq_recon_grad_mode = str(raq_recon_grad_mode).lower()
+        if self.raq_recon_grad_mode not in {"ste", "dual"}:
+            raise ValueError("raq_recon_grad_mode must be 'ste' or 'dual'")
         self.raq_min_trg = None
         self.raq_max_trg = None
         self.raq_target_list = list(raq_target_list) if raq_target_list is not None else list(num_embeddings_list)
         self.raqs = nn.ModuleList()
         if self.use_raq:
-            if raq_target_list is None:
-                raise ValueError("RAQ enabled but raq_target_list is not configured.")
+            # if raq_target_list is None:
+            #     raise ValueError("RAQ enabled but raq_target_list is not configured.")
             if raq_min_trg is None or raq_max_trg is None:
                 raise ValueError("RAQ enabled but raq_min_trg/raq_max_trg is not configured.")
             if quantizer_type != "simvq":
@@ -154,9 +158,9 @@ class DeepSC(nn.Module):
                 raise ValueError("RAQ integration currently supports patch-wise quantizers only.")
             self.raq_min_trg = int(raq_min_trg)
             self.raq_max_trg = int(raq_max_trg)
-            self.raq_target_list = list(raq_target_list)
-            if len(self.raq_target_list) != num_downsample_blocks:
-                raise ValueError("raq_target_list length must match num_downsample_blocks")
+            # self.raq_target_list = list(raq_target_list)
+            # if len(self.raq_target_list) != num_downsample_blocks:
+            #     raise ValueError("raq_target_list length must match num_downsample_blocks")
             for Ki, Di in zip(num_embeddings_list, embedding_dim_list):
                 self.raqs.append(
                     RAQ(
@@ -248,8 +252,9 @@ class DeepSC(nn.Module):
         reconstructed_images = self.semantic_decoder(quantized_features)
         return self.swinir_enhance(reconstructed_images)
 
-    def _generate_raq_codebook(self, layer_index, k_trg):
-        source_codebook = self.vector_quantizers[layer_index].transformed_weight()
+    def _generate_raq_codebook(self, layer_index, k_trg, source_codebook=None):
+        if source_codebook is None:
+            source_codebook = self.vector_quantizers[layer_index].transformed_weight()
         return self.raqs[layer_index].generate_codebook_transformer(k_trg, source_codebook)
 
     def _forward_impl(self, x, channel_coding_rate, ste_channel=False, raq_trg_list=None):
@@ -263,6 +268,7 @@ class DeepSC(nn.Module):
         encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
 
         quantized_src = []
+        z_q_src_list = [] if self.use_raq else None
         vq_losses_src = []
         use_channel = self.quantizer_type != "none" and random.random() < self.channel_prob
 
@@ -272,7 +278,14 @@ class DeepSC(nn.Module):
                 vq_losses_src.append(feat.new_zeros(()))
                 continue
             feat_for_quant = self._maybe_apply_nested_channel_dropout(i, feat)
-            vq_loss, quantized_clean, encoding_idx = self.vector_quantizers[i](feat_for_quant)
+            if self.use_raq:
+                vq_loss, quantized_clean, encoding_idx, z_q_src = self.vector_quantizers[i](
+                    feat_for_quant,
+                    return_raw=True,
+                )
+                z_q_src_list.append(z_q_src)
+            else:
+                vq_loss, quantized_clean, encoding_idx = self.vector_quantizers[i](feat_for_quant)
             vq_losses_src.append(vq_loss)
 
             if use_channel:
@@ -310,15 +323,23 @@ class DeepSC(nn.Module):
 
         target_list = list(raq_trg_list or self._sample_raq_target_list())
         quantized_raq = []
+        z_q_raq_list = []
         vq_losses_raq = []
         codebooks_trg_list = []
+        source_codebooks_list = []
         for i, feat in enumerate(encoder_features):
             k_trg = int(target_list[i])
-            w_trg = self._generate_raq_codebook(i, k_trg)
+            source_codebook = self.vector_quantizers[i].transformed_weight()
+            source_codebooks_list.append(source_codebook)
+            w_trg = self._generate_raq_codebook(i, k_trg, source_codebook=source_codebook)
             codebooks_trg_list.append(w_trg)
-            vq_loss_raq, quantized_clean_raq, encoding_idx_raq = self.vector_quantizers[i].forward_raq(
-                feat, w_trg
+            vq_loss_raq, quantized_clean_raq, encoding_idx_raq, z_q_raq = self.vector_quantizers[i].forward_raq(
+                feat,
+                w_trg,
+                return_raw=True,
+                recon_grad_mode=self.raq_recon_grad_mode if self.training else "ste",
             )
+            z_q_raq_list.append(z_q_raq)
             vq_losses_raq.append(vq_loss_raq)
 
             if use_channel:
@@ -349,7 +370,10 @@ class DeepSC(nn.Module):
             "vq_losses": vq_losses_raq,
             "reconstructed_images_raq": reconstructed_images_raq,
             "vq_losses_raq": vq_losses_raq,
+            "source_codebooks_list": source_codebooks_list,
             "W_trg_list": codebooks_trg_list,
+            "z_q_src_list": z_q_src_list,
+            "z_q_raq_list": z_q_raq_list,
             "raq_target_list": target_list,
         })
         return result

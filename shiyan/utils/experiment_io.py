@@ -3,7 +3,9 @@ import os
 
 
 EPOCH_METRIC_FIELDS = [
-    "run_id", "epoch", "train_recon", "train_vq", "val_recon",
+    "run_id", "epoch", "train_recon", "train_vq", "train_distill", "train_src_repulsion",
+    "val_recon", "val_distill", "val_src_repulsion", "src_repulsion_weight",
+    "raq_distill_weight",
     "best_val_recon", "is_best", "phase", "channel_prob", "learning_rate",
 ]
 
