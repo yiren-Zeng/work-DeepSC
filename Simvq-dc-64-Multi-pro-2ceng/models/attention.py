@@ -2,13 +2,6 @@ import torch
 import torch.nn as nn
 
 
-def make_group_norm(channels, preferred_groups=32):
-    groups = min(preferred_groups, channels)
-    while channels % groups != 0 and groups > 1:
-        groups -= 1
-    return nn.GroupNorm(groups, channels)
-
-
 class BottleneckSelfAttention(nn.Module):
     """Lightweight non-local attention for the deepest feature map."""
 

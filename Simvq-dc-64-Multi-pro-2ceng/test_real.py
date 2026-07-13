@@ -100,6 +100,6 @@ if __name__ == "__main__":
     parser.add_argument("--snrs", type=int, nargs="+", default=[0, 3, 6, 9, 12])
     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
-    parser.add_argument("--modulation", choices=["bpsk", "qpsk"], default="bpsk")
+    parser.add_argument("--modulation", choices=["bpsk", "qpsk", "16qam"], default="bpsk")
     args = parser.parse_args()
     test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel, args.modulation)

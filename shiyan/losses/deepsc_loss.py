@@ -112,6 +112,9 @@ class DeepSCLoss(nn.Module):
         lpips_weight=0.0,
         raq_repulsion_weight=0.0,
         raq_latent_distill_weight=0.0,
+        raq_src_recon_weight=0.0,
+        raq_src_vq_weight=0.0,
+        raq_codebook_anchor_weight=0.0,
         src_codebook_repulsion_weight=0.0,
         src_codebook_repulsion_margin=0.5,
         src_codebook_repulsion_normalize=True,
@@ -124,6 +127,9 @@ class DeepSCLoss(nn.Module):
         self.lpips_weight = lpips_weight
         self.raq_repulsion_weight = raq_repulsion_weight
         self.raq_latent_distill_weight = float(raq_latent_distill_weight)
+        self.raq_src_recon_weight = float(raq_src_recon_weight)
+        self.raq_src_vq_weight = float(raq_src_vq_weight)
+        self.raq_codebook_anchor_weight = float(raq_codebook_anchor_weight)
         self.src_codebook_repulsion_weight = float(src_codebook_repulsion_weight)
         self.latent_distill_loss = LatentFeatureDistillationLoss()
         self.src_codebook_repulsion_loss = CodebookRepulsionLoss(
@@ -144,6 +150,11 @@ class DeepSCLoss(nn.Module):
 
     def set_raq_latent_distill_weight(self, weight):
         self.raq_latent_distill_weight = float(weight)
+
+    def set_raq_jointlite_weights(self, src_recon_weight, src_vq_weight, codebook_anchor_weight):
+        self.raq_src_recon_weight = float(src_recon_weight)
+        self.raq_src_vq_weight = float(src_vq_weight)
+        self.raq_codebook_anchor_weight = float(codebook_anchor_weight)
 
     def _reconstruction_loss(self, x, x_hat):
         if x.device != x_hat.device:
@@ -178,6 +189,22 @@ class DeepSCLoss(nn.Module):
             dist_sq = dist_sq.masked_fill(eye, float("inf"))
             repulsion_loss = repulsion_loss - dist_sq.min() / max(1, w_trg.size(1))
         return self.raq_repulsion_weight * repulsion_loss
+
+    def _source_codebook_anchor_loss(self, src_codebook_list, src_codebook_anchor_list, device):
+        if (
+            not src_codebook_list
+            or not src_codebook_anchor_list
+            or self.raq_codebook_anchor_weight <= 0
+        ):
+            return torch.zeros((), device=device)
+        if len(src_codebook_list) != len(src_codebook_anchor_list):
+            raise ValueError("source codebook anchor count must match source codebook count")
+        anchor_loss = torch.zeros((), device=device)
+        for current, anchor in zip(src_codebook_list, src_codebook_anchor_list):
+            current = current.to(device, non_blocking=True)
+            anchor = anchor.to(device, non_blocking=True)
+            anchor_loss = anchor_loss + F.mse_loss(current, anchor)
+        return anchor_loss / max(1, len(src_codebook_list))
 
     def forward_raq_only(
         self,
@@ -217,6 +244,82 @@ class DeepSCLoss(nn.Module):
                 "src_codebook_repulsion_raw_loss": zero.detach(),
                 "src_codebook_repulsion_loss": zero.detach(),
                 "src_codebook_repulsion_weight": zero.detach(),
+                "src_recon_anchor_raw_loss": zero.detach(),
+                "src_recon_anchor_loss": zero.detach(),
+                "src_vq_anchor_raw_loss": zero.detach(),
+                "src_vq_anchor_loss": zero.detach(),
+                "src_codebook_anchor_raw_loss": zero.detach(),
+                "src_codebook_anchor_loss": zero.detach(),
+                "aux_loss": weighted_vq.detach(),
+            }
+            return recon_loss, weighted_vq, details
+        return recon_loss, weighted_vq
+
+    def forward_raq_jointlite(
+        self,
+        x,
+        x_hat_src,
+        vq_losses_src,
+        x_hat_raq,
+        vq_losses_raq,
+        w_trg_list=None,
+        z_q_src_list=None,
+        z_q_raq_list=None,
+        src_codebook_list=None,
+        src_codebook_anchor_list=None,
+        return_details=False,
+    ):
+        raq_recon_loss = self._reconstruction_loss(x, x_hat_raq)
+        src_recon_anchor_raw_loss = self._reconstruction_loss(x, x_hat_src)
+        src_recon_anchor_loss = self.raq_src_recon_weight * src_recon_anchor_raw_loss
+        recon_loss = raq_recon_loss + src_recon_anchor_loss
+
+        raq_vq_loss = self._weighted_vq_loss(vq_losses_raq, recon_loss.device)
+        src_vq_anchor_raw_loss = self._weighted_vq_loss(vq_losses_src, recon_loss.device)
+        src_vq_anchor_loss = self.raq_src_vq_weight * src_vq_anchor_raw_loss
+        repulsion_loss = self._raq_repulsion_loss(w_trg_list, recon_loss.device)
+        src_codebook_anchor_raw_loss = self._source_codebook_anchor_loss(
+            src_codebook_list,
+            src_codebook_anchor_list,
+            recon_loss.device,
+        )
+        src_codebook_anchor_loss = self.raq_codebook_anchor_weight * src_codebook_anchor_raw_loss
+        distill_raw_loss = torch.zeros((), device=recon_loss.device)
+        distill_loss = torch.zeros((), device=recon_loss.device)
+
+        weighted_vq = (
+            raq_vq_loss
+            + repulsion_loss
+            + src_vq_anchor_loss
+            + src_codebook_anchor_loss
+        )
+
+        if self.raq_latent_distill_weight > 0:
+            distill_raw_loss = self.latent_distill_loss(
+                z_q_src_list,
+                z_q_raq_list,
+                device=recon_loss.device,
+            )
+            distill_loss = self.raq_latent_distill_weight * distill_raw_loss
+            weighted_vq = weighted_vq + distill_loss
+
+        if return_details:
+            zero = torch.zeros((), device=recon_loss.device)
+            details = {
+                "src_vq_loss": src_vq_anchor_loss.detach(),
+                "raq_vq_loss": raq_vq_loss.detach(),
+                "raq_repulsion_loss": repulsion_loss.detach(),
+                "latent_distill_raw_loss": distill_raw_loss.detach(),
+                "latent_distill_loss": distill_loss.detach(),
+                "src_codebook_repulsion_raw_loss": zero.detach(),
+                "src_codebook_repulsion_loss": zero.detach(),
+                "src_codebook_repulsion_weight": zero.detach(),
+                "src_recon_anchor_raw_loss": src_recon_anchor_raw_loss.detach(),
+                "src_recon_anchor_loss": src_recon_anchor_loss.detach(),
+                "src_vq_anchor_raw_loss": src_vq_anchor_raw_loss.detach(),
+                "src_vq_anchor_loss": src_vq_anchor_loss.detach(),
+                "src_codebook_anchor_raw_loss": src_codebook_anchor_raw_loss.detach(),
+                "src_codebook_anchor_loss": src_codebook_anchor_loss.detach(),
                 "aux_loss": weighted_vq.detach(),
             }
             return recon_loss, weighted_vq, details
@@ -281,6 +384,12 @@ class DeepSCLoss(nn.Module):
                     self.src_codebook_repulsion_weight,
                     device=recon_loss.device,
                 ),
+                "src_recon_anchor_raw_loss": torch.zeros((), device=recon_loss.device),
+                "src_recon_anchor_loss": torch.zeros((), device=recon_loss.device),
+                "src_vq_anchor_raw_loss": torch.zeros((), device=recon_loss.device),
+                "src_vq_anchor_loss": torch.zeros((), device=recon_loss.device),
+                "src_codebook_anchor_raw_loss": torch.zeros((), device=recon_loss.device),
+                "src_codebook_anchor_loss": torch.zeros((), device=recon_loss.device),
                 "aux_loss": weighted_vq.detach(),
             }
             return recon_loss, weighted_vq, details

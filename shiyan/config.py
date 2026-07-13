@@ -237,7 +237,26 @@ class Config:
     RAQ_CURRICULUM_MIDDLE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST", [8, 16, 32, 64])
     RAQ_CURRICULUM_LATE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_LATE_LIST", [2, 4, 8, 16, 32, 64])
     RAQ_RECON_GRAD_MODE = _env_str("SIMVQ_RAQ_RECON_GRAD_MODE", "ste").lower()
+    RAQ_GENERATOR_TYPE = _env_str("SIMVQ_RAQ_GENERATOR_TYPE", "encoder_decoder").replace("-", "_").lower()
+    RAQ_ROUTED_SRC_ENABLED = _env_int("SIMVQ_RAQ_ROUTED_SRC_ENABLED", 0) == 1
+    RAQ_ROUTED_SRC_THRESHOLD = _env_int("SIMVQ_RAQ_ROUTED_SRC_THRESHOLD", 16)
+    RAQ_ROUTED_SRC_SMALL_LIST = _env_int_list_optional("SIMVQ_RAQ_ROUTED_SRC_SMALL_LIST")
+    _RAQ_ROUTED_SRC_LARGE_LIST_VALUE = _env_int_list_optional("SIMVQ_RAQ_ROUTED_SRC_LARGE_LIST")
+    RAQ_ROUTED_SRC_LARGE_LIST = (
+        _RAQ_ROUTED_SRC_LARGE_LIST_VALUE
+        if _RAQ_ROUTED_SRC_LARGE_LIST_VALUE is not None
+        else list(NUM_EMBEDDINGS_LIST)
+    )
     RAQ_TRAIN_ENCODER = _env_int("SIMVQ_RAQ_TRAIN_ENCODER", 0) == 1
+    RAQ_SRC_RECON_WEIGHT = _env_float("SIMVQ_RAQ_SRC_RECON_WEIGHT", 0.0)
+    RAQ_SRC_RECON_FINAL_WEIGHT = _env_float_optional("SIMVQ_RAQ_SRC_RECON_FINAL_WEIGHT")
+    RAQ_SRC_VQ_WEIGHT = _env_float("SIMVQ_RAQ_SRC_VQ_WEIGHT", 0.0)
+    RAQ_SRC_VQ_FINAL_WEIGHT = _env_float_optional("SIMVQ_RAQ_SRC_VQ_FINAL_WEIGHT")
+    RAQ_CODEBOOK_ANCHOR_WEIGHT = _env_float("SIMVQ_RAQ_CODEBOOK_ANCHOR_WEIGHT", 0.0)
+    RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT = _env_float_optional("SIMVQ_RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT")
+    RAQ_JOINTLITE_DECAY_START_EPOCH = _env_int("SIMVQ_RAQ_JOINTLITE_DECAY_START_EPOCH", 0)
+    RAQ_JOINTLITE_DECAY_END_EPOCH = _env_int_optional("SIMVQ_RAQ_JOINTLITE_DECAY_END_EPOCH")
+    SRC_CODEBOOK_ANCHOR_CHECKPOINT = _env_str("SIMVQ_SRC_CODEBOOK_ANCHOR_CHECKPOINT", "")
     TRAIN_BRANCH = _env_str("SIMVQ_TRAIN_BRANCH", "joint").lower()
     SRC_CODEBOOK_REPULSION_WEIGHT = _env_float("SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT", 0.0)
     SRC_CODEBOOK_REPULSION_MARGIN = _env_float("SIMVQ_SRC_CODEBOOK_REPULSION_MARGIN", 0.5)
@@ -371,7 +390,10 @@ class Config:
                 raise ValueError("SIMVQ_QUANTIZER_AXIS_LIST entries must be patch or channel")
         if cls.QUANTIZER_TYPE != "simvq" and any(axis == "channel" for axis in cls.QUANTIZER_AXIS_LIST):
             raise ValueError("channel-wise CVQ is currently implemented for SIMVQ_QUANTIZER_TYPE=simvq")
-        valid_train_branches = {"joint", "src", "raq_warmup", "raq_finetune", "raq_channel"}
+        valid_train_branches = {
+            "joint", "src", "raq_warmup", "raq_finetune", "raq_channel",
+            "raq_jointlite", "raq_jointlite_channel",
+        }
         if cls.TRAIN_BRANCH not in valid_train_branches:
             raise ValueError(
                 "SIMVQ_TRAIN_BRANCH must be one of: " + ", ".join(sorted(valid_train_branches))
@@ -382,6 +404,55 @@ class Config:
             raise ValueError(f"SIMVQ_TRAIN_BRANCH={cls.TRAIN_BRANCH} requires SIMVQ_USE_RAQ=1")
         if cls.RAQ_RECON_GRAD_MODE not in {"ste", "dual"}:
             raise ValueError("SIMVQ_RAQ_RECON_GRAD_MODE must be ste or dual")
+        if cls.RAQ_GENERATOR_TYPE not in {"encoder_decoder", "decoder_only"}:
+            raise ValueError("SIMVQ_RAQ_GENERATOR_TYPE must be encoder_decoder or decoder_only")
+        if cls.RAQ_ROUTED_SRC_ENABLED:
+            if not cls.USE_RAQ:
+                raise ValueError("SIMVQ_RAQ_ROUTED_SRC_ENABLED requires SIMVQ_USE_RAQ=1")
+            if cls.RAQ_ROUTED_SRC_SMALL_LIST is None:
+                raise ValueError("SIMVQ_RAQ_ROUTED_SRC_ENABLED requires SIMVQ_RAQ_ROUTED_SRC_SMALL_LIST")
+            routed_lists = {
+                "SIMVQ_RAQ_ROUTED_SRC_SMALL_LIST": cls.RAQ_ROUTED_SRC_SMALL_LIST,
+                "SIMVQ_RAQ_ROUTED_SRC_LARGE_LIST": cls.RAQ_ROUTED_SRC_LARGE_LIST,
+            }
+            for name, values in routed_lists.items():
+                if len(values) != cls.UNET_DEPTH:
+                    raise ValueError(f"{name} length ({len(values)}) must equal UNET_DEPTH ({cls.UNET_DEPTH})")
+                for value in values:
+                    if value < 2:
+                        raise ValueError(f"{name} entries must be >= 2")
+            if list(cls.RAQ_ROUTED_SRC_LARGE_LIST) != list(cls.NUM_EMBEDDINGS_LIST):
+                raise ValueError(
+                    "SIMVQ_RAQ_ROUTED_SRC_LARGE_LIST must match SIMVQ_NUM_EMBEDDINGS_LIST "
+                    "so the existing source codebook bank remains the large bank"
+                )
+            if cls.RAQ_ROUTED_SRC_THRESHOLD < 2:
+                raise ValueError("SIMVQ_RAQ_ROUTED_SRC_THRESHOLD must be >= 2")
+        jointlite_weights = {
+            "SIMVQ_RAQ_SRC_RECON_WEIGHT": cls.RAQ_SRC_RECON_WEIGHT,
+            "SIMVQ_RAQ_SRC_VQ_WEIGHT": cls.RAQ_SRC_VQ_WEIGHT,
+            "SIMVQ_RAQ_CODEBOOK_ANCHOR_WEIGHT": cls.RAQ_CODEBOOK_ANCHOR_WEIGHT,
+        }
+        jointlite_final_weights = {
+            "SIMVQ_RAQ_SRC_RECON_FINAL_WEIGHT": cls.RAQ_SRC_RECON_FINAL_WEIGHT,
+            "SIMVQ_RAQ_SRC_VQ_FINAL_WEIGHT": cls.RAQ_SRC_VQ_FINAL_WEIGHT,
+            "SIMVQ_RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT": cls.RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT,
+        }
+        for name, weight in jointlite_weights.items():
+            if weight < 0:
+                raise ValueError(f"{name} must be >= 0")
+        for name, weight in jointlite_final_weights.items():
+            if weight is not None and weight < 0:
+                raise ValueError(f"{name} must be >= 0")
+        if cls.RAQ_JOINTLITE_DECAY_START_EPOCH < 0:
+            raise ValueError("SIMVQ_RAQ_JOINTLITE_DECAY_START_EPOCH must be >= 0")
+        if (
+            cls.RAQ_JOINTLITE_DECAY_END_EPOCH is not None
+            and cls.RAQ_JOINTLITE_DECAY_END_EPOCH < cls.RAQ_JOINTLITE_DECAY_START_EPOCH
+        ):
+            raise ValueError(
+                "SIMVQ_RAQ_JOINTLITE_DECAY_END_EPOCH must be >= decay start"
+            )
         if cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT is not None and cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT < 0:
             raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_FINAL_WEIGHT must be >= 0")
         if cls.RAQ_LATENT_DISTILL_DECAY_START_EPOCH < 0:
@@ -419,6 +490,15 @@ class Config:
                 raise ValueError("RAQ target range must satisfy 2 <= RAQ_MIN_TRG <= RAQ_MAX_TRG")
             if cls.RAQ_LATENT_DISTILL_WEIGHT < 0:
                 raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT must be >= 0")
+            if (
+                cls.TRAIN_BRANCH in {"raq_jointlite", "raq_jointlite_channel"}
+                and cls.RAQ_CODEBOOK_ANCHOR_WEIGHT > 0
+                and not cls.SRC_CODEBOOK_ANCHOR_CHECKPOINT
+            ):
+                raise ValueError(
+                    "SIMVQ_SRC_CODEBOOK_ANCHOR_CHECKPOINT is required when "
+                    "joint-lite codebook anchor weight is > 0"
+                )
             if cls.RAQ_USE_CURRICULUM:
                 curriculum_lists = {
                     "SIMVQ_RAQ_CURRICULUM_EARLY_LIST": cls.RAQ_CURRICULUM_EARLY_LIST,
@@ -479,7 +559,25 @@ class Config:
             "raq_curriculum_middle_list": list(cls.RAQ_CURRICULUM_MIDDLE_LIST),
             "raq_curriculum_late_list": list(cls.RAQ_CURRICULUM_LATE_LIST),
             "raq_recon_grad_mode": cls.RAQ_RECON_GRAD_MODE,
+            "raq_generator_type": cls.RAQ_GENERATOR_TYPE,
+            "raq_routed_src_enabled": cls.RAQ_ROUTED_SRC_ENABLED,
+            "raq_routed_src_threshold": cls.RAQ_ROUTED_SRC_THRESHOLD,
+            "raq_routed_src_small_list": (
+                list(cls.RAQ_ROUTED_SRC_SMALL_LIST)
+                if cls.RAQ_ROUTED_SRC_SMALL_LIST is not None
+                else None
+            ),
+            "raq_routed_src_large_list": list(cls.RAQ_ROUTED_SRC_LARGE_LIST),
             "raq_train_encoder": cls.RAQ_TRAIN_ENCODER,
+            "raq_src_recon_weight": cls.RAQ_SRC_RECON_WEIGHT,
+            "raq_src_recon_final_weight": cls.RAQ_SRC_RECON_FINAL_WEIGHT,
+            "raq_src_vq_weight": cls.RAQ_SRC_VQ_WEIGHT,
+            "raq_src_vq_final_weight": cls.RAQ_SRC_VQ_FINAL_WEIGHT,
+            "raq_codebook_anchor_weight": cls.RAQ_CODEBOOK_ANCHOR_WEIGHT,
+            "raq_codebook_anchor_final_weight": cls.RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT,
+            "raq_jointlite_decay_start_epoch": cls.RAQ_JOINTLITE_DECAY_START_EPOCH,
+            "raq_jointlite_decay_end_epoch": cls.RAQ_JOINTLITE_DECAY_END_EPOCH,
+            "src_codebook_anchor_checkpoint": cls.SRC_CODEBOOK_ANCHOR_CHECKPOINT,
             "train_branch": cls.TRAIN_BRANCH,
             "src_codebook_repulsion_weight": cls.SRC_CODEBOOK_REPULSION_WEIGHT,
             "src_codebook_repulsion_margin": cls.SRC_CODEBOOK_REPULSION_MARGIN,

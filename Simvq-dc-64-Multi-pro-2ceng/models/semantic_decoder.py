@@ -3,8 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import os
 from torch.utils.checkpoint import checkpoint
-
-from .semantic_encoder import make_activation, make_norm
+from .blocks import ResidualBlock, make_norm, make_activation
 
 
 class SkipConnectionDropout(nn.Module):
@@ -23,25 +22,6 @@ class SkipConnectionDropout(nn.Module):
         # 生成 (B,1,1,1) 二值掩码：以概率 p 整个样本的 skip 被丢弃
         mask = (torch.rand(batch_size, 1, 1, 1, device=x.device) > self.p).float()
         return x * mask
-
-
-class ResidualBlock(nn.Module):
-    def __init__(self, channels, norm_type="batch", num_groups=32, activation="prelu"):
-        super().__init__()
-        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
-        self.norm = make_norm(channels, norm_type, num_groups)
-        self.act = make_activation(activation)
-        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, stride=1, padding=1)
-
-    def forward(self, x):
-        identity = x
-        out = self.conv1(x)
-        out = self.norm(out)
-        out = self.act(out)
-        out = self.conv2(out)
-        out = out + identity
-        return out
-
 
 class UpSampleBlock(nn.Module):
     def __init__(self, in_ch, out_ch, up_mode: str = "nearest", scale_factor: int = 2,

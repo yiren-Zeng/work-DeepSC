@@ -12,6 +12,7 @@ class RAQ(nn.Module):
         n_embed_min_trg: int,
         n_embed_max_trg: int,
         device: str = "cuda:2",
+        generator_type: str = "encoder_decoder",
     ):
         super().__init__()
         self.device = torch.device(device)
@@ -47,7 +48,9 @@ class RAQ(nn.Module):
             num_decoder_layers=3,
             dim_feedforward=current_dim_feedforward,
             dropout=0.1,
-            device=device
+            device=device,
+            generator_type=generator_type,
+            max_len=max(n_embed_src, n_embed_max_trg),
         ).to(self.device)
 
 

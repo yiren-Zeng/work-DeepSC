@@ -41,11 +41,16 @@ class TransformerCodebookGen(nn.Module):
                  num_decoder_layers: int = 3,
                  dim_feedforward: int = 1024,
                  dropout: float = 0.1,
-                 device: str = "cuda:2"):
+                 device: str = "cuda:2",
+                 generator_type: str = "encoder_decoder",
+                 max_len: int = 5000):
         super().__init__()
 
         self.device = torch.device(device)
         self.embed_layer_dec = embed_layer_dec
+        self.generator_type = str(generator_type).replace("-", "_").lower()
+        if self.generator_type not in {"encoder_decoder", "decoder_only"}:
+            raise ValueError("generator_type must be 'encoder_decoder' or 'decoder_only'")
 
         trg_dim = self.embed_layer_dec.embedding_dim
 
@@ -54,14 +59,26 @@ class TransformerCodebookGen(nn.Module):
         self.src_project = nn.Linear(src_dim, d_model) if src_dim != d_model else nn.Identity()
         self.trg_project = nn.Linear(trg_dim, d_model) if trg_dim != d_model else nn.Identity()
 
-        self.pos_encoder = PositionalEncoding(d_model)
+        self.pos_encoder = PositionalEncoding(d_model, max_len=max_len)
 
-        self.transformer = nn.Transformer(d_model=d_model,
-                                          nhead=nhead,
-                                          num_encoder_layers=num_encoder_layers,
-                                          num_decoder_layers=num_decoder_layers,
-                                          dim_feedforward=dim_feedforward,
-                                          dropout=dropout)
+        if self.generator_type == "encoder_decoder":
+            self.transformer = nn.Transformer(d_model=d_model,
+                                              nhead=nhead,
+                                              num_encoder_layers=num_encoder_layers,
+                                              num_decoder_layers=num_decoder_layers,
+                                              dim_feedforward=dim_feedforward,
+                                              dropout=dropout)
+        else:
+            decoder_layer = nn.TransformerDecoderLayer(
+                d_model=d_model,
+                nhead=nhead,
+                dim_feedforward=dim_feedforward,
+                dropout=dropout,
+            )
+            self.decoder = nn.TransformerDecoder(
+                decoder_layer,
+                num_layers=num_decoder_layers,
+            )
 
         # 输出投影
         self.out_project = nn.Linear(d_model, trg_dim) if d_model != trg_dim else nn.Identity()
@@ -78,8 +95,12 @@ class TransformerCodebookGen(nn.Module):
         trg_emb = self.pos_encoder(trg_emb)
 
         # Transformer Forward
-        # [K_trg, 1, d_model]
-        output = self.transformer(src=src_emb, tgt=trg_emb)
+        # encoder_decoder: source codebook is contextualized by encoder first.
+        # decoder_only: source codebook is used directly as decoder memory/K,V.
+        if self.generator_type == "encoder_decoder":
+            output = self.transformer(src=src_emb, tgt=trg_emb)
+        else:
+            output = self.decoder(tgt=trg_emb, memory=src_emb)
 
         # [K_trg, 1, trg_dim]
         output = self.out_project(output)

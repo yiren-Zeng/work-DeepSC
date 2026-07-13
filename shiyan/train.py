@@ -12,7 +12,7 @@ from monitoring.codebook import (compute_codebook_utilization, print_codebook_ut
 from training.schedules import compute_schedule
 from utils.experiment_io import append_codebook_records, append_epoch_record
 from utils.reproducibility import setup_seed
-from utils.checkpoint_utils import load_model_state_dict
+from utils.checkpoint_utils import load_model_state_dict, load_state_dict_compatible
 from utils.math_utils import sample_trg
 
 
@@ -34,6 +34,35 @@ def load_pretrained_weights(model, pretrained_path, device):
     model.load_state_dict(model_state)
     print(f"[Info] 从预训练权重加载: {loaded} 个参数匹配, {skipped} 个跳过")
     return loaded
+
+
+def load_source_codebook_anchor_weights(anchor_path, device):
+    if not anchor_path:
+        return None
+    if not os.path.exists(anchor_path):
+        raise FileNotFoundError(f"source codebook anchor checkpoint not found: {anchor_path}")
+    state_dict = load_model_state_dict(anchor_path, device)
+    anchors = []
+    idx = 0
+    while True:
+        embed_key = f"vector_quantizers.{idx}.codebook.embed.weight"
+        proj_weight_key = f"vector_quantizers.{idx}.codebook.proj.weight"
+        proj_bias_key = f"vector_quantizers.{idx}.codebook.proj.bias"
+        if embed_key not in state_dict:
+            break
+        if proj_weight_key not in state_dict:
+            raise KeyError(f"missing {proj_weight_key} in source codebook anchor checkpoint")
+        embed_weight = state_dict[embed_key].to(device)
+        proj_weight = state_dict[proj_weight_key].to(device)
+        projected = embed_weight.matmul(proj_weight.t())
+        if proj_bias_key in state_dict:
+            projected = projected + state_dict[proj_bias_key].to(device)
+        anchors.append(projected.detach())
+        idx += 1
+    if not anchors:
+        raise ValueError("No SimVQ source codebook weights found in anchor checkpoint.")
+    print(f"[Info] Loaded {len(anchors)} source codebook anchor tensors from {anchor_path}")
+    return anchors
 
 
 def scheduled_src_codebook_repulsion_weight(epoch, cfg):
@@ -66,6 +95,50 @@ def scheduled_raq_distill_weight(epoch, cfg):
     return start_weight + (final_weight - start_weight) * progress
 
 
+def scheduled_linear_weight(epoch, num_epochs, start_weight, final_weight, start_epoch, end_epoch):
+    start_weight = float(start_weight)
+    if final_weight is None:
+        return start_weight
+    final_weight = float(final_weight)
+    start = int(start_epoch)
+    end = int(num_epochs if end_epoch is None else end_epoch)
+    if epoch < start:
+        return start_weight
+    if epoch >= end or end == start:
+        return final_weight
+    progress = float(epoch - start) / float(end - start)
+    return start_weight + (final_weight - start_weight) * progress
+
+
+def scheduled_raq_jointlite_weights(epoch, cfg):
+    return {
+        "src_recon": scheduled_linear_weight(
+            epoch,
+            cfg.NUM_EPOCHS,
+            cfg.RAQ_SRC_RECON_WEIGHT,
+            cfg.RAQ_SRC_RECON_FINAL_WEIGHT,
+            cfg.RAQ_JOINTLITE_DECAY_START_EPOCH,
+            cfg.RAQ_JOINTLITE_DECAY_END_EPOCH,
+        ),
+        "src_vq": scheduled_linear_weight(
+            epoch,
+            cfg.NUM_EPOCHS,
+            cfg.RAQ_SRC_VQ_WEIGHT,
+            cfg.RAQ_SRC_VQ_FINAL_WEIGHT,
+            cfg.RAQ_JOINTLITE_DECAY_START_EPOCH,
+            cfg.RAQ_JOINTLITE_DECAY_END_EPOCH,
+        ),
+        "codebook_anchor": scheduled_linear_weight(
+            epoch,
+            cfg.NUM_EPOCHS,
+            cfg.RAQ_CODEBOOK_ANCHOR_WEIGHT,
+            cfg.RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT,
+            cfg.RAQ_JOINTLITE_DECAY_START_EPOCH,
+            cfg.RAQ_JOINTLITE_DECAY_END_EPOCH,
+        ),
+    }
+
+
 def raq_curriculum_values_for_epoch(epoch, cfg):
     if not cfg.RAQ_USE_CURRICULUM:
         return None, "uniform"
@@ -89,15 +162,41 @@ def sample_raq_target_list_for_epoch(epoch, cfg):
 
 
 RAQ_ONLY_BRANCHES = {"raq_warmup", "raq_finetune", "raq_channel"}
+RAQ_JOINTLITE_BRANCHES = {"raq_jointlite", "raq_jointlite_channel"}
 
 
 def uses_raq_only_loss(cfg):
     return cfg.USE_RAQ and cfg.TRAIN_BRANCH in RAQ_ONLY_BRANCHES
 
 
+def uses_raq_jointlite_loss(cfg):
+    return cfg.USE_RAQ and cfg.TRAIN_BRANCH in RAQ_JOINTLITE_BRANCHES
+
+
 def set_module_trainable(module, trainable):
     for param in module.parameters():
         param.requires_grad = trainable
+
+
+def set_raq_trainable(module, trainable):
+    set_module_trainable(module, trainable)
+    for submodule in module.modules():
+        embed = getattr(submodule, "embed", None)
+        if embed is not None and hasattr(embed, "weight"):
+            embed.weight.requires_grad = False
+
+
+def set_source_codebook_proj_trainable(model, trainable):
+    quantizer_lists = [model.vector_quantizers]
+    small_quantizers = getattr(model, "vector_quantizers_small", None)
+    if small_quantizers is not None:
+        quantizer_lists.append(small_quantizers)
+    for quantizers in quantizer_lists:
+        for quantizer in quantizers:
+            codebook = getattr(quantizer, "codebook", None)
+            proj = getattr(codebook, "proj", None)
+            if proj is not None:
+                set_module_trainable(proj, trainable)
 
 
 def configure_trainable_parameters(model, cfg):
@@ -107,7 +206,10 @@ def configure_trainable_parameters(model, cfg):
         return
 
     set_module_trainable(model, False)
-    set_module_trainable(model.raqs, True)
+    if branch in RAQ_JOINTLITE_BRANCHES:
+        set_raq_trainable(model.raqs, True)
+    else:
+        set_module_trainable(model.raqs, True)
 
     if branch in {"raq_finetune", "raq_channel"}:
         if cfg.RAQ_TRAIN_ENCODER:
@@ -115,6 +217,12 @@ def configure_trainable_parameters(model, cfg):
             set_module_trainable(model.bottleneck_attention, True)
         set_module_trainable(model.semantic_decoder, True)
         set_module_trainable(model.swinir_enhance, True)
+    elif branch in RAQ_JOINTLITE_BRANCHES:
+        set_module_trainable(model.semantic_encoder, True)
+        set_module_trainable(model.bottleneck_attention, True)
+        set_module_trainable(model.semantic_decoder, True)
+        set_module_trainable(model.swinir_enhance, True)
+        set_source_codebook_proj_trainable(model, True)
 
     total_params = sum(p.numel() for p in model.parameters())
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -220,6 +328,19 @@ def main():
               f"{cfg.RAQ_LATENT_DISTILL_DECAY_END_EPOCH or cfg.NUM_EPOCHS}]")
     print(f"  - RAQ重建梯度模式: {cfg.RAQ_RECON_GRAD_MODE}, "
           f"RAQ阶段解冻encoder={cfg.RAQ_TRAIN_ENCODER}")
+    print(f"  - RAQ生成器结构: {cfg.RAQ_GENERATOR_TYPE}")
+    print(f"  - RAQ路由SRC码本: {cfg.RAQ_ROUTED_SRC_ENABLED}, "
+          f"threshold<={cfg.RAQ_ROUTED_SRC_THRESHOLD}, "
+          f"small={cfg.RAQ_ROUTED_SRC_SMALL_LIST}, "
+          f"large={cfg.RAQ_ROUTED_SRC_LARGE_LIST}")
+    if cfg.TRAIN_BRANCH in RAQ_JOINTLITE_BRANCHES:
+        print(f"  - Joint-lite SRC recon anchor: {cfg.RAQ_SRC_RECON_WEIGHT} -> "
+              f"{cfg.RAQ_SRC_RECON_FINAL_WEIGHT}")
+        print(f"  - Joint-lite SRC VQ anchor: {cfg.RAQ_SRC_VQ_WEIGHT} -> "
+              f"{cfg.RAQ_SRC_VQ_FINAL_WEIGHT}")
+        print(f"  - Joint-lite source codebook anchor: {cfg.RAQ_CODEBOOK_ANCHOR_WEIGHT} -> "
+              f"{cfg.RAQ_CODEBOOK_ANCHOR_FINAL_WEIGHT}")
+        print(f"  - Joint-lite anchor checkpoint: {cfg.SRC_CODEBOOK_ANCHOR_CHECKPOINT}")
     print(f"  - SRC码本排斥: target_weight={cfg.SRC_CODEBOOK_REPULSION_WEIGHT}, "
           f"margin={cfg.SRC_CODEBOOK_REPULSION_MARGIN}, "
           f"normalize={cfg.SRC_CODEBOOK_REPULSION_NORMALIZE}, "
@@ -279,11 +400,28 @@ def main():
         raq_min_trg=cfg.RAQ_MIN_TRG,
         raq_max_trg=cfg.RAQ_MAX_TRG,
         raq_recon_grad_mode=cfg.RAQ_RECON_GRAD_MODE,
+        raq_generator_type=cfg.RAQ_GENERATOR_TYPE,
+        raq_routed_src_enabled=cfg.RAQ_ROUTED_SRC_ENABLED,
+        raq_routed_src_small_list=cfg.RAQ_ROUTED_SRC_SMALL_LIST,
+        raq_routed_src_large_list=cfg.RAQ_ROUTED_SRC_LARGE_LIST,
+        raq_routed_src_threshold=cfg.RAQ_ROUTED_SRC_THRESHOLD,
     ).to(device)
 
     # 加载预训练权重默认禁用；本实验要求从零开始训练。
     if pretrained_path and allow_pretrained:
         load_pretrained_weights(deepsc_model, pretrained_path, device)
+
+    source_codebook_anchor_list = None
+    if uses_raq_jointlite_loss(cfg) and cfg.RAQ_CODEBOOK_ANCHOR_WEIGHT > 0:
+        source_codebook_anchor_list = load_source_codebook_anchor_weights(
+            cfg.SRC_CODEBOOK_ANCHOR_CHECKPOINT,
+            device,
+        )
+        if len(source_codebook_anchor_list) != cfg.NUM_DOWNSAMPLE_BLOCKS:
+            raise ValueError(
+                "source codebook anchor layer count differs from current model "
+                f"({len(source_codebook_anchor_list)} vs {cfg.NUM_DOWNSAMPLE_BLOCKS})"
+            )
 
     if cfg.MODEL_PARALLEL:
         if not torch.cuda.is_available() or torch.cuda.device_count() < 2:
@@ -312,6 +450,9 @@ def main():
         lpips_weight=cfg.LPIPS_LOSS_WEIGHT,
         raq_repulsion_weight=cfg.RAQ_REPULSION_WEIGHT if cfg.USE_RAQ else 0.0,
         raq_latent_distill_weight=cfg.RAQ_LATENT_DISTILL_WEIGHT if cfg.USE_RAQ else 0.0,
+        raq_src_recon_weight=cfg.RAQ_SRC_RECON_WEIGHT if uses_raq_jointlite_loss(cfg) else 0.0,
+        raq_src_vq_weight=cfg.RAQ_SRC_VQ_WEIGHT if uses_raq_jointlite_loss(cfg) else 0.0,
+        raq_codebook_anchor_weight=cfg.RAQ_CODEBOOK_ANCHOR_WEIGHT if uses_raq_jointlite_loss(cfg) else 0.0,
         src_codebook_repulsion_weight=0.0,
         src_codebook_repulsion_margin=cfg.SRC_CODEBOOK_REPULSION_MARGIN,
         src_codebook_repulsion_normalize=cfg.SRC_CODEBOOK_REPULSION_NORMALIZE,
@@ -342,7 +483,7 @@ def main():
     if cfg.RESUME and os.path.exists(cfg.RESUME_PATH):
         print(f"Loading checkpoint: {cfg.RESUME_PATH}")
         checkpoint = torch.load(cfg.RESUME_PATH, map_location=device)
-        deepsc_model.load_state_dict(checkpoint['model_state_dict'])
+        load_state_dict_compatible(deepsc_model, checkpoint['model_state_dict'])
         optimizer_g.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler_g.load_state_dict(checkpoint['scheduler_state_dict'])
         start_epoch = checkpoint['epoch'] + 1
@@ -389,6 +530,16 @@ def main():
         deepsc_loss_fn.set_src_codebook_repulsion_weight(src_repulsion_weight)
         raq_distill_weight = scheduled_raq_distill_weight(epoch, cfg) if cfg.USE_RAQ else 0.0
         deepsc_loss_fn.set_raq_latent_distill_weight(raq_distill_weight)
+        jointlite_weights = (
+            scheduled_raq_jointlite_weights(epoch, cfg)
+            if uses_raq_jointlite_loss(cfg)
+            else {"src_recon": 0.0, "src_vq": 0.0, "codebook_anchor": 0.0}
+        )
+        deepsc_loss_fn.set_raq_jointlite_weights(
+            jointlite_weights["src_recon"],
+            jointlite_weights["src_vq"],
+            jointlite_weights["codebook_anchor"],
+        )
 
         deepsc_model.train()
 
@@ -396,6 +547,9 @@ def main():
         total_vq_losses = 0
         total_distill_losses = 0
         total_src_repulsion_losses = 0
+        total_src_recon_anchor_losses = 0
+        total_src_vq_anchor_losses = 0
+        total_src_codebook_anchor_losses = 0
 
         optimizer_g.zero_grad()
         steps_per_epoch = len(train_dataloader)
@@ -412,7 +566,21 @@ def main():
                 raq_trg_list=current_raq_trg_list if cfg.USE_RAQ else None,
             )
 
-            if uses_raq_only_loss(cfg):
+            if uses_raq_jointlite_loss(cfg):
+                recon_loss, vq_loss, loss_details = deepsc_loss_fn.forward_raq_jointlite(
+                    real_images,
+                    out["reconstructed_images_src"],
+                    out["vq_losses_src"],
+                    out["reconstructed_images_raq"],
+                    out["vq_losses_raq"],
+                    out["W_trg_list"],
+                    out["z_q_src_list"],
+                    out["z_q_raq_list"],
+                    out["source_codebooks_list"],
+                    source_codebook_anchor_list,
+                    return_details=True,
+                )
+            elif uses_raq_only_loss(cfg):
                 recon_loss, vq_loss, loss_details = deepsc_loss_fn.forward_raq_only(
                     real_images,
                     out["reconstructed_images_raq"],
@@ -450,6 +618,9 @@ def main():
             total_vq_losses += vq_loss.item()
             total_distill_losses += loss_details["latent_distill_loss"].item()
             total_src_repulsion_losses += loss_details["src_codebook_repulsion_loss"].item()
+            total_src_recon_anchor_losses += loss_details["src_recon_anchor_loss"].item()
+            total_src_vq_anchor_losses += loss_details["src_vq_anchor_loss"].item()
+            total_src_codebook_anchor_losses += loss_details["src_codebook_anchor_loss"].item()
 
             current_snr = out.get("current_snr")
             snr_desc = "clean" if current_snr is None else f"{current_snr:.2f} dB"
@@ -466,10 +637,15 @@ def main():
                       f"DistillW: {raq_distill_weight:.6g}, "
                       f"SrcRep: {loss_details['src_codebook_repulsion_loss'].item():.6f}, "
                       f"SrcRepW: {src_repulsion_weight:.6g}, "
+                      f"SrcAnchor: {loss_details['src_recon_anchor_loss'].item():.4f}/"
+                      f"{loss_details['src_vq_anchor_loss'].item():.4f}/"
+                      f"{loss_details['src_codebook_anchor_loss'].item():.4f}, "
                       f"ChannelProb: {channel_prob:.2f}, SNR: {snr_desc}")
                 if cfg.USE_RAQ:
                     print(f"  RAQ target K this accumulation: {out['raq_target_list']} "
                           f"(sampling={raq_sampling_phase})")
+                    if out.get("source_route_list") is not None:
+                        print(f"  RAQ source route this accumulation: {out['source_route_list']}")
                 if current_snr is not None:
                     writer.add_scalar("Train/SNR", current_snr, global_step)
                 writer.add_scalar("Train/Loss_Step", recon_loss.item() + vq_loss.item(), global_step)
@@ -478,6 +654,9 @@ def main():
                 writer.add_scalar("Train/SrcCodebookRepulsion_Step", loss_details["src_codebook_repulsion_loss"].item(), global_step)
                 writer.add_scalar("Train/SrcCodebookRepulsionRaw_Step", loss_details["src_codebook_repulsion_raw_loss"].item(), global_step)
                 writer.add_scalar("Train/SrcCodebookRepulsionWeight", src_repulsion_weight, global_step)
+                writer.add_scalar("Train/SrcReconAnchor_Step", loss_details["src_recon_anchor_loss"].item(), global_step)
+                writer.add_scalar("Train/SrcVQAnchor_Step", loss_details["src_vq_anchor_loss"].item(), global_step)
+                writer.add_scalar("Train/SrcCodebookAnchor_Step", loss_details["src_codebook_anchor_loss"].item(), global_step)
                 writer.add_scalar("Train/ChannelProb", channel_prob, global_step)
 
             global_step += 1
@@ -488,11 +667,16 @@ def main():
         avg_vq = total_vq_losses / steps_per_epoch
         avg_distill = total_distill_losses / steps_per_epoch
         avg_src_repulsion = total_src_repulsion_losses / steps_per_epoch
+        avg_src_recon_anchor = total_src_recon_anchor_losses / steps_per_epoch
+        avg_src_vq_anchor = total_src_vq_anchor_losses / steps_per_epoch
+        avg_src_codebook_anchor = total_src_codebook_anchor_losses / steps_per_epoch
 
         print(f"[{phase_desc}] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], "
               f"Recon: {avg_recon:.4f}, Aux: {avg_vq:.4f}, Distill: {avg_distill:.4f}, "
               f"DistillW: {raq_distill_weight:.6g}, "
               f"SrcRep: {avg_src_repulsion:.6f}, SrcRepW: {src_repulsion_weight:.6g}, "
+              f"SrcAnchor: {avg_src_recon_anchor:.4f}/{avg_src_vq_anchor:.4f}/"
+              f"{avg_src_codebook_anchor:.4f}, "
               f"ChannelProb: {channel_prob:.2f}, RAQSampling: {raq_sampling_phase}, "
               f"Dropout: {[f'{p:.2f}' for p in dropout_p]}, "
               f"LossW: {[f'{w:.1f}' for w in loss_weights]}")
@@ -503,6 +687,12 @@ def main():
         writer.add_scalar("Schedule/RAQLatentDistillWeight", raq_distill_weight, epoch)
         writer.add_scalar("Loss/Train/SrcCodebookRepulsion", avg_src_repulsion, epoch)
         writer.add_scalar("Schedule/SrcCodebookRepulsionWeight", src_repulsion_weight, epoch)
+        writer.add_scalar("Loss/Train/SrcReconAnchor", avg_src_recon_anchor, epoch)
+        writer.add_scalar("Loss/Train/SrcVQAnchor", avg_src_vq_anchor, epoch)
+        writer.add_scalar("Loss/Train/SrcCodebookAnchor", avg_src_codebook_anchor, epoch)
+        writer.add_scalar("Schedule/JointLiteSrcReconWeight", jointlite_weights["src_recon"], epoch)
+        writer.add_scalar("Schedule/JointLiteSrcVQWeight", jointlite_weights["src_vq"], epoch)
+        writer.add_scalar("Schedule/JointLiteCodebookAnchorWeight", jointlite_weights["codebook_anchor"], epoch)
         writer.add_scalar("Loss/Train/Total", avg_recon + avg_vq, epoch)
         writer.add_scalar("Schedule/ChannelProb", channel_prob, epoch)
         writer.add_text("Schedule/RAQSamplingPhase", raq_sampling_phase, epoch)
@@ -517,11 +707,28 @@ def main():
         val_loss_sum = 0
         val_distill_sum = 0
         val_src_repulsion_sum = 0
+        val_src_recon_anchor_sum = 0
+        val_src_vq_anchor_sum = 0
+        val_src_codebook_anchor_sum = 0
         with torch.no_grad():
             for real_images in val_dataloader:
                 real_images = real_images.to(device, non_blocking=True)
                 out = deepsc_model.forward_val(real_images)
-                if uses_raq_only_loss(cfg):
+                if uses_raq_jointlite_loss(cfg):
+                    recon_loss_val, _, val_details = deepsc_loss_fn.forward_raq_jointlite(
+                        real_images,
+                        out["reconstructed_images_src"],
+                        out["vq_losses_src"],
+                        out["reconstructed_images_raq"],
+                        out["vq_losses_raq"],
+                        out["W_trg_list"],
+                        out["z_q_src_list"],
+                        out["z_q_raq_list"],
+                        out["source_codebooks_list"],
+                        source_codebook_anchor_list,
+                        return_details=True,
+                    )
+                elif uses_raq_only_loss(cfg):
                     recon_loss_val, _, val_details = deepsc_loss_fn.forward_raq_only(
                         real_images,
                         out["reconstructed_images_raq"],
@@ -554,15 +761,26 @@ def main():
                 val_loss_sum += recon_loss_val.item()
                 val_distill_sum += val_details["latent_distill_loss"].item()
                 val_src_repulsion_sum += val_details["src_codebook_repulsion_loss"].item()
+                val_src_recon_anchor_sum += val_details["src_recon_anchor_loss"].item()
+                val_src_vq_anchor_sum += val_details["src_vq_anchor_loss"].item()
+                val_src_codebook_anchor_sum += val_details["src_codebook_anchor_loss"].item()
 
         avg_val_loss = val_loss_sum / len(val_dataloader)
         avg_val_distill = val_distill_sum / len(val_dataloader)
         avg_val_src_repulsion = val_src_repulsion_sum / len(val_dataloader)
+        avg_val_src_recon_anchor = val_src_recon_anchor_sum / len(val_dataloader)
+        avg_val_src_vq_anchor = val_src_vq_anchor_sum / len(val_dataloader)
+        avg_val_src_codebook_anchor = val_src_codebook_anchor_sum / len(val_dataloader)
         print(f"[VAL] Epoch [{epoch + 1}/{cfg.NUM_EPOCHS}], Val Recon Loss: {avg_val_loss:.4f}, "
-              f"Val Distill: {avg_val_distill:.4f}, Val SrcRep: {avg_val_src_repulsion:.6f}")
+              f"Val Distill: {avg_val_distill:.4f}, Val SrcRep: {avg_val_src_repulsion:.6f}, "
+              f"Val SrcAnchor: {avg_val_src_recon_anchor:.4f}/{avg_val_src_vq_anchor:.4f}/"
+              f"{avg_val_src_codebook_anchor:.4f}")
         writer.add_scalar("Loss/Val/Recon", avg_val_loss, epoch)
         writer.add_scalar("Loss/Val/LatentDistill", avg_val_distill, epoch)
         writer.add_scalar("Loss/Val/SrcCodebookRepulsion", avg_val_src_repulsion, epoch)
+        writer.add_scalar("Loss/Val/SrcReconAnchor", avg_val_src_recon_anchor, epoch)
+        writer.add_scalar("Loss/Val/SrcVQAnchor", avg_val_src_vq_anchor, epoch)
+        writer.add_scalar("Loss/Val/SrcCodebookAnchor", avg_val_src_codebook_anchor, epoch)
 
         # === 每 N 个 epoch 统计一次码本利用率 ===
         codebook_monitor_interval = 10

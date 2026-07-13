@@ -14,6 +14,32 @@ def load_model_state_dict(checkpoint_path, device):
     return extract_state_dict(checkpoint)
 
 
+def make_state_dict_compatible(model, state_dict):
+    model_state = model.state_dict()
+    compatible_state = dict(state_dict)
+    adjusted = []
+    for key, value in state_dict.items():
+        if not key.endswith("pos_encoder.pe"):
+            continue
+        if key not in model_state:
+            continue
+        current_value = model_state[key]
+        if tuple(current_value.shape) != tuple(value.shape):
+            compatible_state[key] = current_value
+            adjusted.append((key, tuple(value.shape), tuple(current_value.shape)))
+    return compatible_state, adjusted
+
+
+def load_state_dict_compatible(model, state_dict, strict=True):
+    compatible_state, adjusted = make_state_dict_compatible(model, state_dict)
+    for key, ckpt_shape, model_shape in adjusted:
+        print(
+            "[Info] Compatible checkpoint load: regenerate "
+            f"{key} ({ckpt_shape} -> {model_shape})"
+        )
+    return model.load_state_dict(compatible_state, strict=strict)
+
+
 def infer_codebook_config(state_dict, cfg=None):
     if any(".qbridge." in key for key in state_dict):
         quantizer_type = "vitvq_nocompress"
@@ -102,8 +128,13 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", None),
         raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", None),
         raq_recon_grad_mode=getattr(cfg, "RAQ_RECON_GRAD_MODE", "ste"),
+        raq_generator_type=getattr(cfg, "RAQ_GENERATOR_TYPE", "encoder_decoder"),
+        raq_routed_src_enabled=getattr(cfg, "RAQ_ROUTED_SRC_ENABLED", False),
+        raq_routed_src_small_list=getattr(cfg, "RAQ_ROUTED_SRC_SMALL_LIST", None),
+        raq_routed_src_large_list=getattr(cfg, "RAQ_ROUTED_SRC_LARGE_LIST", None),
+        raq_routed_src_threshold=getattr(cfg, "RAQ_ROUTED_SRC_THRESHOLD", 16),
     ).to(device)
-    model.load_state_dict(state_dict)
+    load_state_dict_compatible(model, state_dict)
     if getattr(cfg, "MODEL_PARALLEL", False):
         if not torch.cuda.is_available() or torch.cuda.device_count() < 2:
             raise RuntimeError("SIMVQ_MODEL_PARALLEL=1 requires at least two visible CUDA devices.")

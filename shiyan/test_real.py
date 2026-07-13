@@ -9,15 +9,14 @@ from utils.checkpoint_utils import build_model_from_checkpoint
 from utils.reproducibility import setup_seed
 
 
-LDPC_N = 256
-LDPC_R = 0.5
+# LDPC_N = 256
+# LDPC_R = 0.5
 
 
 @torch.no_grad()
 def test_real(
     checkpoint_path=None, test_snrs=None, json_output=None, no_channel=False,
-    modulation="bpsk",
-):
+    modulation="bpsk", LDPC_N = 256, LDPC_R = 0.5):
     cfg = Config()
     cfg.validate()
     setup_seed(42)
@@ -106,6 +105,8 @@ if __name__ == "__main__":
     parser.add_argument("--snrs", type=int, nargs="+", default=[0, 3, 6, 9, 12])
     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
-    parser.add_argument("--modulation", choices=["bpsk", "qpsk"], default="bpsk")
+    parser.add_argument("--modulation", choices=["bpsk", "qpsk","16qam"], default="bpsk")
+    parser.add_argument("--ldpc_n", type=int, default=256)
+    parser.add_argument("--ldpc_k", type=float, default=0.5)
     args = parser.parse_args()
-    test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel, args.modulation)
+    test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel, args.modulation, args.ldpc_n, args.ldpc_k)

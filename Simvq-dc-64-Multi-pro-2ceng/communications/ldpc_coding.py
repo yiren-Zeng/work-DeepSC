@@ -8,7 +8,10 @@ import torch
 try:
     # 隐藏所有物理 GPU，强制 TF 在 CPU 上初始化上下文
     tf.config.set_visible_devices([], 'GPU')
-    print("[LDPC Info] TensorFlow GPU 已经被成功屏蔽，LDPC 模块将运行在 CPU 上。")
+    # 限制 TF CPU 线程数，避免在已有大量训练进程时创建上百个线程相互竞争
+    tf.config.threading.set_inter_op_parallelism_threads(1)
+    tf.config.threading.set_intra_op_parallelism_threads(2)
+    print("[LDPC Info] TensorFlow GPU 已经被成功屏蔽，LDPC 模块将运行在 CPU 上（线程数已限制）。")
 except RuntimeError as e:
     # 必须在 TF 初始化其他内容前调用
     print(f"[LDPC Warning] TensorFlow 可见设备配置失败: {e}")

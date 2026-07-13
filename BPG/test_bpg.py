@@ -25,10 +25,10 @@ def main():
 
     # ================= 参数配置 =================
     # 原始未压缩图片所在的文件夹路径
-    ori_path = '/workspace/yi/work/Kodak-256to768-transform-resize'
+    ori_path = '/workspace/yi/work/Kodak-256-transform-resize'
 
     # 已经解压完毕的图片文件夹路径
-    rx_path = '/workspace/yi/work/JPEG/output_jpeg'
+    rx_path = '/workspace/yi/work/BPG/Kodak-256-transform-resize-De'
 
     psnr_scores = [] # 用于保存 24 张图的 PSNR 得分
     msssim_scores = [] # 用于保存 24 张图的 MS-SSIM 得分

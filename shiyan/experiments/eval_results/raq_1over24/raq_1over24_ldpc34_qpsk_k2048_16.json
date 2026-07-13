@@ -1,0 +1,31 @@
+{
+  "checkpoint": "checkpoints/shiyan_raq_src32768-32768_raq2-32768_curriculum_rate044_A_patch_ch64-128_unet2_ds8x2_k32768/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    2048,
+    16
+  ],
+  "ldpc_rate": 0.75,
+  "modulation": "qpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.2028353004976522,
+      "psnr": 12.007889201243719
+    },
+    "3": {
+      "ms_ssim": 0.38474602496667804,
+      "psnr": 14.660619348287582
+    },
+    "6": {
+      "ms_ssim": 0.9298838251852667,
+      "psnr": 25.25716831286748
+    },
+    "9": {
+      "ms_ssim": 0.9300014796302755,
+      "psnr": 25.261271794637043
+    },
+    "12": {
+      "ms_ssim": 0.9300014796302755,
+      "psnr": 25.261271794637043
+    }
+  }
+}

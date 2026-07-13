@@ -10,6 +10,8 @@ from communications.modulation import (
     bpsk_modulate,
     qpsk_llr,
     qpsk_modulate,
+    qam16_llr,
+    qam16_modulate,
 )
 from utils.bit_utils import bits_to_indices, indices_to_bits
 from utils.metrics import calculate_ms_ssim
@@ -62,6 +64,7 @@ def evaluate_ldpc_channel(
     modulators = {
         "bpsk": (bpsk_modulate, bpsk_llr),
         "qpsk": (qpsk_modulate, qpsk_llr),
+        "16qam": (qam16_modulate, qam16_llr),
     }
     if modulation not in modulators:
         raise ValueError(f"Unsupported modulation: {modulation}")
