@@ -2,6 +2,9 @@
 import torch
 import os
 import math
+import json
+
+from utils.raq_rvq import resolve_rvq_stage_k_lists
 
 def _default_embedding_dims(base_channels, depth):
     return [base_channels * (2 ** (i + 1)) for i in range(depth)]
@@ -106,6 +109,24 @@ def _env_int_list_optional(name):
     if not value:
         return None
     return [int(item.strip()) for item in value.split(",") if item.strip()]
+
+
+def _env_nested_int_lists_optional(name):
+    """Parse either JSON ``[[32,64],[8,2]]`` or ``32,64;8,2``."""
+    value = os.environ.get(name)
+    if not value:
+        return None
+    value = value.strip()
+    if value.startswith("["):
+        parsed = json.loads(value)
+        if not isinstance(parsed, list) or any(not isinstance(row, list) for row in parsed):
+            raise ValueError(f"{name} must be a nested integer list")
+        return [[int(item) for item in row] for row in parsed]
+    return [
+        [int(item.strip()) for item in row.split(",") if item.strip()]
+        for row in value.split(";")
+        if row.strip()
+    ]
 
 
 def _resize_tuple_from_env(name, default):
@@ -225,6 +246,19 @@ class Config:
     _USE_RAQ_VALUE = _env_int_optional("SIMVQ_USE_RAQ")
     USE_RAQ = (_USE_RAQ_VALUE == 1) if _USE_RAQ_VALUE is not None else False
     RAQ_TARGET_LIST = _env_int_list_optional("SIMVQ_RAQ_TARGET_LIST")
+    # Optional trained dynamic residual branch. Disabled by default so legacy
+    # RAQ models retain their exact module/state_dict layout.
+    USE_DYNAMIC_RAQ_RVQ = _env_int("SIMVQ_USE_DYNAMIC_RAQ_RVQ", 0) == 1
+    DYNAMIC_RAQ_RVQ_ZERO_CODEWORD = (
+        _env_int("SIMVQ_DYNAMIC_RAQ_RVQ_ZERO_CODEWORD", 1) == 1
+    )
+    # Inference-only zero-shot residual RAQ experiment.  The two RVQ stages
+    # share the already-trained RAQ generator; these flags add no model state.
+    TEST_USE_RAQ_RVQ = _env_int("SIMVQ_TEST_USE_RAQ_RVQ", 0) == 1
+    TEST_RAQ_RVQ_DEPTH = _env_int("SIMVQ_TEST_RAQ_RVQ_DEPTH", 2)
+    TEST_RAQ_RVQ_K_LISTS = _env_nested_int_lists_optional(
+        "SIMVQ_TEST_RAQ_RVQ_K_LISTS"
+    )
     RAQ_MIN_TRG = _env_int_optional("SIMVQ_RAQ_MIN_TRG")
     RAQ_MAX_TRG = _env_int_optional("SIMVQ_RAQ_MAX_TRG")
     RAQ_REPULSION_WEIGHT = _env_float_optional("SIMVQ_RAQ_REPULSION_WEIGHT")
@@ -406,6 +440,54 @@ class Config:
             raise ValueError("SIMVQ_RAQ_RECON_GRAD_MODE must be ste or dual")
         if cls.RAQ_GENERATOR_TYPE not in {"encoder_decoder", "decoder_only"}:
             raise ValueError("SIMVQ_RAQ_GENERATOR_TYPE must be encoder_decoder or decoder_only")
+        if cls.USE_DYNAMIC_RAQ_RVQ:
+            if not cls.USE_RAQ:
+                raise ValueError("SIMVQ_USE_DYNAMIC_RAQ_RVQ=1 requires SIMVQ_USE_RAQ=1")
+            if cls.RAQ_TARGET_LIST is None:
+                raise ValueError(
+                    "SIMVQ_USE_DYNAMIC_RAQ_RVQ=1 requires SIMVQ_RAQ_TARGET_LIST "
+                    "for deterministic validation"
+                )
+            if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
+                raise ValueError(
+                    "SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH for dynamic RAQ-RVQ"
+                )
+            resolve_rvq_stage_k_lists(
+                cls.RAQ_TARGET_LIST,
+                rvq_depth=2,
+                min_k=cls.RAQ_MIN_TRG,
+                max_k=cls.RAQ_MAX_TRG,
+            )
+        if cls.TEST_USE_RAQ_RVQ:
+            if not cls.USE_RAQ:
+                raise ValueError("SIMVQ_TEST_USE_RAQ_RVQ=1 requires SIMVQ_USE_RAQ=1")
+            if cls.TEST_RAQ_RVQ_DEPTH != 2:
+                raise ValueError(
+                    "SIMVQ_TEST_RAQ_RVQ_DEPTH must be 2; only the two-stage "
+                    "test-time RAQ-RVQ experiment is currently supported"
+                )
+            if cls.RAQ_TARGET_LIST is None:
+                raise ValueError(
+                    "SIMVQ_TEST_USE_RAQ_RVQ=1 requires SIMVQ_RAQ_TARGET_LIST"
+                )
+            if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
+                raise ValueError(
+                    "SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH when "
+                    "test-time RAQ-RVQ is enabled"
+                )
+            for target in cls.RAQ_TARGET_LIST:
+                if target < 2 or target & (target - 1) != 0:
+                    raise ValueError(
+                        "Test-time RAQ-RVQ requires every SIMVQ_RAQ_TARGET_LIST "
+                        "entry to be a power of two >= 2"
+                    )
+            resolve_rvq_stage_k_lists(
+                cls.RAQ_TARGET_LIST,
+                rvq_depth=cls.TEST_RAQ_RVQ_DEPTH,
+                stage_k_lists=cls.TEST_RAQ_RVQ_K_LISTS,
+                min_k=cls.RAQ_MIN_TRG,
+                max_k=cls.RAQ_MAX_TRG,
+            )
         if cls.RAQ_ROUTED_SRC_ENABLED:
             if not cls.USE_RAQ:
                 raise ValueError("SIMVQ_RAQ_ROUTED_SRC_ENABLED requires SIMVQ_USE_RAQ=1")
@@ -547,6 +629,14 @@ class Config:
             "num_embeddings_list": list(cls.NUM_EMBEDDINGS_LIST),
             "use_raq": cls.USE_RAQ,
             "raq_target_list": list(cls.RAQ_TARGET_LIST) if cls.RAQ_TARGET_LIST is not None else None,
+            "use_dynamic_raq_rvq": cls.USE_DYNAMIC_RAQ_RVQ,
+            "dynamic_raq_rvq_zero_codeword": cls.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD,
+            "test_use_raq_rvq": cls.TEST_USE_RAQ_RVQ,
+            "test_raq_rvq_depth": cls.TEST_RAQ_RVQ_DEPTH,
+            "test_raq_rvq_k_lists": (
+                [list(stage_sizes) for stage_sizes in cls.TEST_RAQ_RVQ_K_LISTS]
+                if cls.TEST_RAQ_RVQ_K_LISTS is not None else None
+            ),
             "raq_min_trg": cls.RAQ_MIN_TRG,
             "raq_max_trg": cls.RAQ_MAX_TRG,
             "raq_repulsion_weight": cls.RAQ_REPULSION_WEIGHT,

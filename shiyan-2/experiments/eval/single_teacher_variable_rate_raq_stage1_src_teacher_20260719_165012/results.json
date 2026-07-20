@@ -1,0 +1,105 @@
+{
+  "checkpoint": "/workspace/yi/work/shiyan-2/checkpoints/single_teacher_variable_rate_raq_stage1_src_teacher/best_src_teacher.pth",
+  "teacher_checkpoint": null,
+  "checkpoint_stage": "src_teacher",
+  "evaluation_mode": "src_teacher_clean",
+  "channel": {
+    "enabled": false,
+    "snr_db": null,
+    "coding_rate": null,
+    "mod_bits": null,
+    "probability": 0.0
+  },
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "max_batches": null,
+  "results": {
+    "profiles": [
+      [
+        2048,
+        2048
+      ]
+    ],
+    "per_profile": {
+      "2048x2048": {
+        "profile": [
+          2048,
+          2048
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 26.601127465565998,
+        "ms_ssim": 0.9499653717413791,
+        "lpips": 0.3962451194723447,
+        "reconstruction_loss": 0.009960422699805349,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 2048,
+            "num_assignments": 24576,
+            "active_count": 1838,
+            "active_ratio": 0.8974609375,
+            "perplexity": 749.307493426933,
+            "dead_code_count": 210,
+            "min_l2_distance": 0.5311871767044067,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2048,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 2048,
+            "num_assignments": 6144,
+            "active_count": 1691,
+            "active_ratio": 0.82568359375,
+            "perplexity": 1312.6616498740407,
+            "dead_code_count": 357,
+            "min_l2_distance": 0.21609190106391907,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2048,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 0.861572265625,
+        "perplexity": 1030.984571650487,
+        "dead_code_count": 283.5,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 0.21609190106391907,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      }
+    },
+    "profile_weights": {
+      "2048x2048": 1.0
+    },
+    "weighted_mean_psnr": 26.601127465565998,
+    "worst_profile": "2048x2048",
+    "worst_psnr": 26.601127465565998,
+    "worst_profile_weight": 0.2,
+    "score": 26.601127465565998,
+    "teacher_psnr": null,
+    "max_profile": [
+      2048,
+      2048
+    ],
+    "max_profile_psnr": 26.601127465565998,
+    "teacher_psnr_drop_db": null,
+    "max_teacher_psnr_drop_db": 0.3,
+    "is_guard_satisfied": null,
+    "eligible": true,
+    "guard": {
+      "available": false,
+      "required": false,
+      "max_profile": [
+        2048,
+        2048
+      ],
+      "teacher_psnr": null,
+      "student_psnr": 26.601127465565998,
+      "drop_db": null,
+      "threshold_db": 0.3,
+      "passed": null
+    }
+  }
+}

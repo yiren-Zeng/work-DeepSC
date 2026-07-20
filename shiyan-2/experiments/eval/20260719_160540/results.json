@@ -1,0 +1,375 @@
+{
+  "checkpoint": "/workspace/yi/work/shiyan-2/checkpoints/single_teacher_variable_rate_raq_stage5_channel_finetune/best_variable_rate_raq.pth",
+  "teacher_checkpoint": "/workspace/yi/work/shiyan-2/checkpoints/single_teacher_variable_rate_raq_stage1_src_teacher/best_src_teacher.pth",
+  "checkpoint_stage": "channel_finetune",
+  "evaluation_mode": "student_clean",
+  "channel": {
+    "enabled": false,
+    "snr_db": null,
+    "coding_rate": null,
+    "mod_bits": null,
+    "probability": 0.0
+  },
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "max_batches": null,
+  "results": {
+    "profiles": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2048,
+        16
+      ],
+      [
+        16,
+        2
+      ],
+      [
+        1024,
+        256
+      ],
+      [
+        512,
+        64
+      ],
+      [
+        64,
+        16
+      ]
+    ],
+    "per_profile": {
+      "2048x2048": {
+        "profile": [
+          2048,
+          2048
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 31.070283730824787,
+        "ms_ssim": 0.9689018330304761,
+        "lpips": 0.25137141222755116,
+        "reconstruction_loss": 0.0032828860469938568,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 2048,
+            "num_assignments": 147456,
+            "active_count": 1875,
+            "active_ratio": 0.91552734375,
+            "perplexity": 381.31760429499843,
+            "dead_code_count": 173,
+            "min_l2_distance": 0.5311871767044067,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2048,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 2048,
+            "num_assignments": 36864,
+            "active_count": 1958,
+            "active_ratio": 0.9560546875,
+            "perplexity": 1059.0793244039435,
+            "dead_code_count": 90,
+            "min_l2_distance": 0.21609190106391907,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2048,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 0.935791015625,
+        "perplexity": 720.1984643494709,
+        "dead_code_count": 131.5,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 0.21609190106391907,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      },
+      "2048x16": {
+        "profile": [
+          2048,
+          16
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 29.35328435897827,
+        "ms_ssim": 0.9519949251427597,
+        "lpips": 0.28405600041151047,
+        "reconstruction_loss": 0.004853794690764819,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 2048,
+            "num_assignments": 147456,
+            "active_count": 1925,
+            "active_ratio": 0.93994140625,
+            "perplexity": 437.33401581471173,
+            "dead_code_count": 123,
+            "min_l2_distance": 0.5311871767044067,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2048,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 16,
+            "num_assignments": 36864,
+            "active_count": 16,
+            "active_ratio": 1.0,
+            "perplexity": 13.63520343077381,
+            "dead_code_count": 0,
+            "min_l2_distance": 1.8086622953414917,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 16,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 0.969970703125,
+        "perplexity": 225.48460962274277,
+        "dead_code_count": 61.5,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 0.5311871767044067,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      },
+      "16x2": {
+        "profile": [
+          16,
+          2
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 22.41497278213501,
+        "ms_ssim": 0.836048980490987,
+        "lpips": 0.505121510475874,
+        "reconstruction_loss": 0.024211275624111295,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 16,
+            "num_assignments": 147456,
+            "active_count": 16,
+            "active_ratio": 1.0,
+            "perplexity": 10.956140229449398,
+            "dead_code_count": 0,
+            "min_l2_distance": 3.593083143234253,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 16,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 2,
+            "num_assignments": 36864,
+            "active_count": 2,
+            "active_ratio": 1.0,
+            "perplexity": 1.997360877400157,
+            "dead_code_count": 0,
+            "min_l2_distance": 8.287676811218262,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 2,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 1.0,
+        "perplexity": 6.476750553424777,
+        "dead_code_count": 0.0,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 3.593083143234253,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      },
+      "1024x256": {
+        "profile": [
+          1024,
+          256
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 31.000946124394734,
+        "ms_ssim": 0.9669603395016312,
+        "lpips": 0.25348712628086406,
+        "reconstruction_loss": 0.0033118322365529216,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 1024,
+            "num_assignments": 147456,
+            "active_count": 1023,
+            "active_ratio": 0.9990234375,
+            "perplexity": 449.91392532988374,
+            "dead_code_count": 1,
+            "min_l2_distance": 0.5060026049613953,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 1024,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 256,
+            "num_assignments": 36864,
+            "active_count": 256,
+            "active_ratio": 1.0,
+            "perplexity": 178.65347773939703,
+            "dead_code_count": 0,
+            "min_l2_distance": 0.45225071907043457,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 256,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 0.99951171875,
+        "perplexity": 314.2837015346404,
+        "dead_code_count": 0.5,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 0.45225071907043457,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      },
+      "512x64": {
+        "profile": [
+          512,
+          64
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 30.446620146433514,
+        "ms_ssim": 0.9608715912937608,
+        "lpips": 0.2708554659038782,
+        "reconstruction_loss": 0.003765665664104745,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 512,
+            "num_assignments": 147456,
+            "active_count": 511,
+            "active_ratio": 0.998046875,
+            "perplexity": 279.03699643047224,
+            "dead_code_count": 1,
+            "min_l2_distance": 0.6061177253723145,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 512,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 64,
+            "num_assignments": 36864,
+            "active_count": 64,
+            "active_ratio": 1.0,
+            "perplexity": 50.182914556386415,
+            "dead_code_count": 0,
+            "min_l2_distance": 0.9669068455696106,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 64,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 0.9990234375,
+        "perplexity": 164.60995549342934,
+        "dead_code_count": 0.5,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 0.6061177253723145,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      },
+      "64x16": {
+        "profile": [
+          64,
+          16
+        ],
+        "num_images": 24,
+        "num_batches": 24,
+        "psnr": 28.434536298116047,
+        "ms_ssim": 0.9363807160596012,
+        "lpips": 0.33884280795852345,
+        "reconstruction_loss": 0.006009263248415664,
+        "layers": [
+          {
+            "layer": 0,
+            "codebook_size": 64,
+            "num_assignments": 147456,
+            "active_count": 64,
+            "active_ratio": 1.0,
+            "perplexity": 37.02543943990903,
+            "dead_code_count": 0,
+            "min_l2_distance": 1.6174367666244507,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 64,
+            "distance_stats_exact": true
+          },
+          {
+            "layer": 1,
+            "codebook_size": 16,
+            "num_assignments": 36864,
+            "active_count": 16,
+            "active_ratio": 1.0,
+            "perplexity": 13.209565517885279,
+            "dead_code_count": 0,
+            "min_l2_distance": 2.1301467418670654,
+            "collapse_count": 0,
+            "collapse_ratio": 0.0,
+            "distance_reference_count": 16,
+            "distance_stats_exact": true
+          }
+        ],
+        "active_ratio": 1.0,
+        "perplexity": 25.117502478897155,
+        "dead_code_count": 0.0,
+        "collapse_ratio": 0.0,
+        "min_l2_distance": 1.6174367666244507,
+        "src_reference_psnr": null,
+        "src_psnr_gap_db": null
+      }
+    },
+    "profile_weights": {
+      "2048x2048": 0.16666666666666666,
+      "2048x16": 0.16666666666666666,
+      "16x2": 0.16666666666666666,
+      "1024x256": 0.16666666666666666,
+      "512x64": 0.16666666666666666,
+      "64x16": 0.16666666666666666
+    },
+    "weighted_mean_psnr": 28.78677390681372,
+    "worst_profile": "16x2",
+    "worst_psnr": 22.41497278213501,
+    "worst_profile_weight": 0.25,
+    "score": 27.193823625644043,
+    "teacher_psnr": 31.480287551879883,
+    "max_profile": [
+      2048,
+      2048
+    ],
+    "max_profile_psnr": 31.070283730824787,
+    "teacher_psnr_drop_db": 0.4100038210550956,
+    "max_teacher_psnr_drop_db": 0.3,
+    "is_guard_satisfied": false,
+    "eligible": false,
+    "guard": {
+      "available": true,
+      "required": true,
+      "max_profile": [
+        2048,
+        2048
+      ],
+      "teacher_psnr": 31.480287551879883,
+      "student_psnr": 31.070283730824787,
+      "drop_db": 0.4100038210550956,
+      "threshold_db": 0.3,
+      "passed": false
+    }
+  }
+}

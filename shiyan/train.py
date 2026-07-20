@@ -14,6 +14,7 @@ from utils.experiment_io import append_codebook_records, append_epoch_record
 from utils.reproducibility import setup_seed
 from utils.checkpoint_utils import load_model_state_dict, load_state_dict_compatible
 from utils.math_utils import sample_trg
+from utils.raq_rvq import resolve_rvq_stage_k_lists, sample_total_codebook_bit_split
 
 
 def load_pretrained_weights(model, pretrained_path, device):
@@ -161,6 +162,16 @@ def sample_raq_target_list_for_epoch(epoch, cfg):
     return [random.choice(values) for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)], phase
 
 
+def sample_dynamic_raq_rvq_for_epoch(epoch, cfg):
+    """Sample total K first, then an ordered equal-bit RVQ allocation."""
+    target_list, phase = sample_raq_target_list_for_epoch(epoch, cfg)
+    rvq_k_lists = [
+        sample_total_codebook_bit_split(k_total)
+        for k_total in target_list
+    ]
+    return target_list, rvq_k_lists, phase
+
+
 RAQ_ONLY_BRANCHES = {"raq_warmup", "raq_finetune", "raq_channel"}
 RAQ_JOINTLITE_BRANCHES = {"raq_jointlite", "raq_jointlite_channel"}
 
@@ -208,8 +219,12 @@ def configure_trainable_parameters(model, cfg):
     set_module_trainable(model, False)
     if branch in RAQ_JOINTLITE_BRANCHES:
         set_raq_trainable(model.raqs, True)
+        if getattr(model, "use_dynamic_raq_rvq", False):
+            set_raq_trainable(model.raqs_rvq_stage2, True)
     else:
         set_module_trainable(model.raqs, True)
+        if getattr(model, "use_dynamic_raq_rvq", False):
+            set_module_trainable(model.raqs_rvq_stage2, True)
 
     if branch in {"raq_finetune", "raq_channel"}:
         if cfg.RAQ_TRAIN_ENCODER:
@@ -299,6 +314,8 @@ def main():
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
     print(f"  - RAQ动态目标码本: {cfg.USE_RAQ}, train K范围=[{cfg.RAQ_MIN_TRG},{cfg.RAQ_MAX_TRG}], "
           f"eval K={cfg.RAQ_TARGET_LIST}, repulsion={cfg.RAQ_REPULSION_WEIGHT}")
+    print(f"  - 动态RAQ-RVQ训练: {cfg.USE_DYNAMIC_RAQ_RVQ}, "
+          f"stage2_zero={cfg.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD}")
     print(f"  - RAQ课程采样: {cfg.RAQ_USE_CURRICULUM}, "
           f"early={cfg.RAQ_CURRICULUM_EARLY_LIST}, "
           f"middle={cfg.RAQ_CURRICULUM_MIDDLE_LIST}, "
@@ -405,6 +422,8 @@ def main():
         raq_routed_src_small_list=cfg.RAQ_ROUTED_SRC_SMALL_LIST,
         raq_routed_src_large_list=cfg.RAQ_ROUTED_SRC_LARGE_LIST,
         raq_routed_src_threshold=cfg.RAQ_ROUTED_SRC_THRESHOLD,
+        use_dynamic_raq_rvq=cfg.USE_DYNAMIC_RAQ_RVQ,
+        dynamic_raq_rvq_zero_codeword=cfg.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD,
     ).to(device)
 
     # 加载预训练权重默认禁用；本实验要求从零开始训练。
@@ -482,7 +501,10 @@ def main():
     best_val_loss = float('inf')
     if cfg.RESUME and os.path.exists(cfg.RESUME_PATH):
         print(f"Loading checkpoint: {cfg.RESUME_PATH}")
-        checkpoint = torch.load(cfg.RESUME_PATH, map_location=device)
+        # Load resume tensors on CPU first. Loading the full model+optimizer
+        # checkpoint directly onto CUDA keeps a second GPU copy alive during
+        # training and can consume the remaining memory headroom.
+        checkpoint = torch.load(cfg.RESUME_PATH, map_location="cpu")
         load_state_dict_compatible(deepsc_model, checkpoint['model_state_dict'])
         optimizer_g.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler_g.load_state_dict(checkpoint['scheduler_state_dict'])
@@ -497,6 +519,9 @@ def main():
                       f"但当前只有 {num_current_gpus} 个 GPU，仅恢复前 {num_current_gpus} 个")
                 cuda_states = cuda_states[:num_current_gpus]
             torch.cuda.set_rng_state_all(cuda_states)
+        del checkpoint
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         print(f"--> 成功恢复检查点，从 Epoch {start_epoch} 继续。")
 
     # 数据加载
@@ -559,11 +584,20 @@ def main():
 
             do_step = ((i + 1) % accumulation_steps == 0) or ((i + 1) == len(train_dataloader))
             if cfg.USE_RAQ and i % accumulation_steps == 0:
-                current_raq_trg_list, raq_sampling_phase = sample_raq_target_list_for_epoch(epoch, cfg)
+                if cfg.USE_DYNAMIC_RAQ_RVQ:
+                    current_raq_trg_list, current_rvq_k_lists, raq_sampling_phase = (
+                        sample_dynamic_raq_rvq_for_epoch(epoch, cfg)
+                    )
+                else:
+                    current_raq_trg_list, raq_sampling_phase = sample_raq_target_list_for_epoch(epoch, cfg)
+                    current_rvq_k_lists = None
 
             out = deepsc_model.forward_train(
                 real_images,
                 raq_trg_list=current_raq_trg_list if cfg.USE_RAQ else None,
+                raq_rvq_k_lists=(
+                    current_rvq_k_lists if cfg.USE_DYNAMIC_RAQ_RVQ else None
+                ),
             )
 
             if uses_raq_jointlite_loss(cfg):
@@ -644,6 +678,8 @@ def main():
                 if cfg.USE_RAQ:
                     print(f"  RAQ target K this accumulation: {out['raq_target_list']} "
                           f"(sampling={raq_sampling_phase})")
+                    if cfg.USE_DYNAMIC_RAQ_RVQ:
+                        print(f"  Dynamic RVQ stage K: {out['rvq_k_lists']}")
                     if out.get("source_route_list") is not None:
                         print(f"  RAQ source route this accumulation: {out['source_route_list']}")
                 if current_snr is not None:
@@ -711,9 +747,20 @@ def main():
         val_src_vq_anchor_sum = 0
         val_src_codebook_anchor_sum = 0
         with torch.no_grad():
+            val_raq_target_list = (
+                list(cfg.RAQ_TARGET_LIST) if cfg.USE_DYNAMIC_RAQ_RVQ else None
+            )
+            val_rvq_k_lists = (
+                resolve_rvq_stage_k_lists(val_raq_target_list)
+                if cfg.USE_DYNAMIC_RAQ_RVQ else None
+            )
             for real_images in val_dataloader:
                 real_images = real_images.to(device, non_blocking=True)
-                out = deepsc_model.forward_val(real_images)
+                out = deepsc_model.forward_val(
+                    real_images,
+                    raq_trg_list=val_raq_target_list,
+                    raq_rvq_k_lists=val_rvq_k_lists,
+                )
                 if uses_raq_jointlite_loss(cfg):
                     recon_loss_val, _, val_details = deepsc_loss_fn.forward_raq_jointlite(
                         real_images,

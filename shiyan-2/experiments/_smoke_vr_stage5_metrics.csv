@@ -1,0 +1,2 @@
+epoch,stage,train_profile_loss,validation_score,weighted_mean_psnr,worst_profile,worst_psnr,teacher_drop_db,eligible,best_score,covered_profiles,min_sample_count,max_sample_count,channel_probability,seconds
+1,channel_finetune,0.563614030679067,10.87467498779297,10.960553646087646,2048x2048,10.531160354614258,-0.2105541229248047,True,10.87467498779297,3,0,1,1.0,1.1094729900360107
