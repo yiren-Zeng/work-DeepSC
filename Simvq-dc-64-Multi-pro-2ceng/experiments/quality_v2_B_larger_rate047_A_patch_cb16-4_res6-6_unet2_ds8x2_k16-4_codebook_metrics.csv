@@ -1,0 +1,3 @@
+run_id,epoch,layer,codebook_size,active_ratio,active_count,dead_count,perplexity,min_l2_dist,collapse_count,collapse_ratio,distance_reference_count,distance_stats_exact
+exp12_rate047_A_patch_cb16-4_res6-6-20260720-110225,10,0,16,1.0000000000,16,0,14.2344188690,6.9665837288,0,0.0000000000,16,1
+exp12_rate047_A_patch_cb16-4_res6-6-20260720-110225,10,1,4,1.0000000000,4,0,3.9977388382,7.2745590210,0,0.0000000000,4,1
