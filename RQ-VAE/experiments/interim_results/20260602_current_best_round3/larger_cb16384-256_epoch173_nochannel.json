@@ -1,0 +1,15 @@
+{
+  "checkpoint": "experiments/interim_results/20260602_current_best_round3/checkpoints/larger_cb16384-256_best_epoch173.pth",
+  "num_embeddings_list": [
+    16384,
+    256
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9662361766138131,
+      "psnr": 29.016758898893993
+    }
+  }
+}

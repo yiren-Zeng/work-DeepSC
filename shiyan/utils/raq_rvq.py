@@ -71,9 +71,28 @@ def resolve_rvq_stage_k_lists(
 
     ``stage_k_lists=None`` preserves the original automatic balanced split.
     Otherwise the caller can choose any ordered split whose summed index-bit
-    budget matches the corresponding single-stage ``k_total``.
+    budget matches the corresponding single-stage ``k_total``. ``min_k`` and
+    ``max_k`` may be scalars (legacy behavior) or one value per scale.
     """
     totals = list(k_total_list)
+
+    def expand_bound(bound, name):
+        if bound is None:
+            return [None] * len(totals)
+        try:
+            value = operator.index(bound)
+        except TypeError:
+            values = list(bound)
+            if len(values) != len(totals):
+                raise ValueError(
+                    f"{name} scale count must match RAQ target count: "
+                    f"got {len(values)} and {len(totals)}"
+                )
+            return [operator.index(value) for value in values]
+        return [value] * len(totals)
+
+    min_bounds = expand_bound(min_k, "RAQ minimum")
+    max_bounds = expand_bound(max_k, "RAQ maximum")
     if stage_k_lists is None:
         resolved = [
             split_total_codebook_bits(k_total, rvq_depth=rvq_depth)
@@ -88,6 +107,8 @@ def resolve_rvq_stage_k_lists(
             )
 
     for scale_index, (k_total, stage_sizes) in enumerate(zip(totals, resolved)):
+        scale_min_k = min_bounds[scale_index]
+        scale_max_k = max_bounds[scale_index]
         # Reuse the baseline validation and obtain its total bit budget.
         automatic_sizes = split_total_codebook_bits(k_total, rvq_depth=rvq_depth)
         expected_stage_count = len(automatic_sizes)
@@ -110,15 +131,15 @@ def resolve_rvq_stage_k_lists(
                     f"RVQ scale {scale_index} stage {stage_index} K must be a "
                     f"power of two >= 2, got {stage_k}"
                 )
-            if min_k is not None and stage_k < min_k:
+            if scale_min_k is not None and stage_k < scale_min_k:
                 raise ValueError(
                     f"RVQ scale {scale_index} stage {stage_index} K={stage_k} "
-                    f"is below RAQ minimum {min_k}"
+                    f"is below RAQ minimum {scale_min_k}"
                 )
-            if max_k is not None and stage_k > max_k:
+            if scale_max_k is not None and stage_k > scale_max_k:
                 raise ValueError(
                     f"RVQ scale {scale_index} stage {stage_index} K={stage_k} "
-                    f"exceeds RAQ maximum {max_k}"
+                    f"exceeds RAQ maximum {scale_max_k}"
                 )
             stage_sizes[stage_index] = stage_k
             stage_bits += stage_k.bit_length() - 1

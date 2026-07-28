@@ -1,0 +1,3 @@
+larger_cb16384-256 best_epoch=173 modulation=qpsk snr=4 + nochannel
+vitvq_nocompress_k64-256 best_epoch=140 modulation=bpsk snr=0 + nochannel
+larger_noquant best_epoch=10 nochannel only

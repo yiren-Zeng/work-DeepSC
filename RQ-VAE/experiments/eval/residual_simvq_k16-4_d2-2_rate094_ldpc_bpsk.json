@@ -1,0 +1,46 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_rate094_residual_simvq_unet2_ds8x2_k16-4_d2-2/best_vq_deepsc.pth",
+  "quantizer_type": "residual_simvq",
+  "num_embeddings_list": [
+    16,
+    4
+  ],
+  "embedding_dim_list": [
+    256,
+    512
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "rq_ema_decay": 0.99,
+  "rq_restart_unused_codes": false,
+  "rq_shared_codebook": true,
+  "source_bits_per_256_image": 9216.0,
+  "source_bpp": 0.140625,
+  "transmission_ratio": 0.09375,
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.9261316073853575,
+      "psnr": 25.535401304562885
+    },
+    "3": {
+      "ms_ssim": 0.9278683273827196,
+      "psnr": 25.658261080582935
+    },
+    "6": {
+      "ms_ssim": 0.9278683273827196,
+      "psnr": 25.658261080582935
+    },
+    "9": {
+      "ms_ssim": 0.9278683273827196,
+      "psnr": 25.658261080582935
+    },
+    "12": {
+      "ms_ssim": 0.9278683273827196,
+      "psnr": 25.658261080582935
+    }
+  }
+}

@@ -1,0 +1,59 @@
+#!/bin/bash
+set -euo pipefail
+eval "$(/usr/local/miniconda3/bin/conda shell.bash hook)"
+conda activate work
+cd /workspace/yi/work/shiyan
+mkdir -p checkpoints experiments/logs
+
+export SIMVQ_EXPERIMENT_STAGE="B"
+export SIMVQ_EXP_FAMILY="shiyan_raq_src16-4_raq2-16_raq2-4_curriculum_rate023_qpsk_A_patch_res6-6_ch256-512"
+export SIMVQ_NUM_EMBEDDINGS_LIST="16,4"
+export SIMVQ_DOWNSAMPLE_STRIDES="8,2"
+export SIMVQ_UNET_DEPTH="2"
+export SIMVQ_BASE_CHANNELS="128"
+export SIMVQ_ENCODER_RES_BLOCKS="6"
+export SIMVQ_DECODER_RES_BLOCKS="6"
+export SIMVQ_QUANTIZER_TYPE="simvq"
+export SIMVQ_QUANTIZER_AXIS_LIST="patch,patch"
+export SIMVQ_NESTED_CHANNEL_DROPOUT_ALPHA="0.0"
+export SIMVQ_USE_RAQ="1"
+unset SIMVQ_RAQ_TARGET_LIST
+export SIMVQ_RAQ_MIN_TRG="2"
+export SIMVQ_RAQ_MAX_TRG="16"
+export SIMVQ_RAQ_MIN_TRG_LIST="2,2"
+export SIMVQ_RAQ_MAX_TRG_LIST="16,4"
+export SIMVQ_RAQ_REPULSION_WEIGHT="${SIMVQ_RAQ_REPULSION_WEIGHT:-0.00}"
+export SIMVQ_RAQ_LATENT_DISTILL_WEIGHT="${SIMVQ_RAQ_LATENT_DISTILL_WEIGHT:-0.00}"
+export SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT="${SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT:-0.00}"
+export SIMVQ_RAQ_USE_CURRICULUM="1"
+export SIMVQ_RAQ_CURRICULUM_EARLY_LISTS="8,16;4"
+export SIMVQ_RAQ_CURRICULUM_MIDDLE_LISTS="4,8,16;4"
+export SIMVQ_RAQ_CURRICULUM_LATE_LISTS="2,4,8,16;2,4"
+export SIMVQ_RESUME="${SIMVQ_RESUME:-0}"
+unset SIMVQ_PRETRAINED_CHECKPOINT
+
+export SIMVQ_TOTAL_BATCH_SIZE="${SIMVQ_TOTAL_BATCH_SIZE:-24}"
+export SIMVQ_MICRO_BATCH_SIZE="${SIMVQ_MICRO_BATCH_SIZE:-24}"
+export GPU_ID="${GPU_ID:-2}"
+export CUDA_VISIBLE_DEVICES="$GPU_ID"
+export NUM_EPOCHS="${NUM_EPOCHS:-200}"
+
+RUN_ID="src16-4_raq2-16_raq2-4_curriculum_res6_ch256-512_gpu${GPU_ID}-$(date +%Y%m%d-%H%M%S)"
+export EXPERIMENT_RUN_ID="$RUN_ID"
+export PYTHONUNBUFFERED=1
+
+echo "Experiment: $SIMVQ_EXP_FAMILY"
+echo "Run ID: $RUN_ID"
+echo "Physical GPU: $GPU_ID"
+echo "Source codebooks: $SIMVQ_NUM_EMBEDDINGS_LIST"
+echo "Base channels: $SIMVQ_BASE_CHANNELS"
+echo "Embedding dims: 256,512"
+echo "Encoder/decoder residual blocks: $SIMVQ_ENCODER_RES_BLOCKS/$SIMVQ_DECODER_RES_BLOCKS"
+echo "RAQ ranges: min=[$SIMVQ_RAQ_MIN_TRG_LIST] max=[$SIMVQ_RAQ_MAX_TRG_LIST]"
+echo "RAQ curriculum: early=[$SIMVQ_RAQ_CURRICULUM_EARLY_LISTS] middle=[$SIMVQ_RAQ_CURRICULUM_MIDDLE_LISTS] late=[$SIMVQ_RAQ_CURRICULUM_LATE_LISTS]"
+echo "RAQ latent distill weight: $SIMVQ_RAQ_LATENT_DISTILL_WEIGHT"
+echo "SRC codebook repulsion target weight: $SIMVQ_SRC_CODEBOOK_REPULSION_WEIGHT"
+echo "Batch: total=$SIMVQ_TOTAL_BATCH_SIZE micro=$SIMVQ_MICRO_BATCH_SIZE"
+echo "NUM_EPOCHS: ${NUM_EPOCHS}"
+
+python -u train.py 2>&1 | tee "experiments/logs/train_${RUN_ID}.log"

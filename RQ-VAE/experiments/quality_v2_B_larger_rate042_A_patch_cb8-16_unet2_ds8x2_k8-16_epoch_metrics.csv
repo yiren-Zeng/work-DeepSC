@@ -1,0 +1,2 @@
+run_id,epoch,train_recon,train_vq,val_recon,best_val_recon,is_best,phase,channel_prob,learning_rate
+exp12_rate042_A_patch_cb8-16-20260608-190010,1,0.02446658,0.16107362,0.01985408,0.01985408,1,Phase1-拓荒,0.000000,5e-05

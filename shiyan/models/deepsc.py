@@ -65,6 +65,8 @@ class DeepSC(nn.Module):
                  test_use_raq_rvq=False,
                  test_raq_rvq_depth=2,
                  test_raq_rvq_k_lists=None,
+                 raq_min_trg_list=None,
+                 raq_max_trg_list=None,
                  ):
         super(DeepSC, self).__init__()
         if len(num_embeddings_list) != num_downsample_blocks:
@@ -201,42 +203,109 @@ class DeepSC(nn.Module):
         self.raq_generator_type = str(raq_generator_type).replace("-", "_").lower()
         if self.raq_generator_type not in {"encoder_decoder", "decoder_only"}:
             raise ValueError("raq_generator_type must be 'encoder_decoder' or 'decoder_only'")
-        self.raq_min_trg = None
-        self.raq_max_trg = None
-        self.raq_target_list = list(raq_target_list) if raq_target_list is not None else list(num_embeddings_list)
-        if self.test_use_raq_rvq:
-            # Resolve once at construction so invalid custom splits fail before
-            # any dataset or checkpoint evaluation begins.
-            self.test_raq_rvq_k_lists = resolve_rvq_stage_k_lists(
-                self.raq_target_list,
-                rvq_depth=self.test_raq_rvq_depth,
-                stage_k_lists=self.test_raq_rvq_k_lists,
-                min_k=raq_min_trg,
-                max_k=raq_max_trg,
+        def expand_raq_bound(values, scalar, name):
+            if values is None:
+                if scalar is None:
+                    return None
+                return [int(scalar)] * num_downsample_blocks
+            expanded = [int(value) for value in values]
+            if len(expanded) != num_downsample_blocks:
+                raise ValueError(
+                    f"{name} length must match num_downsample_blocks"
+                )
+            return expanded
+
+        self.raq_min_trg_list = expand_raq_bound(
+            raq_min_trg_list, raq_min_trg, "raq_min_trg_list"
+        )
+        self.raq_max_trg_list = expand_raq_bound(
+            raq_max_trg_list, raq_max_trg, "raq_max_trg_list"
+        )
+        self.raq_min_trg = (
+            int(raq_min_trg)
+            if raq_min_trg is not None
+            else (
+                min(self.raq_min_trg_list)
+                if self.raq_min_trg_list is not None else None
             )
+        )
+        self.raq_max_trg = (
+            int(raq_max_trg)
+            if raq_max_trg is not None
+            else (
+                max(self.raq_max_trg_list)
+                if self.raq_max_trg_list is not None else None
+            )
+        )
+        self.raq_target_list = list(raq_target_list) if raq_target_list is not None else list(num_embeddings_list)
         self.raqs = nn.ModuleList()
         self.raqs_rvq_stage2 = nn.ModuleList()
         if self.use_raq:
             # if raq_target_list is None:
             #     raise ValueError("RAQ enabled but raq_target_list is not configured.")
-            if raq_min_trg is None or raq_max_trg is None:
-                raise ValueError("RAQ enabled but raq_min_trg/raq_max_trg is not configured.")
+            if self.raq_min_trg_list is None or self.raq_max_trg_list is None:
+                raise ValueError(
+                    "RAQ enabled but target min/max bounds are not configured."
+                )
             if quantizer_type != "simvq":
                 raise ValueError("RAQ integration requires SIMVQ quantizers.")
             if any(axis != "patch" for axis in self.quantizer_axis_list):
                 raise ValueError("RAQ integration currently supports patch-wise quantizers only.")
-            self.raq_min_trg = int(raq_min_trg)
-            self.raq_max_trg = int(raq_max_trg)
+            for layer_index, (min_k, max_k) in enumerate(
+                zip(self.raq_min_trg_list, self.raq_max_trg_list)
+            ):
+                if min_k < 2 or min_k > max_k:
+                    raise ValueError(
+                        f"RAQ layer {layer_index} target range must satisfy "
+                        f"2 <= min <= max, got [{min_k},{max_k}]"
+                    )
+                if min_k & (min_k - 1) != 0 or max_k & (max_k - 1) != 0:
+                    raise ValueError(
+                        f"RAQ layer {layer_index} target bounds must be powers "
+                        f"of two, got [{min_k},{max_k}]"
+                    )
+            if len(self.raq_target_list) != num_downsample_blocks:
+                raise ValueError(
+                    "raq_target_list length must match num_downsample_blocks"
+                )
+            if raq_target_list is not None:
+                for layer_index, (target, min_k, max_k) in enumerate(
+                    zip(
+                        self.raq_target_list,
+                        self.raq_min_trg_list,
+                        self.raq_max_trg_list,
+                    )
+                ):
+                    if target < min_k or target > max_k:
+                        raise ValueError(
+                            f"RAQ target layer {layer_index} K={target} is "
+                            f"outside [{min_k},{max_k}]"
+                        )
+            if self.test_use_raq_rvq:
+                # Resolve once at construction so invalid custom splits fail
+                # before any dataset or checkpoint evaluation begins.
+                self.test_raq_rvq_k_lists = resolve_rvq_stage_k_lists(
+                    self.raq_target_list,
+                    rvq_depth=self.test_raq_rvq_depth,
+                    stage_k_lists=self.test_raq_rvq_k_lists,
+                    min_k=self.raq_min_trg_list,
+                    max_k=self.raq_max_trg_list,
+                )
             # self.raq_target_list = list(raq_target_list)
             # if len(self.raq_target_list) != num_downsample_blocks:
             #     raise ValueError("raq_target_list length must match num_downsample_blocks")
-            for Ki, Di in zip(num_embeddings_list, embedding_dim_list):
+            for Ki, Di, min_k, max_k in zip(
+                num_embeddings_list,
+                embedding_dim_list,
+                self.raq_min_trg_list,
+                self.raq_max_trg_list,
+            ):
                 self.raqs.append(
                     RAQ(
                         embedding_dim=Di,
                         n_embed_src=Ki,
-                        n_embed_min_trg=self.raq_min_trg,
-                        n_embed_max_trg=self.raq_max_trg,
+                        n_embed_min_trg=min_k,
+                        n_embed_max_trg=max_k,
                         device=device,
                         generator_type=self.raq_generator_type,
                     )
@@ -246,8 +315,8 @@ class DeepSC(nn.Module):
                         RAQ(
                             embedding_dim=Di,
                             n_embed_src=Ki,
-                            n_embed_min_trg=self.raq_min_trg,
-                            n_embed_max_trg=self.raq_max_trg,
+                            n_embed_min_trg=min_k,
+                            n_embed_max_trg=max_k,
                             device=device,
                             generator_type=self.raq_generator_type,
                             allocation_conditioned=True,
@@ -329,7 +398,12 @@ class DeepSC(nn.Module):
             return random.choice([2, 4])
 
     def _sample_raq_target_list(self):
-        return [sample_trg(self.raq_min_trg, self.raq_max_trg) for _ in self.embedding_dim_list]
+        return [
+            sample_trg(min_k, max_k)
+            for min_k, max_k in zip(
+                self.raq_min_trg_list, self.raq_max_trg_list
+            )
+        ]
 
     def _select_source_quantizer(self, layer_index, k_trg=None):
         if self.raq_routed_src_enabled and k_trg is not None and int(k_trg) <= self.raq_routed_src_threshold:
@@ -394,8 +468,8 @@ class DeepSC(nn.Module):
             target_list,
             rvq_depth=2,
             stage_k_lists=rvq_k_lists,
-            min_k=self.raq_min_trg,
-            max_k=self.raq_max_trg,
+            min_k=self.raq_min_trg_list,
+            max_k=self.raq_max_trg_list,
         )
         quantized_raq = []
         z_q_raq_list = []
@@ -690,10 +764,12 @@ class DeepSC(nn.Module):
             k_total = int(self.raq_target_list[i])
             stage_k_list = self.test_raq_rvq_k_lists[i]
             for stage_k in stage_k_list:
-                if not self.raq_min_trg <= stage_k <= self.raq_max_trg:
+                min_k = self.raq_min_trg_list[i]
+                max_k = self.raq_max_trg_list[i]
+                if not min_k <= stage_k <= max_k:
                     raise ValueError(
                         f"RAQ-RVQ scale {i} stage K={stage_k} is outside the trained "
-                        f"RAQ target range [{self.raq_min_trg}, {self.raq_max_trg}]"
+                        f"RAQ target range [{min_k}, {max_k}]"
                     )
 
             # Source routing is decided once from K_total. Trained dynamic RVQ

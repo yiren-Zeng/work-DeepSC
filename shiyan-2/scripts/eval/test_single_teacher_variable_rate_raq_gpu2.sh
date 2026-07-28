@@ -38,7 +38,7 @@ done
 
 ALL_PROFILES="${ALL_PROFILES:-0}"
 [[ "$ALL_PROFILES" == "0" || "$ALL_PROFILES" == "1" ]] || die "ALL_PROFILES must be 0 or 1"
-FIXED_PROFILES="2048x2048;32x16;128x16;8x16;2x16;64x16"
+FIXED_PROFILES="8x2;64x4;256x16;2048x16;2x16;64x16"
 RUN_NAME="${EVAL_RUN_NAME:-$(date +%Y%m%d_%H%M%S)}"
 if [[ "$RUN_NAME" == *"/"* || "$RUN_NAME" == *".."* ]]; then
   die "EVAL_RUN_NAME must be a plain directory name"

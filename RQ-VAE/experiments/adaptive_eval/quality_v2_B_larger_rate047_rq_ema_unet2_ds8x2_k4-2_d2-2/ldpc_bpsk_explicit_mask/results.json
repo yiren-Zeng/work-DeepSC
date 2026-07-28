@@ -1,0 +1,2012 @@
+{
+  "schema_version": 1,
+  "evaluation": "adaptive_explicit_mask_ldpc_bpsk",
+  "checkpoint": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "num_images": 24,
+  "quantizer_type": "rq_ema",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "transport": {
+    "representation": "fixed first indices + one-bit explicit mask per token + fixed-width active second indices",
+    "logical_frames_per_image": "first_s0, first_s1, mask_s0, mask_s1, second_active_s0, second_active_s1",
+    "mask_decode_rule": "Map A_tx decoded refinement indices onto received-mask active positions in raster order; truncate surplus payload or zero-fill surplus received active positions.",
+    "framing_metadata": "segment boundaries, shapes, K, and original source lengths are assumed known out of band",
+    "framing_overhead_counted": false,
+    "mask_error_note": "Residual mask errors can shift compact active-index assignment within one scale; independent frames prevent cross-scale and cross-image propagation."
+  },
+  "channel": {
+    "ldpc": "Sionna 5G LDPC",
+    "k": 128,
+    "n": 256,
+    "rate": 0.5,
+    "modulation": "bpsk",
+    "channel": "awgn",
+    "snrs_db": [
+      0.0,
+      3.0,
+      6.0,
+      9.0,
+      12.0
+    ],
+    "seed_per_rate_snr_point": 42
+  },
+  "threshold_source": "/workspace/yi/work/RQ-VAE/experiments/adaptive_eval/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/adaptive_scan_0to100_step10.json",
+  "results": [
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.0,
+        0.0
+      ],
+      "thresholds": [
+        4.038139343261719,
+        3.9615156650543213
+      ],
+      "scan_id": 0,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 86016,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 0,
+        "source_bpp": 0.0546875,
+        "coded_bits_with_ldpc_padding": 172032,
+        "ldpc_padding_bits": 0,
+        "coded_bpp_with_ldpc_padding": 0.109375,
+        "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+        "active_ratios": [
+          0.0,
+          0.0
+        ],
+        "active_counts": [
+          0,
+          0
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 21.09173309037801,
+        "ms_ssim": 0.815975261976113
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 21.05174867959856,
+          "ms_ssim": 0.814069099199692,
+          "source_bits": 86016,
+          "source_bpp": 0.0546875,
+          "coded_bits_with_ldpc_padding": 172032,
+          "coded_bpp_with_ldpc_padding": 0.109375,
+          "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 59,
+          "source_ber_after_ldpc": 0.0006859188988095238,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 0
+          },
+          "segment_bit_errors": {
+            "first": 34,
+            "mask": 25,
+            "second_active": 0
+          },
+          "images_with_source_errors": 3,
+          "mask_active_count_mismatch_scale_events": 1,
+          "zero_filled_second_indices": 25,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 21.09173309037801,
+          "ms_ssim": 0.815975261976113,
+          "source_bits": 86016,
+          "source_bpp": 0.0546875,
+          "coded_bits_with_ldpc_padding": 172032,
+          "coded_bpp_with_ldpc_padding": 0.109375,
+          "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 0
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 21.09173309037801,
+          "ms_ssim": 0.815975261976113,
+          "source_bits": 86016,
+          "source_bpp": 0.0546875,
+          "coded_bits_with_ldpc_padding": 172032,
+          "coded_bpp_with_ldpc_padding": 0.109375,
+          "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 0
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 21.09173309037801,
+          "ms_ssim": 0.815975261976113,
+          "source_bits": 86016,
+          "source_bpp": 0.0546875,
+          "coded_bits_with_ldpc_padding": 172032,
+          "coded_bpp_with_ldpc_padding": 0.109375,
+          "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 0
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 21.09173309037801,
+          "ms_ssim": 0.815975261976113,
+          "source_bits": 86016,
+          "source_bpp": 0.0546875,
+          "coded_bits_with_ldpc_padding": 172032,
+          "coded_bpp_with_ldpc_padding": 0.109375,
+          "bpsk_channel_uses_per_rgb_value": 0.036458333333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 0
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.1,
+        0.1
+      ],
+      "thresholds": [
+        0.09066654741764069,
+        0.016283206641674042
+      ],
+      "scan_id": 1,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 91547,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 5531,
+        "source_bpp": 0.05820401509602865,
+        "coded_bits_with_ldpc_padding": 191488,
+        "ldpc_padding_bits": 4197,
+        "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+        "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+        "active_ratios": [
+          0.10001627604166667,
+          0.10009765625
+        ],
+        "active_counts": [
+          2458,
+          615
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 21.85520900902552,
+        "ms_ssim": 0.8393565961793016
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 21.726308616565177,
+          "ms_ssim": 0.8353183906161804,
+          "source_bits": 91547,
+          "source_bpp": 0.05820401509602865,
+          "coded_bits_with_ldpc_padding": 191488,
+          "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+          "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+          "ldpc_padding_bits": 4197,
+          "source_bit_errors": 36,
+          "source_ber_after_ldpc": 0.0003932406304958109,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 5531
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 13,
+            "second_active": 0
+          },
+          "images_with_source_errors": 3,
+          "mask_active_count_mismatch_scale_events": 1,
+          "zero_filled_second_indices": 13,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 21.855209009025515,
+          "ms_ssim": 0.8393565961793016,
+          "source_bits": 91547,
+          "source_bpp": 0.05820401509602865,
+          "coded_bits_with_ldpc_padding": 191488,
+          "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+          "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+          "ldpc_padding_bits": 4197,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 5531
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 21.855209009025515,
+          "ms_ssim": 0.8393565961793016,
+          "source_bits": 91547,
+          "source_bpp": 0.05820401509602865,
+          "coded_bits_with_ldpc_padding": 191488,
+          "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+          "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+          "ldpc_padding_bits": 4197,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 5531
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 21.855209009025515,
+          "ms_ssim": 0.8393565961793016,
+          "source_bits": 91547,
+          "source_bpp": 0.05820401509602865,
+          "coded_bits_with_ldpc_padding": 191488,
+          "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+          "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+          "ldpc_padding_bits": 4197,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 5531
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 21.855209009025515,
+          "ms_ssim": 0.8393565961793016,
+          "source_bits": 91547,
+          "source_bpp": 0.05820401509602865,
+          "coded_bits_with_ldpc_padding": 191488,
+          "coded_bpp_with_ldpc_padding": 0.12174479166666667,
+          "bpsk_channel_uses_per_rgb_value": 0.040581597222222224,
+          "ldpc_padding_bits": 4197,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 5531
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.2,
+        0.2
+      ],
+      "thresholds": [
+        0.050378695130348206,
+        0.006604419089853764
+      ],
+      "scan_id": 2,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 97077,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 11061,
+        "source_bpp": 0.06171989440917969,
+        "coded_bits_with_ldpc_padding": 200448,
+        "ldpc_padding_bits": 3147,
+        "coded_bpp_with_ldpc_padding": 0.12744140625,
+        "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+        "active_ratios": [
+          0.20003255208333334,
+          0.20003255208333334
+        ],
+        "active_counts": [
+          4916,
+          1229
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 22.210527846316538,
+        "ms_ssim": 0.8484854324436002
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 22.19162014954138,
+          "ms_ssim": 0.8474123412855926,
+          "source_bits": 97077,
+          "source_bpp": 0.06171989440917969,
+          "coded_bits_with_ldpc_padding": 200448,
+          "coded_bpp_with_ldpc_padding": 0.12744140625,
+          "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+          "ldpc_padding_bits": 3147,
+          "source_bit_errors": 32,
+          "source_ber_after_ldpc": 0.00032963523800694293,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 11061
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 4,
+            "second_active": 5
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 1,
+          "zero_filled_second_indices": 2,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 22.210527846316538,
+          "ms_ssim": 0.8484854324435999,
+          "source_bits": 97077,
+          "source_bpp": 0.06171989440917969,
+          "coded_bits_with_ldpc_padding": 200448,
+          "coded_bpp_with_ldpc_padding": 0.12744140625,
+          "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+          "ldpc_padding_bits": 3147,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 11061
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 22.210527846316538,
+          "ms_ssim": 0.8484854324435999,
+          "source_bits": 97077,
+          "source_bpp": 0.06171989440917969,
+          "coded_bits_with_ldpc_padding": 200448,
+          "coded_bpp_with_ldpc_padding": 0.12744140625,
+          "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+          "ldpc_padding_bits": 3147,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 11061
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 22.210527846316538,
+          "ms_ssim": 0.8484854324435999,
+          "source_bits": 97077,
+          "source_bpp": 0.06171989440917969,
+          "coded_bits_with_ldpc_padding": 200448,
+          "coded_bpp_with_ldpc_padding": 0.12744140625,
+          "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+          "ldpc_padding_bits": 3147,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 11061
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 22.210527846316538,
+          "ms_ssim": 0.8484854324435999,
+          "source_bits": 97077,
+          "source_bpp": 0.06171989440917969,
+          "coded_bits_with_ldpc_padding": 200448,
+          "coded_bpp_with_ldpc_padding": 0.12744140625,
+          "bpsk_channel_uses_per_rgb_value": 0.04248046875,
+          "ldpc_padding_bits": 3147,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 11061
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.3,
+        0.3
+      ],
+      "thresholds": [
+        0.03283238410949707,
+        0.004250913392752409
+      ],
+      "scan_id": 3,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 102605,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 16589,
+        "source_bpp": 0.06523450215657552,
+        "coded_bits_with_ldpc_padding": 211200,
+        "ldpc_padding_bits": 2995,
+        "coded_bpp_with_ldpc_padding": 0.13427734375,
+        "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+        "active_ratios": [
+          0.3000081380208333,
+          0.2999674479166667
+        ],
+        "active_counts": [
+          7373,
+          1843
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 22.466149686537175,
+        "ms_ssim": 0.8556835434035074
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 22.433970914650573,
+          "ms_ssim": 0.8538822389263799,
+          "source_bits": 102605,
+          "source_bpp": 0.06523450215657552,
+          "coded_bits_with_ldpc_padding": 211200,
+          "coded_bpp_with_ldpc_padding": 0.13427734375,
+          "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+          "ldpc_padding_bits": 2995,
+          "source_bit_errors": 40,
+          "source_ber_after_ldpc": 0.0003898445494858925,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 16589
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 17,
+            "second_active": 0
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 2,
+          "zero_filled_second_indices": 15,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 22.466149686537175,
+          "ms_ssim": 0.8556835434035074,
+          "source_bits": 102605,
+          "source_bpp": 0.06523450215657552,
+          "coded_bits_with_ldpc_padding": 211200,
+          "coded_bpp_with_ldpc_padding": 0.13427734375,
+          "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+          "ldpc_padding_bits": 2995,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 16589
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 22.466149686537175,
+          "ms_ssim": 0.8556835434035074,
+          "source_bits": 102605,
+          "source_bpp": 0.06523450215657552,
+          "coded_bits_with_ldpc_padding": 211200,
+          "coded_bpp_with_ldpc_padding": 0.13427734375,
+          "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+          "ldpc_padding_bits": 2995,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 16589
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 22.466149686537175,
+          "ms_ssim": 0.8556835434035074,
+          "source_bits": 102605,
+          "source_bpp": 0.06523450215657552,
+          "coded_bits_with_ldpc_padding": 211200,
+          "coded_bpp_with_ldpc_padding": 0.13427734375,
+          "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+          "ldpc_padding_bits": 2995,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 16589
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 22.466149686537175,
+          "ms_ssim": 0.8556835434035074,
+          "source_bits": 102605,
+          "source_bpp": 0.06523450215657552,
+          "coded_bits_with_ldpc_padding": 211200,
+          "coded_bpp_with_ldpc_padding": 0.13427734375,
+          "bpsk_channel_uses_per_rgb_value": 0.044759114583333336,
+          "ldpc_padding_bits": 2995,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 16589
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.4,
+        0.4
+      ],
+      "thresholds": [
+        0.022738425061106682,
+        0.0030967642087489367
+      ],
+      "scan_id": 4,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 108136,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 22120,
+        "source_bpp": 0.06875101725260417,
+        "coded_bits_with_ldpc_padding": 220928,
+        "ldpc_padding_bits": 2328,
+        "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+        "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+        "active_ratios": [
+          0.4000244140625,
+          0.4000651041666667
+        ],
+        "active_counts": [
+          9831,
+          2458
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 22.64981425112819,
+        "ms_ssim": 0.8604098341335372
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 22.627078275154428,
+          "ms_ssim": 0.8589345842035532,
+          "source_bits": 108136,
+          "source_bpp": 0.06875101725260417,
+          "coded_bits_with_ldpc_padding": 220928,
+          "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+          "ldpc_padding_bits": 2328,
+          "source_bit_errors": 54,
+          "source_ber_after_ldpc": 0.0004993711622401421,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 22120
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 27,
+            "second_active": 4
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 1,
+          "zero_filled_second_indices": 7,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 22.64981425112819,
+          "ms_ssim": 0.8604098341335374,
+          "source_bits": 108136,
+          "source_bpp": 0.06875101725260417,
+          "coded_bits_with_ldpc_padding": 220928,
+          "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+          "ldpc_padding_bits": 2328,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 22120
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 22.64981425112819,
+          "ms_ssim": 0.8604098341335374,
+          "source_bits": 108136,
+          "source_bpp": 0.06875101725260417,
+          "coded_bits_with_ldpc_padding": 220928,
+          "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+          "ldpc_padding_bits": 2328,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 22120
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 22.64981425112819,
+          "ms_ssim": 0.8604098341335374,
+          "source_bits": 108136,
+          "source_bpp": 0.06875101725260417,
+          "coded_bits_with_ldpc_padding": 220928,
+          "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+          "ldpc_padding_bits": 2328,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 22120
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 22.64981425112819,
+          "ms_ssim": 0.8604098341335374,
+          "source_bits": 108136,
+          "source_bpp": 0.06875101725260417,
+          "coded_bits_with_ldpc_padding": 220928,
+          "coded_bpp_with_ldpc_padding": 0.14046223958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.046820746527777776,
+          "ldpc_padding_bits": 2328,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 22120
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.5,
+        0.5
+      ],
+      "thresholds": [
+        0.01675977185368538,
+        0.0023178281262516975
+      ],
+      "scan_id": 5,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 113664,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 27648,
+        "source_bpp": 0.072265625,
+        "coded_bits_with_ldpc_padding": 233216,
+        "ldpc_padding_bits": 2944,
+        "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+        "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+        "active_ratios": [
+          0.5,
+          0.5
+        ],
+        "active_counts": [
+          12288,
+          3072
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 22.79683482459296,
+        "ms_ssim": 0.8642895827849059
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 22.775446004795963,
+          "ms_ssim": 0.8633136367172548,
+          "source_bits": 113664,
+          "source_bpp": 0.072265625,
+          "coded_bits_with_ldpc_padding": 233216,
+          "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+          "ldpc_padding_bits": 2944,
+          "source_bit_errors": 49,
+          "source_ber_after_ldpc": 0.00043109515765765765,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 27648
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 0,
+            "second_active": 26
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 22.796834824592963,
+          "ms_ssim": 0.8642895827849059,
+          "source_bits": 113664,
+          "source_bpp": 0.072265625,
+          "coded_bits_with_ldpc_padding": 233216,
+          "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+          "ldpc_padding_bits": 2944,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 27648
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 22.796834824592963,
+          "ms_ssim": 0.8642895827849059,
+          "source_bits": 113664,
+          "source_bpp": 0.072265625,
+          "coded_bits_with_ldpc_padding": 233216,
+          "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+          "ldpc_padding_bits": 2944,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 27648
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 22.796834824592963,
+          "ms_ssim": 0.8642895827849059,
+          "source_bits": 113664,
+          "source_bpp": 0.072265625,
+          "coded_bits_with_ldpc_padding": 233216,
+          "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+          "ldpc_padding_bits": 2944,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 27648
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 22.796834824592963,
+          "ms_ssim": 0.8642895827849059,
+          "source_bits": 113664,
+          "source_bpp": 0.072265625,
+          "coded_bits_with_ldpc_padding": 233216,
+          "coded_bpp_with_ldpc_padding": 0.14827473958333334,
+          "bpsk_channel_uses_per_rgb_value": 0.04942491319444445,
+          "ldpc_padding_bits": 2944,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 27648
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.6,
+        0.6
+      ],
+      "thresholds": [
+        0.012518323957920074,
+        0.0017562203574925661
+      ],
+      "scan_id": 6,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 119194,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 33178,
+        "source_bpp": 0.07578150431315105,
+        "coded_bits_with_ldpc_padding": 245760,
+        "ldpc_padding_bits": 3686,
+        "coded_bpp_with_ldpc_padding": 0.15625,
+        "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+        "active_ratios": [
+          0.6000162760416666,
+          0.5999348958333334
+        ],
+        "active_counts": [
+          14746,
+          3686
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 22.94355583856124,
+        "ms_ssim": 0.8673113043401726
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 22.81183290181286,
+          "ms_ssim": 0.8609210695425858,
+          "source_bits": 119194,
+          "source_bpp": 0.07578150431315105,
+          "coded_bits_with_ldpc_padding": 245760,
+          "coded_bpp_with_ldpc_padding": 0.15625,
+          "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+          "ldpc_padding_bits": 3686,
+          "source_bit_errors": 79,
+          "source_ber_after_ldpc": 0.0006627850395154118,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 33178
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 37,
+            "second_active": 19
+          },
+          "images_with_source_errors": 6,
+          "mask_active_count_mismatch_scale_events": 3,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 19
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 22.94355583856124,
+          "ms_ssim": 0.8673113043401726,
+          "source_bits": 119194,
+          "source_bpp": 0.07578150431315105,
+          "coded_bits_with_ldpc_padding": 245760,
+          "coded_bpp_with_ldpc_padding": 0.15625,
+          "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+          "ldpc_padding_bits": 3686,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 33178
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 22.94355583856124,
+          "ms_ssim": 0.8673113043401726,
+          "source_bits": 119194,
+          "source_bpp": 0.07578150431315105,
+          "coded_bits_with_ldpc_padding": 245760,
+          "coded_bpp_with_ldpc_padding": 0.15625,
+          "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+          "ldpc_padding_bits": 3686,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 33178
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 22.94355583856124,
+          "ms_ssim": 0.8673113043401726,
+          "source_bits": 119194,
+          "source_bpp": 0.07578150431315105,
+          "coded_bits_with_ldpc_padding": 245760,
+          "coded_bpp_with_ldpc_padding": 0.15625,
+          "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+          "ldpc_padding_bits": 3686,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 33178
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 22.94355583856124,
+          "ms_ssim": 0.8673113043401726,
+          "source_bits": 119194,
+          "source_bpp": 0.07578150431315105,
+          "coded_bits_with_ldpc_padding": 245760,
+          "coded_bpp_with_ldpc_padding": 0.15625,
+          "bpsk_channel_uses_per_rgb_value": 0.052083333333333336,
+          "ldpc_padding_bits": 3686,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 33178
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.7,
+        0.7
+      ],
+      "thresholds": [
+        0.009213319048285484,
+        0.0012813592329621315
+      ],
+      "scan_id": 7,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 124723,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 38707,
+        "source_bpp": 0.07929674784342448,
+        "coded_bits_with_ldpc_padding": 256768,
+        "ldpc_padding_bits": 3661,
+        "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+        "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+        "active_ratios": [
+          0.6999918619791666,
+          0.7000325520833334
+        ],
+        "active_counts": [
+          17203,
+          4301
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 23.11169471584377,
+        "ms_ssim": 0.8696256707356244
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 23.05313052938668,
+          "ms_ssim": 0.8679480400867732,
+          "source_bits": 124723,
+          "source_bpp": 0.07929674784342448,
+          "coded_bits_with_ldpc_padding": 256768,
+          "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+          "ldpc_padding_bits": 3661,
+          "source_bit_errors": 96,
+          "source_ber_after_ldpc": 0.0007697056677597557,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 38707
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 24,
+            "second_active": 49
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 23.11169471584377,
+          "ms_ssim": 0.8696256707356244,
+          "source_bits": 124723,
+          "source_bpp": 0.07929674784342448,
+          "coded_bits_with_ldpc_padding": 256768,
+          "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+          "ldpc_padding_bits": 3661,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 38707
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 23.11169471584377,
+          "ms_ssim": 0.8696256707356244,
+          "source_bits": 124723,
+          "source_bpp": 0.07929674784342448,
+          "coded_bits_with_ldpc_padding": 256768,
+          "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+          "ldpc_padding_bits": 3661,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 38707
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 23.11169471584377,
+          "ms_ssim": 0.8696256707356244,
+          "source_bits": 124723,
+          "source_bpp": 0.07929674784342448,
+          "coded_bits_with_ldpc_padding": 256768,
+          "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+          "ldpc_padding_bits": 3661,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 38707
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 23.11169471584377,
+          "ms_ssim": 0.8696256707356244,
+          "source_bits": 124723,
+          "source_bpp": 0.07929674784342448,
+          "coded_bits_with_ldpc_padding": 256768,
+          "coded_bpp_with_ldpc_padding": 0.16324869791666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05441623263888889,
+          "ldpc_padding_bits": 3661,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 38707
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.8,
+        0.8
+      ],
+      "thresholds": [
+        0.006639855448156595,
+        0.0008819098002277315
+      ],
+      "scan_id": 8,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 130253,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 44237,
+        "source_bpp": 0.08281262715657552,
+        "coded_bits_with_ldpc_padding": 265728,
+        "ldpc_padding_bits": 2611,
+        "coded_bpp_with_ldpc_padding": 0.1689453125,
+        "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+        "active_ratios": [
+          0.8000081380208334,
+          0.7999674479166666
+        ],
+        "active_counts": [
+          19661,
+          4915
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 23.287197505659236,
+        "ms_ssim": 0.8713103273889719
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 23.19798822684639,
+          "ms_ssim": 0.8657805895706489,
+          "source_bits": 130253,
+          "source_bpp": 0.08281262715657552,
+          "coded_bits_with_ldpc_padding": 265728,
+          "coded_bpp_with_ldpc_padding": 0.1689453125,
+          "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+          "ldpc_padding_bits": 2611,
+          "source_bit_errors": 35,
+          "source_ber_after_ldpc": 0.00026870782246858036,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 44237
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 12,
+            "second_active": 0
+          },
+          "images_with_source_errors": 3,
+          "mask_active_count_mismatch_scale_events": 2,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 10
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 23.287197505659236,
+          "ms_ssim": 0.8713103273889719,
+          "source_bits": 130253,
+          "source_bpp": 0.08281262715657552,
+          "coded_bits_with_ldpc_padding": 265728,
+          "coded_bpp_with_ldpc_padding": 0.1689453125,
+          "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+          "ldpc_padding_bits": 2611,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 44237
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 23.287197505659236,
+          "ms_ssim": 0.8713103273889719,
+          "source_bits": 130253,
+          "source_bpp": 0.08281262715657552,
+          "coded_bits_with_ldpc_padding": 265728,
+          "coded_bpp_with_ldpc_padding": 0.1689453125,
+          "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+          "ldpc_padding_bits": 2611,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 44237
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 23.287197505659236,
+          "ms_ssim": 0.8713103273889719,
+          "source_bits": 130253,
+          "source_bpp": 0.08281262715657552,
+          "coded_bits_with_ldpc_padding": 265728,
+          "coded_bpp_with_ldpc_padding": 0.1689453125,
+          "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+          "ldpc_padding_bits": 2611,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 44237
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 23.287197505659236,
+          "ms_ssim": 0.8713103273889719,
+          "source_bits": 130253,
+          "source_bpp": 0.08281262715657552,
+          "coded_bits_with_ldpc_padding": 265728,
+          "coded_bpp_with_ldpc_padding": 0.1689453125,
+          "bpsk_channel_uses_per_rgb_value": 0.056315104166666664,
+          "ldpc_padding_bits": 2611,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 44237
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        0.9,
+        0.9
+      ],
+      "thresholds": [
+        0.00433889776468277,
+        0.00048373304889537394
+      ],
+      "scan_id": 9,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 135781,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 49765,
+        "source_bpp": 0.08632723490397136,
+        "coded_bits_with_ldpc_padding": 275968,
+        "ldpc_padding_bits": 2203,
+        "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+        "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+        "active_ratios": [
+          0.8999837239583334,
+          0.89990234375
+        ],
+        "active_counts": [
+          22118,
+          5529
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 23.451450180993845,
+        "ms_ssim": 0.8719679118983729
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 23.388640699648434,
+          "ms_ssim": 0.8701883469581629,
+          "source_bits": 135781,
+          "source_bpp": 0.08632723490397136,
+          "coded_bits_with_ldpc_padding": 275968,
+          "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+          "ldpc_padding_bits": 2203,
+          "source_bit_errors": 55,
+          "source_ber_after_ldpc": 0.00040506403694184017,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 49765
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 19,
+            "second_active": 13
+          },
+          "images_with_source_errors": 4,
+          "mask_active_count_mismatch_scale_events": 1,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 17
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 23.45145018099385,
+          "ms_ssim": 0.8719679118983729,
+          "source_bits": 135781,
+          "source_bpp": 0.08632723490397136,
+          "coded_bits_with_ldpc_padding": 275968,
+          "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+          "ldpc_padding_bits": 2203,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 49765
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 23.45145018099385,
+          "ms_ssim": 0.8719679118983729,
+          "source_bits": 135781,
+          "source_bpp": 0.08632723490397136,
+          "coded_bits_with_ldpc_padding": 275968,
+          "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+          "ldpc_padding_bits": 2203,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 49765
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 23.45145018099385,
+          "ms_ssim": 0.8719679118983729,
+          "source_bits": 135781,
+          "source_bpp": 0.08632723490397136,
+          "coded_bits_with_ldpc_padding": 275968,
+          "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+          "ldpc_padding_bits": 2203,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 49765
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 23.45145018099385,
+          "ms_ssim": 0.8719679118983729,
+          "source_bits": 135781,
+          "source_bpp": 0.08632723490397136,
+          "coded_bits_with_ldpc_padding": 275968,
+          "coded_bpp_with_ldpc_padding": 0.17545572916666666,
+          "bpsk_channel_uses_per_rgb_value": 0.05848524305555555,
+          "ldpc_padding_bits": 2203,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 49765
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    },
+    {
+      "source": "reused_nochannel_quantile_threshold",
+      "target_active_rates": [
+        1.0,
+        1.0
+      ],
+      "thresholds": [
+        0.0005083422875031829,
+        2.4170298274839297e-05
+      ],
+      "scan_id": 10,
+      "rate": {
+        "num_images": 24,
+        "total_image_pixels": 1572864,
+        "source_bits": 141312,
+        "first_stage_bits": 55296,
+        "mask_bits": 30720,
+        "active_second_bits": 55296,
+        "source_bpp": 0.08984375,
+        "coded_bits_with_ldpc_padding": 282624,
+        "ldpc_padding_bits": 0,
+        "coded_bpp_with_ldpc_padding": 0.1796875,
+        "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+        "active_ratios": [
+          1.0,
+          1.0
+        ],
+        "active_counts": [
+          24576,
+          6144
+        ],
+        "token_counts": [
+          24576,
+          6144
+        ],
+        "framing_overhead_counted": false
+      },
+      "nochannel": {
+        "psnr": 23.552703010652888,
+        "ms_ssim": 0.8718672917102492
+      },
+      "channel_results": [
+        {
+          "snr_db": 0.0,
+          "psnr": 23.51870811513258,
+          "ms_ssim": 0.870878599949341,
+          "source_bits": 141312,
+          "source_bpp": 0.08984375,
+          "coded_bits_with_ldpc_padding": 282624,
+          "coded_bpp_with_ldpc_padding": 0.1796875,
+          "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 55,
+          "source_ber_after_ldpc": 0.0003892096920289855,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 55296
+          },
+          "segment_bit_errors": {
+            "first": 23,
+            "mask": 0,
+            "second_active": 32
+          },
+          "images_with_source_errors": 5,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 3.0,
+          "psnr": 23.552703010652895,
+          "ms_ssim": 0.8718672917102491,
+          "source_bits": 141312,
+          "source_bpp": 0.08984375,
+          "coded_bits_with_ldpc_padding": 282624,
+          "coded_bpp_with_ldpc_padding": 0.1796875,
+          "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 55296
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 6.0,
+          "psnr": 23.552703010652895,
+          "ms_ssim": 0.8718672917102491,
+          "source_bits": 141312,
+          "source_bpp": 0.08984375,
+          "coded_bits_with_ldpc_padding": 282624,
+          "coded_bpp_with_ldpc_padding": 0.1796875,
+          "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 55296
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 9.0,
+          "psnr": 23.552703010652895,
+          "ms_ssim": 0.8718672917102491,
+          "source_bits": 141312,
+          "source_bpp": 0.08984375,
+          "coded_bits_with_ldpc_padding": 282624,
+          "coded_bpp_with_ldpc_padding": 0.1796875,
+          "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 55296
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        },
+        {
+          "snr_db": 12.0,
+          "psnr": 23.552703010652895,
+          "ms_ssim": 0.8718672917102491,
+          "source_bits": 141312,
+          "source_bpp": 0.08984375,
+          "coded_bits_with_ldpc_padding": 282624,
+          "coded_bpp_with_ldpc_padding": 0.1796875,
+          "bpsk_channel_uses_per_rgb_value": 0.059895833333333336,
+          "ldpc_padding_bits": 0,
+          "source_bit_errors": 0,
+          "source_ber_after_ldpc": 0.0,
+          "segment_source_bits": {
+            "first": 55296,
+            "mask": 30720,
+            "second_active": 55296
+          },
+          "segment_bit_errors": {
+            "first": 0,
+            "mask": 0,
+            "second_active": 0
+          },
+          "images_with_source_errors": 0,
+          "mask_active_count_mismatch_scale_events": 0,
+          "zero_filled_second_indices": 0,
+          "truncated_second_indices": 0
+        }
+      ]
+    }
+  ]
+}

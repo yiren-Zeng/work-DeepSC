@@ -1,0 +1,2 @@
+epoch_seen,snapshot,no_channel_psnr,no_channel_ms_ssim,target_psnr,target_ms_ssim,upper_bound_passed
+180,checkpoints/quality_v2_C_full_unet2_ds8x2_k16-32/best_vq_deepsc.pth,25.047535,0.921805,32.3,0.9777,0

@@ -146,20 +146,43 @@ def raq_curriculum_values_for_epoch(epoch, cfg):
     phase1_end = int(cfg.PHASE1_END * cfg.NUM_EPOCHS)
     phase2_end = int(cfg.PHASE2_END * cfg.NUM_EPOCHS)
     if epoch < phase1_end:
-        return list(cfg.RAQ_CURRICULUM_EARLY_LIST), "early"
-    if epoch < phase2_end:
-        return list(cfg.RAQ_CURRICULUM_MIDDLE_LIST), "middle"
-    return list(cfg.RAQ_CURRICULUM_LATE_LIST), "late"
+        plural_name = "RAQ_CURRICULUM_EARLY_LISTS"
+        singular_name = "RAQ_CURRICULUM_EARLY_LIST"
+        phase = "early"
+    elif epoch < phase2_end:
+        plural_name = "RAQ_CURRICULUM_MIDDLE_LISTS"
+        singular_name = "RAQ_CURRICULUM_MIDDLE_LIST"
+        phase = "middle"
+    else:
+        plural_name = "RAQ_CURRICULUM_LATE_LISTS"
+        singular_name = "RAQ_CURRICULUM_LATE_LIST"
+        phase = "late"
+
+    values_by_layer = getattr(cfg, plural_name, None)
+    if values_by_layer is None:
+        shared_values = list(getattr(cfg, singular_name))
+        values_by_layer = [
+            list(shared_values) for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)
+        ]
+    else:
+        values_by_layer = [list(values) for values in values_by_layer]
+    return values_by_layer, phase
 
 
 def sample_raq_target_list_for_epoch(epoch, cfg):
-    values, phase = raq_curriculum_values_for_epoch(epoch, cfg)
-    if values is None:
+    values_by_layer, phase = raq_curriculum_values_for_epoch(epoch, cfg)
+    if values_by_layer is None:
+        min_values = getattr(cfg, "RAQ_MIN_TRG_LIST", None)
+        max_values = getattr(cfg, "RAQ_MAX_TRG_LIST", None)
+        if min_values is None:
+            min_values = [cfg.RAQ_MIN_TRG] * cfg.NUM_DOWNSAMPLE_BLOCKS
+        if max_values is None:
+            max_values = [cfg.RAQ_MAX_TRG] * cfg.NUM_DOWNSAMPLE_BLOCKS
         return [
-            sample_trg(cfg.RAQ_MIN_TRG, cfg.RAQ_MAX_TRG)
-            for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)
+            sample_trg(min_k, max_k)
+            for min_k, max_k in zip(min_values, max_values)
         ], phase
-    return [random.choice(values) for _ in range(cfg.NUM_DOWNSAMPLE_BLOCKS)], phase
+    return [random.choice(values) for values in values_by_layer], phase
 
 
 def sample_dynamic_raq_rvq_for_epoch(epoch, cfg):
@@ -312,14 +335,20 @@ def main():
     print(f"  - 估算测试传输压缩率(LDPC1/2+BPSK): {cfg.ESTIMATED_TEST_TRANSMISSION_RATIO:.8f}")
     print(f"  - 每层特征维度: {cfg.EMBEDDING_DIM_LIST}")
     print(f"  - 每层码本大小: {cfg.NUM_EMBEDDINGS_LIST}")
-    print(f"  - RAQ动态目标码本: {cfg.USE_RAQ}, train K范围=[{cfg.RAQ_MIN_TRG},{cfg.RAQ_MAX_TRG}], "
+    raq_ranges = (
+        list(zip(cfg.RAQ_MIN_TRG_LIST, cfg.RAQ_MAX_TRG_LIST))
+        if cfg.RAQ_MIN_TRG_LIST is not None and cfg.RAQ_MAX_TRG_LIST is not None
+        else None
+    )
+    print(f"  - RAQ动态目标码本: {cfg.USE_RAQ}, "
+          f"train K逐层范围={raq_ranges}, "
           f"eval K={cfg.RAQ_TARGET_LIST}, repulsion={cfg.RAQ_REPULSION_WEIGHT}")
     print(f"  - 动态RAQ-RVQ训练: {cfg.USE_DYNAMIC_RAQ_RVQ}, "
           f"stage2_zero={cfg.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD}")
     print(f"  - RAQ课程采样: {cfg.RAQ_USE_CURRICULUM}, "
-          f"early={cfg.RAQ_CURRICULUM_EARLY_LIST}, "
-          f"middle={cfg.RAQ_CURRICULUM_MIDDLE_LIST}, "
-          f"late={cfg.RAQ_CURRICULUM_LATE_LIST}")
+          f"early={cfg.RAQ_CURRICULUM_EARLY_LISTS}, "
+          f"middle={cfg.RAQ_CURRICULUM_MIDDLE_LISTS}, "
+          f"late={cfg.RAQ_CURRICULUM_LATE_LISTS}")
     print(f"  - 训练分支模式: {cfg.TRAIN_BRANCH}")
     print(f"  - 量化器类型: {cfg.QUANTIZER_TYPE}")
     print(f"  - 逐层量化轴: {cfg.QUANTIZER_AXIS_LIST}")
@@ -416,6 +445,8 @@ def main():
         raq_target_list=cfg.RAQ_TARGET_LIST,
         raq_min_trg=cfg.RAQ_MIN_TRG,
         raq_max_trg=cfg.RAQ_MAX_TRG,
+        raq_min_trg_list=cfg.RAQ_MIN_TRG_LIST,
+        raq_max_trg_list=cfg.RAQ_MAX_TRG_LIST,
         raq_recon_grad_mode=cfg.RAQ_RECON_GRAD_MODE,
         raq_generator_type=cfg.RAQ_GENERATOR_TYPE,
         raq_routed_src_enabled=cfg.RAQ_ROUTED_SRC_ENABLED,

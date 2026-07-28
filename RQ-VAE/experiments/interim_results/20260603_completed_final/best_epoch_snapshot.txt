@@ -1,0 +1,2 @@
+quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256 last= 200 best= 185 best_val= 0.00649915
+quality_v2_B_larger_ViTvqNoCompress_unet2_ds8x2_k64-256 last= 200 best= 184 best_val= 0.01009690

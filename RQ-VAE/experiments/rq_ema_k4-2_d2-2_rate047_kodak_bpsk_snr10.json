@@ -1,0 +1,30 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+  "quantizer_type": "rq_ema",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "embedding_dim_list": [
+    256,
+    512
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "rq_ema_decay": 0.99,
+  "rq_restart_unused_codes": true,
+  "rq_shared_codebook": true,
+  "source_bits_per_256_image": 4608.0,
+  "source_bpp": 0.0703125,
+  "transmission_ratio": 0.046875,
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "10": {
+      "ms_ssim": 0.8718672917102491,
+      "psnr": 23.552703460057575
+    }
+  }
+}

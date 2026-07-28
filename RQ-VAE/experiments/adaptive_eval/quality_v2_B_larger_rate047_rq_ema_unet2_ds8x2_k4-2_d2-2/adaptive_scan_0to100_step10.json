@@ -1,0 +1,1323 @@
+{
+  "schema_version": 1,
+  "evaluation": "adaptive_second_stage_rq_stop_scan",
+  "checkpoint": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "num_images": 24,
+  "image_sizes": [
+    [
+      256,
+      256
+    ]
+  ],
+  "quantizer_type": "rq_ema",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "activation_rule": "second stage active iff first_stage_error >= threshold",
+  "first_stage_error": "channel-mean squared residual after first RQ code",
+  "quantile_scope": "global pooled tokens from this evaluation dataset, per scale",
+  "scan_implementation": "The encoder and dense second-stage indices are cached once only to accelerate repeated thresholds; inserting STOP gives the same codes and reconstruction as thresholded encoding. The core adaptive quantizer performs an actual sparse second-codebook lookup.",
+  "rate_contract": {
+    "first_stage": "fixed-width ceil(log2(K)) index at every token",
+    "second_stage_ideal": "zero-order joint entropy over {STOP,0,...,K-1}",
+    "exact_raw": "one-bit activity mask plus fixed-width active indices",
+    "dense_fixed": "fixed-width indices at both RQ depths",
+    "overhead_counted": false,
+    "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted."
+  },
+  "results": [
+    {
+      "thresholds": [
+        4.038139343261719,
+        3.9615156650543213
+      ],
+      "psnr": 21.09173309037801,
+      "ms_ssim": 0.815975261976113,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 0.0,
+        "exact_raw_bits": 86016.0,
+        "mask_entropy_bits": 0.0,
+        "active_index_entropy_bits": 0.0,
+        "joint_stop_index_entropy_bits": 0.0,
+        "ideal_bits": 55296.0,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 0,
+            "stop_tokens": 24576,
+            "active_ratio": 0.0,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "joint_stop_index_counts": [
+              24576,
+              0,
+              0,
+              0,
+              0
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 0.0,
+            "exact_raw_bits": 73728.0,
+            "mask_entropy_bits": 0.0,
+            "mask_entropy_per_token": 0.0,
+            "active_index_entropy_bits": 0.0,
+            "active_index_entropy_per_active_token": 0.0,
+            "joint_stop_index_entropy_bits": -0.0,
+            "joint_stop_index_entropy_per_token": -0.0,
+            "entropy_decomposition_error_bits": -0.0,
+            "ideal_bits": 49152.0
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 0,
+            "stop_tokens": 6144,
+            "active_ratio": 0.0,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              0,
+              0
+            ],
+            "joint_stop_index_counts": [
+              6144,
+              0,
+              0
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 0.0,
+            "exact_raw_bits": 12288.0,
+            "mask_entropy_bits": 0.0,
+            "mask_entropy_per_token": 0.0,
+            "active_index_entropy_bits": 0.0,
+            "active_index_entropy_per_active_token": 0.0,
+            "joint_stop_index_entropy_bits": -0.0,
+            "joint_stop_index_entropy_per_token": -0.0,
+            "entropy_decomposition_error_bits": -0.0,
+            "ideal_bits": 6144.0
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.0,
+        "exact_raw_bpp": 0.0546875,
+        "mask_entropy_bpp": 0.0,
+        "active_index_entropy_bpp": 0.0,
+        "joint_stop_index_entropy_bpp": 0.0,
+        "ideal_bpp": 0.03515625,
+        "bpp": 0.03515625
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.0,
+        0.0
+      ],
+      "scan_id": 0
+    },
+    {
+      "thresholds": [
+        0.09066654741764069,
+        0.016283206641674042
+      ],
+      "psnr": 21.855209009025515,
+      "ms_ssim": 0.8393565961793016,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 5531.0,
+        "exact_raw_bits": 91547.0,
+        "mask_entropy_bits": 14410.714038394395,
+        "active_index_entropy_bits": 3799.3702888365506,
+        "joint_stop_index_entropy_bits": 18210.084327230947,
+        "ideal_bits": 73506.08432723094,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 2458,
+            "stop_tokens": 22118,
+            "active_ratio": 0.10001627604166667,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              133,
+              1011,
+              48,
+              1266
+            ],
+            "joint_stop_index_counts": [
+              22118,
+              133,
+              1011,
+              48,
+              1266
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 4916.0,
+            "exact_raw_bits": 78644.0,
+            "mask_entropy_bits": 11527.303625872457,
+            "mask_entropy_per_token": 0.46904718529754463,
+            "active_index_entropy_bits": 3339.8463097395,
+            "active_index_entropy_per_active_token": 1.3587657891535803,
+            "joint_stop_index_entropy_bits": 14867.149935611957,
+            "joint_stop_index_entropy_per_token": 0.6049458795415021,
+            "entropy_decomposition_error_bits": -4.547473508864641e-13,
+            "ideal_bits": 64019.14993561196
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 615,
+            "stop_tokens": 5529,
+            "active_ratio": 0.10009765625,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              131,
+              484
+            ],
+            "joint_stop_index_counts": [
+              5529,
+              131,
+              484
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 615.0,
+            "exact_raw_bits": 12903.0,
+            "mask_entropy_bits": 2883.410412521938,
+            "mask_entropy_per_token": 0.4693050801630758,
+            "active_index_entropy_bits": 459.52397909705064,
+            "active_index_entropy_per_active_token": 0.7471934619464238,
+            "joint_stop_index_entropy_bits": 3342.9343916189887,
+            "joint_stop_index_entropy_per_token": 0.5440973944692364,
+            "entropy_decomposition_error_bits": 2.2737367544323206e-13,
+            "ideal_bits": 9486.934391618988
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.003516515096028646,
+        "exact_raw_bpp": 0.05820401509602865,
+        "mask_entropy_bpp": 0.00916208523966115,
+        "active_index_entropy_bpp": 0.002415574575320276,
+        "joint_stop_index_entropy_bpp": 0.011577659814981427,
+        "ideal_bpp": 0.04673390981498143,
+        "bpp": 0.04673390981498143
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.1,
+        0.1
+      ],
+      "scan_id": 1
+    },
+    {
+      "thresholds": [
+        0.050378695130348206,
+        0.006604419089853764
+      ],
+      "psnr": 22.210527846316538,
+      "ms_ssim": 0.8484854324435999,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 11061.0,
+        "exact_raw_bits": 97077.0,
+        "mask_entropy_bits": 22179.630928187216,
+        "active_index_entropy_bits": 6911.19237539775,
+        "joint_stop_index_entropy_bits": 29090.82330358497,
+        "ideal_bits": 84386.82330358496,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 4916,
+            "stop_tokens": 19660,
+            "active_ratio": 0.20003255208333334,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              2032,
+              49,
+              2699
+            ],
+            "joint_stop_index_counts": [
+              19660,
+              136,
+              2032,
+              49,
+              2699
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 9832.0,
+            "exact_raw_bits": 83560.0,
+            "mask_entropy_bits": 17743.704742549773,
+            "mask_entropy_per_token": 0.7219931942769275,
+            "active_index_entropy_bits": 5954.441580040239,
+            "active_index_entropy_per_active_token": 1.2112370992758827,
+            "joint_stop_index_entropy_bits": 23698.146322590015,
+            "joint_stop_index_entropy_per_token": 0.9642800424230963,
+            "entropy_decomposition_error_bits": 2.7284841053187847e-12,
+            "ideal_bits": 72850.14632259001
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 1229,
+            "stop_tokens": 4915,
+            "active_ratio": 0.20003255208333334,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              283,
+              946
+            ],
+            "joint_stop_index_counts": [
+              4915,
+              283,
+              946
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 1229.0,
+            "exact_raw_bits": 13517.0,
+            "mask_entropy_bits": 4435.926185637443,
+            "mask_entropy_per_token": 0.7219931942769275,
+            "active_index_entropy_bits": 956.7507953575106,
+            "active_index_entropy_per_active_token": 0.7784790849125391,
+            "joint_stop_index_entropy_bits": 5392.676980994953,
+            "joint_stop_index_entropy_per_token": 0.8777143523754807,
+            "entropy_decomposition_error_bits": -1.0231815394945443e-12,
+            "ideal_bits": 11536.676980994953
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.0070323944091796875,
+        "exact_raw_bpp": 0.06171989440917969,
+        "mask_entropy_bpp": 0.014101429575721242,
+        "active_index_entropy_bpp": 0.004394017776106357,
+        "joint_stop_index_entropy_bpp": 0.018495447351827603,
+        "ideal_bpp": 0.05365169735182759,
+        "bpp": 0.05365169735182759
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.2,
+        0.2
+      ],
+      "scan_id": 2
+    },
+    {
+      "thresholds": [
+        0.03283238410949707,
+        0.004250913392752409
+      ],
+      "psnr": 22.466149686537175,
+      "ms_ssim": 0.8556835434035074,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 16589.0,
+        "exact_raw_bits": 102605.0,
+        "mask_entropy_bits": 27073.256396412435,
+        "active_index_entropy_bits": 10002.195275414435,
+        "joint_stop_index_entropy_bits": 37075.45167182688,
+        "ideal_bits": 92371.45167182687,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 7373,
+            "stop_tokens": 17203,
+            "active_ratio": 0.3000081380208333,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              3056,
+              49,
+              4132
+            ],
+            "joint_stop_index_counts": [
+              17203,
+              136,
+              3056,
+              49,
+              4132
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 14746.0,
+            "exact_raw_bits": 88474.0,
+            "mask_entropy_bits": 21658.849612386995,
+            "mask_entropy_per_token": 0.8813008468581948,
+            "active_index_entropy_bits": 8472.766913111984,
+            "active_index_entropy_per_active_token": 1.1491613879169922,
+            "joint_stop_index_entropy_bits": 30131.616525498983,
+            "joint_stop_index_entropy_per_token": 1.2260586151326083,
+            "entropy_decomposition_error_bits": 3.637978807091713e-12,
+            "ideal_bits": 79283.61652549898
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 1843,
+            "stop_tokens": 4301,
+            "active_ratio": 0.2999674479166667,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              483,
+              1360
+            ],
+            "joint_stop_index_counts": [
+              4301,
+              483,
+              1360
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 1843.0,
+            "exact_raw_bits": 14131.0,
+            "mask_entropy_bits": 5414.406784025441,
+            "mask_entropy_per_token": 0.8812511041708075,
+            "active_index_entropy_bits": 1529.4283623024517,
+            "active_index_entropy_per_active_token": 0.8298580370604729,
+            "joint_stop_index_entropy_bits": 6943.835146327893,
+            "joint_stop_index_entropy_per_token": 1.1301815016809722,
+            "entropy_decomposition_error_bits": 4.547473508864641e-13,
+            "ideal_bits": 13087.835146327892
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.010547002156575521,
+        "exact_raw_bpp": 0.06523450215657552,
+        "mask_entropy_bpp": 0.01721271285782651,
+        "active_index_entropy_bpp": 0.00635922449456179,
+        "joint_stop_index_entropy_bpp": 0.023571937352388304,
+        "ideal_bpp": 0.0587281873523883,
+        "bpp": 0.0587281873523883
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.3,
+        0.3
+      ],
+      "scan_id": 3
+    },
+    {
+      "thresholds": [
+        0.022738425061106682,
+        0.0030967642087489367
+      ],
+      "psnr": 22.64981425112819,
+      "ms_ssim": 0.8604098341335374,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 22120.0,
+        "exact_raw_bits": 108136.0,
+        "mask_entropy_bits": 29828.187101851083,
+        "active_index_entropy_bits": 13057.388481483846,
+        "joint_stop_index_entropy_bits": 42885.575583334925,
+        "ideal_bits": 98181.57558333492,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 9831,
+            "stop_tokens": 14745,
+            "active_ratio": 0.4000244140625,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              4014,
+              49,
+              5632
+            ],
+            "joint_stop_index_counts": [
+              14745,
+              136,
+              4014,
+              49,
+              5632
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 19662.0,
+            "exact_raw_bits": 93390.0,
+            "mask_entropy_bits": 23862.43274279111,
+            "mask_entropy_per_token": 0.9709648739742476,
+            "active_index_entropy_bits": 10928.331128186064,
+            "active_index_entropy_per_active_token": 1.1116194820655136,
+            "joint_stop_index_entropy_bits": 34790.76387097717,
+            "joint_stop_index_entropy_per_token": 1.4156398059479642,
+            "entropy_decomposition_error_bits": -1.8189894035458565e-12,
+            "ideal_bits": 83942.76387097717
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 2458,
+            "stop_tokens": 3686,
+            "active_ratio": 0.4000651041666667,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              708,
+              1750
+            ],
+            "joint_stop_index_counts": [
+              3686,
+              708,
+              1750
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 2458.0,
+            "exact_raw_bits": 14746.0,
+            "mask_entropy_bits": 5965.7543590599735,
+            "mask_entropy_per_token": 0.9709886652115842,
+            "active_index_entropy_bits": 2129.057353297781,
+            "active_index_entropy_per_active_token": 0.866174675873792,
+            "joint_stop_index_entropy_bits": 8094.811712357753,
+            "joint_stop_index_entropy_per_token": 1.3175149271415614,
+            "entropy_decomposition_error_bits": -1.3642420526593924e-12,
+            "ideal_bits": 14238.811712357754
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.014063517252604166,
+        "exact_raw_bpp": 0.06875101725260417,
+        "mask_entropy_bpp": 0.01896425062933037,
+        "active_index_entropy_bpp": 0.0083016640227533,
+        "joint_stop_index_entropy_bpp": 0.027265914652083667,
+        "ideal_bpp": 0.06242216465208367,
+        "bpp": 0.06242216465208367
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.4,
+        0.4
+      ],
+      "scan_id": 4
+    },
+    {
+      "thresholds": [
+        0.01675977185368538,
+        0.0023178281262516975
+      ],
+      "psnr": 22.796834824592963,
+      "ms_ssim": 0.8642895827849059,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 27648.0,
+        "exact_raw_bits": 113664.0,
+        "mask_entropy_bits": 30720.0,
+        "active_index_entropy_bits": 16062.698046509897,
+        "joint_stop_index_entropy_bits": 46782.69804650989,
+        "ideal_bits": 102078.69804650989,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 12288,
+            "stop_tokens": 12288,
+            "active_ratio": 0.5,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              4971,
+              49,
+              7132
+            ],
+            "joint_stop_index_counts": [
+              12288,
+              136,
+              4971,
+              49,
+              7132
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 24576.0,
+            "exact_raw_bits": 98304.0,
+            "mask_entropy_bits": 24576.0,
+            "mask_entropy_per_token": 1.0,
+            "active_index_entropy_bits": 13362.252907885708,
+            "active_index_entropy_per_active_token": 1.087422925446428,
+            "joint_stop_index_entropy_bits": 37938.252907885704,
+            "joint_stop_index_entropy_per_token": 1.543711462723214,
+            "entropy_decomposition_error_bits": -3.637978807091713e-12,
+            "ideal_bits": 87090.2529078857
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 3072,
+            "stop_tokens": 3072,
+            "active_ratio": 0.5,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              916,
+              2156
+            ],
+            "joint_stop_index_counts": [
+              3072,
+              916,
+              2156
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 3072.0,
+            "exact_raw_bits": 15360.0,
+            "mask_entropy_bits": 6144.0,
+            "mask_entropy_per_token": 1.0,
+            "active_index_entropy_bits": 2700.4451386241894,
+            "active_index_entropy_per_active_token": 0.879051151895895,
+            "joint_stop_index_entropy_bits": 8844.445138624189,
+            "joint_stop_index_entropy_per_token": 1.4395255759479475,
+            "entropy_decomposition_error_bits": -4.547473508864641e-13,
+            "ideal_bits": 14988.445138624189
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.017578125,
+        "exact_raw_bpp": 0.072265625,
+        "mask_entropy_bpp": 0.01953125,
+        "active_index_entropy_bpp": 0.010212388386096888,
+        "joint_stop_index_entropy_bpp": 0.029743638386096883,
+        "ideal_bpp": 0.06489988838609688,
+        "bpp": 0.06489988838609688
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.5,
+        0.5
+      ],
+      "scan_id": 5
+    },
+    {
+      "thresholds": [
+        0.012518323957920074,
+        0.0017562203574925661
+      ],
+      "psnr": 22.94355583856124,
+      "ms_ssim": 0.8673113043401726,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 33178.0,
+        "exact_raw_bits": 119194.0,
+        "mask_entropy_bits": 29827.60216380973,
+        "active_index_entropy_bits": 18958.353390548164,
+        "joint_stop_index_entropy_bits": 48785.9555543579,
+        "ideal_bits": 104081.9555543579,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 14746,
+            "stop_tokens": 9830,
+            "active_ratio": 0.6000162760416666,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              5886,
+              49,
+              8675
+            ],
+            "joint_stop_index_counts": [
+              9830,
+              136,
+              5886,
+              49,
+              8675
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 29492.0,
+            "exact_raw_bits": 103220.0,
+            "mask_entropy_bits": 23861.847804749756,
+            "mask_entropy_per_token": 0.9709410727844139,
+            "active_index_entropy_bits": 15761.351200347695,
+            "active_index_entropy_per_active_token": 1.0688560423401394,
+            "joint_stop_index_entropy_bits": 39623.19900509746,
+            "joint_stop_index_entropy_per_token": 1.6122720949339784,
+            "entropy_decomposition_error_bits": 5.4569682106375694e-12,
+            "ideal_bits": 88775.19900509746
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 3686,
+            "stop_tokens": 2458,
+            "active_ratio": 0.5999348958333334,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              1065,
+              2621
+            ],
+            "joint_stop_index_counts": [
+              2458,
+              1065,
+              2621
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 3686.0,
+            "exact_raw_bits": 15974.0,
+            "mask_entropy_bits": 5965.754359059973,
+            "mask_entropy_per_token": 0.9709886652115841,
+            "active_index_entropy_bits": 3197.002190200468,
+            "active_index_entropy_per_active_token": 0.8673364596311632,
+            "joint_stop_index_entropy_bits": 9162.75654926044,
+            "joint_stop_index_entropy_per_token": 1.4913340737728582,
+            "entropy_decomposition_error_bits": 4.547473508864641e-13,
+            "ideal_bits": 15306.75654926044
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.021094004313151043,
+        "exact_raw_bpp": 0.07578150431315105,
+        "mask_entropy_bpp": 0.01896387873573922,
+        "active_index_entropy_bpp": 0.012053396473279422,
+        "joint_stop_index_entropy_bpp": 0.031017275209018643,
+        "ideal_bpp": 0.06617352520901865,
+        "bpp": 0.06617352520901865
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.6,
+        0.6
+      ],
+      "scan_id": 6
+    },
+    {
+      "thresholds": [
+        0.009213319048285484,
+        0.0012813592329621315
+      ],
+      "psnr": 23.11169471584377,
+      "ms_ssim": 0.8696256707356244,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 38707.0,
+        "exact_raw_bits": 124723.0,
+        "mask_entropy_bits": 27073.256396412442,
+        "active_index_entropy_bits": 21731.523217240552,
+        "joint_stop_index_entropy_bits": 48804.779613652994,
+        "ideal_bits": 104100.779613653,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 17203,
+            "stop_tokens": 7373,
+            "active_ratio": 0.6999918619791666,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              6742,
+              49,
+              10276
+            ],
+            "joint_stop_index_counts": [
+              7373,
+              136,
+              6742,
+              49,
+              10276
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 34406.0,
+            "exact_raw_bits": 108134.0,
+            "mask_entropy_bits": 21658.849612387,
+            "mask_entropy_per_token": 0.8813008468581949,
+            "active_index_entropy_bits": 18114.20755973476,
+            "active_index_entropy_per_active_token": 1.052967945110432,
+            "joint_stop_index_entropy_bits": 39773.05717212176,
+            "joint_stop_index_entropy_per_token": 1.618369839360423,
+            "entropy_decomposition_error_bits": -3.637978807091713e-12,
+            "ideal_bits": 88925.05717212176
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 4301,
+            "stop_tokens": 1843,
+            "active_ratio": 0.7000325520833334,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              1160,
+              3141
+            ],
+            "joint_stop_index_counts": [
+              1843,
+              1160,
+              3141
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 4301.0,
+            "exact_raw_bits": 16589.0,
+            "mask_entropy_bits": 5414.406784025441,
+            "mask_entropy_per_token": 0.8812511041708075,
+            "active_index_entropy_bits": 3617.3156575057924,
+            "active_index_entropy_per_active_token": 0.8410406085807469,
+            "joint_stop_index_entropy_bits": 9031.722441531234,
+            "joint_stop_index_entropy_per_token": 1.4700069078013076,
+            "entropy_decomposition_error_bits": 4.547473508864641e-13,
+            "ideal_bits": 15175.722441531234
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.02460924784342448,
+        "exact_raw_bpp": 0.07929674784342448,
+        "mask_entropy_bpp": 0.017212712857826513,
+        "active_index_entropy_bpp": 0.013816530365778956,
+        "joint_stop_index_entropy_bpp": 0.03102924322360547,
+        "ideal_bpp": 0.06618549322360547,
+        "bpp": 0.06618549322360547
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.7,
+        0.7
+      ],
+      "scan_id": 7
+    },
+    {
+      "thresholds": [
+        0.006639855448156595,
+        0.0008819098002277315
+      ],
+      "psnr": 23.287197505659236,
+      "ms_ssim": 0.8713103273889719,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 44237.0,
+        "exact_raw_bits": 130253.0,
+        "mask_entropy_bits": 22177.63103825126,
+        "active_index_entropy_bits": 24330.181695686126,
+        "joint_stop_index_entropy_bits": 46507.812733937375,
+        "ideal_bits": 101803.81273393738,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 19661,
+            "stop_tokens": 4915,
+            "active_ratio": 0.8000081380208334,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              7577,
+              49,
+              11899
+            ],
+            "joint_stop_index_counts": [
+              4915,
+              136,
+              7577,
+              49,
+              11899
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 39322.0,
+            "exact_raw_bits": 113050.0,
+            "mask_entropy_bits": 17741.704852613817,
+            "mask_entropy_per_token": 0.7219118185471116,
+            "active_index_entropy_bits": 20443.640137837894,
+            "active_index_entropy_per_active_token": 1.0398067309820402,
+            "joint_stop_index_entropy_bits": 38185.344990451704,
+            "joint_stop_index_entropy_per_token": 1.553765665301583,
+            "entropy_decomposition_error_bits": -7.275957614183426e-12,
+            "ideal_bits": 87337.3449904517
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 4915,
+            "stop_tokens": 1229,
+            "active_ratio": 0.7999674479166666,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              1167,
+              3748
+            ],
+            "joint_stop_index_counts": [
+              1229,
+              1167,
+              3748
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 4915.0,
+            "exact_raw_bits": 17203.0,
+            "mask_entropy_bits": 4435.926185637443,
+            "mask_entropy_per_token": 0.7219931942769277,
+            "active_index_entropy_bits": 3886.541557848232,
+            "active_index_entropy_per_active_token": 0.7907510799284297,
+            "joint_stop_index_entropy_bits": 8322.467743485675,
+            "joint_stop_index_entropy_per_token": 1.3545683176246217,
+            "entropy_decomposition_error_bits": -4.547473508864641e-13,
+            "ideal_bits": 14466.467743485675
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.02812512715657552,
+        "exact_raw_bpp": 0.08281262715657552,
+        "mask_entropy_bpp": 0.014100158079942868,
+        "active_index_entropy_bpp": 0.015468712931115548,
+        "joint_stop_index_entropy_bpp": 0.02956887101105841,
+        "ideal_bpp": 0.06472512101105841,
+        "bpp": 0.06472512101105841
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.8,
+        0.8
+      ],
+      "scan_id": 8
+    },
+    {
+      "thresholds": [
+        0.00433889776468277,
+        0.00048373304889537394
+      ],
+      "psnr": 23.45145018099385,
+      "ms_ssim": 0.8719679118983729,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 49765.0,
+        "exact_raw_bits": 135781.0,
+        "mask_entropy_bits": 14410.714038394395,
+        "active_index_entropy_bits": 26813.05966535044,
+        "joint_stop_index_entropy_bits": 41223.77370374484,
+        "ideal_bits": 96519.77370374484,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 22118,
+            "stop_tokens": 2458,
+            "active_ratio": 0.8999837239583334,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              8324,
+              49,
+              13609
+            ],
+            "joint_stop_index_counts": [
+              2458,
+              136,
+              8324,
+              49,
+              13609
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 44236.0,
+            "exact_raw_bits": 117964.0,
+            "mask_entropy_bits": 11527.303625872457,
+            "mask_entropy_per_token": 0.46904718529754463,
+            "active_index_entropy_bits": 22702.132281864386,
+            "active_index_entropy_per_active_token": 1.0264098147149103,
+            "joint_stop_index_entropy_bits": 34229.43590773684,
+            "joint_stop_index_entropy_per_token": 1.3927993126520524,
+            "entropy_decomposition_error_bits": 0.0,
+            "ideal_bits": 83381.43590773684
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 5529,
+            "stop_tokens": 615,
+            "active_ratio": 0.89990234375,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              1167,
+              4362
+            ],
+            "joint_stop_index_counts": [
+              615,
+              1167,
+              4362
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 5529.0,
+            "exact_raw_bits": 17817.0,
+            "mask_entropy_bits": 2883.410412521938,
+            "mask_entropy_per_token": 0.4693050801630758,
+            "active_index_entropy_bits": 4110.927383486056,
+            "active_index_entropy_per_active_token": 0.743520959212526,
+            "joint_stop_index_entropy_bits": 6994.337796007994,
+            "joint_stop_index_entropy_per_token": 1.1384013339856762,
+            "entropy_decomposition_error_bits": 0.0,
+            "ideal_bits": 13138.337796007994
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.03163973490397135,
+        "exact_raw_bpp": 0.08632723490397136,
+        "mask_entropy_bpp": 0.00916208523966115,
+        "active_index_entropy_bpp": 0.017047284231408718,
+        "joint_stop_index_entropy_bpp": 0.02620936947106987,
+        "ideal_bpp": 0.06136561947106987,
+        "bpp": 0.06136561947106987
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        0.9,
+        0.9
+      ],
+      "scan_id": 9
+    },
+    {
+      "thresholds": [
+        0.0005083422875031829,
+        2.4170298274839297e-05
+      ],
+      "psnr": 23.552703010652895,
+      "ms_ssim": 0.8718672917102491,
+      "rate": {
+        "num_samples": 24,
+        "total_image_pixels": 1572864,
+        "overhead_counted": false,
+        "overhead_note": "Shape/header/model/threshold/entropy-table signalling overhead is not counted.",
+        "dense_fixed_bits": 110592.0,
+        "first_stage_fixed_bits": 55296.0,
+        "raw_mask_bits": 30720.0,
+        "raw_active_index_bits": 55296.0,
+        "exact_raw_bits": 141312.0,
+        "mask_entropy_bits": 0.0,
+        "active_index_entropy_bits": 29117.117294317984,
+        "joint_stop_index_entropy_bits": 29117.117294317984,
+        "ideal_bits": 84413.11729431798,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 4,
+            "bits_per_index": 2,
+            "total_tokens": 24576,
+            "active_tokens": 24576,
+            "stop_tokens": 0,
+            "active_ratio": 1.0,
+            "first_stage_counts": [
+              4748,
+              3664,
+              11006,
+              5158
+            ],
+            "refinement_counts": [
+              136,
+              8891,
+              49,
+              15500
+            ],
+            "joint_stop_index_counts": [
+              0,
+              136,
+              8891,
+              49,
+              15500
+            ],
+            "first_stage_fixed_bits": 49152.0,
+            "dense_fixed_bits": 98304.0,
+            "raw_mask_bits": 24576.0,
+            "raw_active_index_bits": 49152.0,
+            "exact_raw_bits": 122880.0,
+            "mask_entropy_bits": 0.0,
+            "mask_entropy_per_token": 0.0,
+            "active_index_entropy_bits": 24808.029835764202,
+            "active_index_entropy_per_active_token": 1.0094413181870199,
+            "joint_stop_index_entropy_bits": 24808.029835764202,
+            "joint_stop_index_entropy_per_token": 1.0094413181870199,
+            "entropy_decomposition_error_bits": 0.0,
+            "ideal_bits": 73960.0298357642
+          },
+          {
+            "scale": 1,
+            "num_embeddings": 2,
+            "bits_per_index": 1,
+            "total_tokens": 6144,
+            "active_tokens": 6144,
+            "stop_tokens": 0,
+            "active_ratio": 1.0,
+            "first_stage_counts": [
+              1586,
+              4558
+            ],
+            "refinement_counts": [
+              1167,
+              4977
+            ],
+            "joint_stop_index_counts": [
+              0,
+              1167,
+              4977
+            ],
+            "first_stage_fixed_bits": 6144.0,
+            "dense_fixed_bits": 12288.0,
+            "raw_mask_bits": 6144.0,
+            "raw_active_index_bits": 6144.0,
+            "exact_raw_bits": 18432.0,
+            "mask_entropy_bits": 0.0,
+            "mask_entropy_per_token": 0.0,
+            "active_index_entropy_bits": 4309.087458553782,
+            "active_index_entropy_per_active_token": 0.7013488702073214,
+            "joint_stop_index_entropy_bits": 4309.087458553782,
+            "joint_stop_index_entropy_per_token": 0.7013488702073214,
+            "entropy_decomposition_error_bits": 0.0,
+            "ideal_bits": 10453.087458553782
+          }
+        ],
+        "dense_fixed_bpp": 0.0703125,
+        "first_stage_fixed_bpp": 0.03515625,
+        "raw_mask_bpp": 0.01953125,
+        "raw_active_index_bpp": 0.03515625,
+        "exact_raw_bpp": 0.08984375,
+        "mask_entropy_bpp": 0.0,
+        "active_index_entropy_bpp": 0.018512164620919536,
+        "joint_stop_index_entropy_bpp": 0.018512164620919536,
+        "ideal_bpp": 0.053668414620919536,
+        "bpp": 0.053668414620919536
+      },
+      "source": "global_error_quantile",
+      "target_active_rates": [
+        1.0,
+        1.0
+      ],
+      "scan_id": 10
+    }
+  ]
+}

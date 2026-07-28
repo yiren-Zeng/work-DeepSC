@@ -1,0 +1,13 @@
+{
+  "checkpoint": "experiments/interim_results/checkpoints/quality_v2_B_larger_cb16384-256_unet2_ds8x2_k16384-256_best_epoch037.pth",
+  "num_embeddings_list": [
+    16384,
+    256
+  ],
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9605875466909456,
+      "psnr": 28.45021923383077
+    }
+  }
+}

@@ -1,0 +1,848 @@
+{
+  "created_at_utc": "2026-07-21T06:05:51.833148+00:00",
+  "entry_point": "bandit_psnr_search.py",
+  "checkpoint": "/workspace/yi/work/shiyan/checkpoints/shiyan_raq_src2048-2048_raq2-2048_curriculum_rate044_A_patch_ch256-512_unet2_ds8x2_k2048/best_vq_deepsc.pth",
+  "checkpoint_size_bytes": 446856281,
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "dataset_size": 24,
+  "evaluated_images": 24,
+  "dataset_files": [
+    "kodim01.png",
+    "kodim02.png",
+    "kodim03.png",
+    "kodim04.png",
+    "kodim05.png",
+    "kodim06.png",
+    "kodim07.png",
+    "kodim08.png",
+    "kodim09.png",
+    "kodim10.png",
+    "kodim11.png",
+    "kodim12.png",
+    "kodim13.png",
+    "kodim14.png",
+    "kodim15.png",
+    "kodim16.png",
+    "kodim17.png",
+    "kodim18.png",
+    "kodim19.png",
+    "kodim20.png",
+    "kodim21.png",
+    "kodim22.png",
+    "kodim23.png",
+    "kodim24.png"
+  ],
+  "dataset_order": "sorted filename order",
+  "selection_and_report_dataset_are_the_same": true,
+  "methodology_note": "RAQ selection and final reporting both use the requested Kodak set; independent channel-noise seeds do not remove image-level selection bias.",
+  "image_shape": [
+    1,
+    3,
+    256,
+    256
+  ],
+  "index_counts_per_image": [
+    1024,
+    256
+  ],
+  "source_values_per_image": 196608,
+  "source_codebooks": [
+    2048,
+    2048
+  ],
+  "raq_range": [
+    2,
+    2048
+  ],
+  "target_ratio": "1/32",
+  "reward": "mean_psnr_db",
+  "snr_semantics": "normalized-symbol SNR (approximately Es/N0)",
+  "qam16_modulator": "device-safe vectorized implementation with the same Gray mapping as communications.modulation.qam16_modulate",
+  "snrs_db": [
+    0.0
+  ],
+  "bandit": {
+    "algorithm": "stateless epsilon-greedy",
+    "episodes": 8,
+    "warmup_pulls_per_action": 1,
+    "eps_start": 0.4,
+    "eps_end": 0.05,
+    "eps_decay": 30.0,
+    "agent_seed": 42,
+    "search_seed_base": 42000,
+    "confirm_seeds": [
+      52000,
+      52001,
+      52002
+    ],
+    "report_seeds": [
+      62000,
+      62001,
+      62002,
+      62003,
+      62004
+    ]
+  },
+  "profiles": {
+    "ldpc12_bpsk": {
+      "label": "LDPC 1/2 + BPSK",
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "modulation": "bpsk",
+      "bits_per_symbol": 1,
+      "actions": [
+        [
+          2,
+          256
+        ],
+        [
+          4,
+          16
+        ]
+      ],
+      "action_ledger": {
+        "2,256": {
+          "action": [
+            2,
+            256
+          ],
+          "bits_per_index": [
+            1,
+            8
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "payload_bits": 3072,
+          "ldpc_input_bits": 3072,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 6144,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 6144,
+          "channel_symbols": 6144,
+          "transmission_ratio": "1/32",
+          "transmission_ratio_float": 0.03125
+        },
+        "4,16": {
+          "action": [
+            4,
+            16
+          ],
+          "bits_per_index": [
+            2,
+            4
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "payload_bits": 3072,
+          "ldpc_input_bits": 3072,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 6144,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 6144,
+          "channel_symbols": 6144,
+          "transmission_ratio": "1/32",
+          "transmission_ratio_float": 0.03125
+        }
+      },
+      "snr_results": {
+        "0": {
+          "snr_db": 0.0,
+          "search_trace": [
+            {
+              "episode": 1,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                2,
+                256
+              ],
+              "seed": 42000,
+              "reward_psnr": 21.31218194961548,
+              "diagnostic_ms_ssim": 0.7999448062093344,
+              "action_n": 1,
+              "action_q": 21.31218194961548,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.31218194961548,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 2,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                4,
+                16
+              ],
+              "seed": 42000,
+              "reward_psnr": 22.009833604097366,
+              "diagnostic_ms_ssim": 0.8268172532934858,
+              "action_n": 1,
+              "action_q": 22.009833604097366,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.31218194961548,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.009833604097366,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 3,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.3885256351687021,
+              "action": [
+                4,
+                16
+              ],
+              "seed": 42001,
+              "reward_psnr": 22.03865533073743,
+              "diagnostic_ms_ssim": 0.8275870027092198,
+              "action_n": 2,
+              "action_q": 22.024244467417397,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.31218194961548,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.024244467417397,
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "episode": 4,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.37742744476106627,
+              "action": [
+                4,
+                16
+              ],
+              "seed": 42002,
+              "reward_psnr": 22.01975146929423,
+              "diagnostic_ms_ssim": 0.8251152671029655,
+              "action_n": 3,
+              "action_q": 22.022746801376343,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.31218194961548,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.022746801376343,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 5,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.36669309631258584,
+              "action": [
+                2,
+                256
+              ],
+              "seed": 42001,
+              "reward_psnr": 21.322392920653026,
+              "diagnostic_ms_ssim": 0.8000004922334599,
+              "action_n": 2,
+              "action_q": 21.317287435134254,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.317287435134254,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.022746801376343,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 6,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.3563106616650316,
+              "action": [
+                4,
+                16
+              ],
+              "seed": 42003,
+              "reward_psnr": 22.03742062052091,
+              "diagnostic_ms_ssim": 0.8275305413234054,
+              "action_n": 4,
+              "action_q": 22.026415256162483,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.317287435134254,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.026415256162483,
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "episode": 7,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.346268603711715,
+              "action": [
+                4,
+                16
+              ],
+              "seed": 42004,
+              "reward_psnr": 22.03865533073743,
+              "diagnostic_ms_ssim": 0.8275870027092198,
+              "action_n": 5,
+              "action_q": 22.028863271077473,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.317287435134254,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.028863271077473,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 8,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.33655576357729367,
+              "action": [
+                2,
+                256
+              ],
+              "seed": 42002,
+              "reward_psnr": 21.317330797513325,
+              "diagnostic_ms_ssim": 0.7997651317588345,
+              "action_n": 3,
+              "action_q": 21.317301889260612,
+              "q_table": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "q": 21.317301889260612,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "q": 22.028863271077473,
+                  "n": 5
+                }
+              ]
+            }
+          ],
+          "search_final_q_table": [
+            {
+              "action": [
+                2,
+                256
+              ],
+              "q": 21.317301889260612,
+              "n": 3
+            },
+            {
+              "action": [
+                4,
+                16
+              ],
+              "q": 22.028863271077473,
+              "n": 5
+            }
+          ],
+          "bandit_best_action": [
+            4,
+            16
+          ],
+          "confirmation": [
+            {
+              "action": [
+                2,
+                256
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 21.28472098045879,
+              "psnr_std": 0.0288051281556059,
+              "psnr_ci95": 0.0715616804726112,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "ms_ssim_mean": 0.798811637809683,
+              "ms_ssim_std": 0.0006147002393792956,
+              "per_seed": [
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "snr": 0.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.7981769839701656,
+                  "psnr": 21.251824895540874,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.0005425347222222222,
+                    "index_error_rate": 0.0013020833333333333
+                  }
+                },
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "snr": 0.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.7988537061922765,
+                  "psnr": 21.296912133693695,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.00037977430555555556,
+                    "index_error_rate": 0.00042317708333333335
+                  }
+                },
+                {
+                  "action": [
+                    2,
+                    256
+                  ],
+                  "snr": 0.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.7994042232666069,
+                  "psnr": 21.3054259121418,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.00021701388888888888,
+                    "index_error_rate": 0.0003255208333333333
+                  }
+                }
+              ]
+            },
+            {
+              "action": [
+                4,
+                16
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 22.02312822143237,
+              "psnr_std": 0.013114880352383536,
+              "psnr_ci95": 0.0325817983570105,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "ms_ssim_mean": 0.8267658600772846,
+              "ms_ssim_std": 0.00018604606745531029,
+              "per_seed": [
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "snr": 0.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.8265857516269071,
+                  "psnr": 22.00819695989291,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.0005154079861111111,
+                    "index_error_rate": 0.0011067708333333333
+                  }
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "snr": 0.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.8269573236156184,
+                  "psnr": 22.032783180475235,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.00047471788194444444,
+                    "index_error_rate": 0.0010416666666666667
+                  }
+                },
+                {
+                  "action": [
+                    4,
+                    16
+                  ],
+                  "snr": 0.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.8267545049893285,
+                  "psnr": 22.02840452392896,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 30720,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 147456,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.09375,
+                    "transmission_ratio": 0.03125,
+                    "ber": 0.0003255208333333333,
+                    "index_error_rate": 0.0007486979166666667
+                  }
+                }
+              ]
+            }
+          ],
+          "selection_metric": "confirmation psnr_mean",
+          "best_action": [
+            4,
+            16
+          ],
+          "report": {
+            "action": [
+              4,
+              16
+            ],
+            "num_seeds": 5,
+            "seeds": [
+              62000,
+              62001,
+              62002,
+              62003,
+              62004
+            ],
+            "psnr_mean": 22.021823197603226,
+            "psnr_std": 0.008575844821673588,
+            "psnr_ci95": 0.010646610686489345,
+            "psnr_ci95_method": "two-sided Student-t half-width",
+            "ms_ssim_mean": 0.826921192640334,
+            "ms_ssim_std": 0.00018270495572665944,
+            "per_seed": [
+              {
+                "action": [
+                  4,
+                  16
+                ],
+                "snr": 0.0,
+                "seed": 62000,
+                "ms_ssim": 0.826596061507197,
+                "psnr": 22.01552574833234,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 30720,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 147456,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.09375,
+                  "transmission_ratio": 0.03125,
+                  "ber": 0.00043402777777777775,
+                  "index_error_rate": 0.0009765625
+                }
+              },
+              {
+                "action": [
+                  4,
+                  16
+                ],
+                "snr": 0.0,
+                "seed": 62001,
+                "ms_ssim": 0.827017807224216,
+                "psnr": 22.016768604516983,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 30720,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 147456,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.09375,
+                  "transmission_ratio": 0.03125,
+                  "ber": 0.00031195746527777775,
+                  "index_error_rate": 0.0005859375
+                }
+              },
+              {
+                "action": [
+                  4,
+                  16
+                ],
+                "snr": 0.0,
+                "seed": 62002,
+                "ms_ssim": 0.8269886355918498,
+                "psnr": 22.01480155189832,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 30720,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 147456,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.09375,
+                  "transmission_ratio": 0.03125,
+                  "ber": 0.0003390842013888889,
+                  "index_error_rate": 0.0006510416666666666
+                }
+              },
+              {
+                "action": [
+                  4,
+                  16
+                ],
+                "snr": 0.0,
+                "seed": 62003,
+                "ms_ssim": 0.8269798334557685,
+                "psnr": 22.033341775337856,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 30720,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 147456,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.09375,
+                  "transmission_ratio": 0.03125,
+                  "ber": 0.00014919704861111112,
+                  "index_error_rate": 0.00035807291666666664
+                }
+              },
+              {
+                "action": [
+                  4,
+                  16
+                ],
+                "snr": 0.0,
+                "seed": 62004,
+                "ms_ssim": 0.8270236254226387,
+                "psnr": 22.02867830793063,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 30720,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 147456,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.09375,
+                  "transmission_ratio": 0.03125,
+                  "ber": 0.00029839409722222225,
+                  "index_error_rate": 0.0006184895833333333
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

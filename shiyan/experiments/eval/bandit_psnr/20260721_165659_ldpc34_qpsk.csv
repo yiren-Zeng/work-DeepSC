@@ -1,0 +1,4 @@
+channel_profile,ldpc_rate,modulation,snr_db,target_ratio,k1,k2,selected,channel_symbols_per_image,actual_ratio,confirm_psnr_mean_db,confirm_psnr_std_db,confirm_psnr_ci95_db,confirm_ms_ssim_mean,report_psnr_mean_db,report_psnr_std_db,report_psnr_ci95_db,report_ms_ssim_mean
+ldpc34_qpsk,0.75,qpsk,6,1/64,4,1024,False,3072,1/64,22.514401475588482,0.0,0.0,0.8422772112318867,,,,
+ldpc34_qpsk,0.75,qpsk,6,1/64,8,64,True,3072,1/64,23.299406617879868,0.0,0.0,0.8731470185601958,23.299406617879868,0.0,0.0,0.8731470185601958
+ldpc34_qpsk,0.75,qpsk,6,1/64,16,4,False,3072,1/64,23.17892203728358,0.0,0.0,0.8773781408814573,,,,

@@ -1,0 +1,13 @@
+{
+  "checkpoint": "experiments/interim_results/checkpoints/quality_v2_B_SwinEnhance_unet2_ds8x2_k64-256_best_epoch076.pth",
+  "num_embeddings_list": [
+    64,
+    256
+  ],
+  "results": {
+    "0": {
+      "ms_ssim": 0.9371857383856042,
+      "psnr": 26.507344444592793
+    }
+  }
+}

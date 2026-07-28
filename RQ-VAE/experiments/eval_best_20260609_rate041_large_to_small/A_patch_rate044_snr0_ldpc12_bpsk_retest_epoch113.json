@@ -1,0 +1,15 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_rate044_A_patch_cb16-2_unet2_ds8x2_k16-2/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    16,
+    2
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.9032505835774679,
+      "psnr": 25.230398674805958
+    }
+  }
+}

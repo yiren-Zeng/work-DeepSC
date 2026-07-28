@@ -123,8 +123,12 @@ def test_real(
             num_embeddings_list,
             rvq_depth=rvq_depth,
             stage_k_lists=getattr(cfg, "TEST_RAQ_RVQ_K_LISTS", None),
-            min_k=getattr(cfg, "RAQ_MIN_TRG", None),
-            max_k=getattr(cfg, "RAQ_MAX_TRG", None),
+            min_k=getattr(
+                cfg, "RAQ_MIN_TRG_LIST", getattr(cfg, "RAQ_MIN_TRG", None)
+            ),
+            max_k=getattr(
+                cfg, "RAQ_MAX_TRG_LIST", getattr(cfg, "RAQ_MAX_TRG", None)
+            ),
         )
         print(f"[Test RAQ-RVQ] enabled=True, depth={rvq_depth}")
         for scale_index, (k_total, stage_k_list) in enumerate(

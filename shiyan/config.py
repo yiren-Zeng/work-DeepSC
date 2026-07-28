@@ -129,6 +129,12 @@ def _env_nested_int_lists_optional(name):
     ]
 
 
+def _layerwise_lists_or_broadcast(layerwise_values, shared_values, depth):
+    if layerwise_values is not None:
+        return [list(values) for values in layerwise_values]
+    return [list(shared_values) for _ in range(depth)]
+
+
 def _resize_tuple_from_env(name, default):
     value = os.environ.get(name)
     if not value:
@@ -261,6 +267,20 @@ class Config:
     )
     RAQ_MIN_TRG = _env_int_optional("SIMVQ_RAQ_MIN_TRG")
     RAQ_MAX_TRG = _env_int_optional("SIMVQ_RAQ_MAX_TRG")
+    _RAQ_MIN_TRG_LIST_VALUE = _env_int_list_optional("SIMVQ_RAQ_MIN_TRG_LIST")
+    _RAQ_MAX_TRG_LIST_VALUE = _env_int_list_optional("SIMVQ_RAQ_MAX_TRG_LIST")
+    # Optional per-layer bounds. Legacy scalar bounds remain the fallback so
+    # existing scripts and checkpoint layouts are unchanged.
+    RAQ_MIN_TRG_LIST = (
+        list(_RAQ_MIN_TRG_LIST_VALUE)
+        if _RAQ_MIN_TRG_LIST_VALUE is not None
+        else ([RAQ_MIN_TRG] * UNET_DEPTH if RAQ_MIN_TRG is not None else None)
+    )
+    RAQ_MAX_TRG_LIST = (
+        list(_RAQ_MAX_TRG_LIST_VALUE)
+        if _RAQ_MAX_TRG_LIST_VALUE is not None
+        else ([RAQ_MAX_TRG] * UNET_DEPTH if RAQ_MAX_TRG is not None else None)
+    )
     RAQ_REPULSION_WEIGHT = _env_float_optional("SIMVQ_RAQ_REPULSION_WEIGHT")
     RAQ_LATENT_DISTILL_WEIGHT = _env_float("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT", 0.0)
     RAQ_LATENT_DISTILL_FINAL_WEIGHT = _env_float_optional("SIMVQ_RAQ_LATENT_DISTILL_FINAL_WEIGHT")
@@ -270,6 +290,32 @@ class Config:
     RAQ_CURRICULUM_EARLY_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_EARLY_LIST", [32, 64])
     RAQ_CURRICULUM_MIDDLE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST", [8, 16, 32, 64])
     RAQ_CURRICULUM_LATE_LIST = _env_int_list("SIMVQ_RAQ_CURRICULUM_LATE_LIST", [2, 4, 8, 16, 32, 64])
+    _RAQ_CURRICULUM_EARLY_LISTS_VALUE = _env_nested_int_lists_optional(
+        "SIMVQ_RAQ_CURRICULUM_EARLY_LISTS"
+    )
+    _RAQ_CURRICULUM_MIDDLE_LISTS_VALUE = _env_nested_int_lists_optional(
+        "SIMVQ_RAQ_CURRICULUM_MIDDLE_LISTS"
+    )
+    _RAQ_CURRICULUM_LATE_LISTS_VALUE = _env_nested_int_lists_optional(
+        "SIMVQ_RAQ_CURRICULUM_LATE_LISTS"
+    )
+    # Per-layer curriculum candidates use ``scale0;scale1`` (or JSON). When
+    # absent, broadcast the legacy flat list to every scale.
+    RAQ_CURRICULUM_EARLY_LISTS = _layerwise_lists_or_broadcast(
+        _RAQ_CURRICULUM_EARLY_LISTS_VALUE,
+        RAQ_CURRICULUM_EARLY_LIST,
+        UNET_DEPTH,
+    )
+    RAQ_CURRICULUM_MIDDLE_LISTS = _layerwise_lists_or_broadcast(
+        _RAQ_CURRICULUM_MIDDLE_LISTS_VALUE,
+        RAQ_CURRICULUM_MIDDLE_LIST,
+        UNET_DEPTH,
+    )
+    RAQ_CURRICULUM_LATE_LISTS = _layerwise_lists_or_broadcast(
+        _RAQ_CURRICULUM_LATE_LISTS_VALUE,
+        RAQ_CURRICULUM_LATE_LIST,
+        UNET_DEPTH,
+    )
     RAQ_RECON_GRAD_MODE = _env_str("SIMVQ_RAQ_RECON_GRAD_MODE", "ste").lower()
     RAQ_GENERATOR_TYPE = _env_str("SIMVQ_RAQ_GENERATOR_TYPE", "encoder_decoder").replace("-", "_").lower()
     RAQ_ROUTED_SRC_ENABLED = _env_int("SIMVQ_RAQ_ROUTED_SRC_ENABLED", 0) == 1
@@ -455,8 +501,8 @@ class Config:
             resolve_rvq_stage_k_lists(
                 cls.RAQ_TARGET_LIST,
                 rvq_depth=2,
-                min_k=cls.RAQ_MIN_TRG,
-                max_k=cls.RAQ_MAX_TRG,
+                min_k=cls.RAQ_MIN_TRG_LIST,
+                max_k=cls.RAQ_MAX_TRG_LIST,
             )
         if cls.TEST_USE_RAQ_RVQ:
             if not cls.USE_RAQ:
@@ -485,8 +531,8 @@ class Config:
                 cls.RAQ_TARGET_LIST,
                 rvq_depth=cls.TEST_RAQ_RVQ_DEPTH,
                 stage_k_lists=cls.TEST_RAQ_RVQ_K_LISTS,
-                min_k=cls.RAQ_MIN_TRG,
-                max_k=cls.RAQ_MAX_TRG,
+                min_k=cls.RAQ_MIN_TRG_LIST,
+                max_k=cls.RAQ_MAX_TRG_LIST,
             )
         if cls.RAQ_ROUTED_SRC_ENABLED:
             if not cls.USE_RAQ:
@@ -570,6 +616,57 @@ class Config:
             #     raise ValueError("SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH")
             if cls.RAQ_MIN_TRG < 2 or cls.RAQ_MIN_TRG > cls.RAQ_MAX_TRG:
                 raise ValueError("RAQ target range must satisfy 2 <= RAQ_MIN_TRG <= RAQ_MAX_TRG")
+            range_lists = {
+                "SIMVQ_RAQ_MIN_TRG_LIST": cls.RAQ_MIN_TRG_LIST,
+                "SIMVQ_RAQ_MAX_TRG_LIST": cls.RAQ_MAX_TRG_LIST,
+            }
+            for name, values in range_lists.items():
+                if values is None or len(values) != cls.UNET_DEPTH:
+                    actual = "None" if values is None else len(values)
+                    raise ValueError(
+                        f"{name} length ({actual}) must equal UNET_DEPTH ({cls.UNET_DEPTH})"
+                    )
+            for layer_index, (min_k, max_k) in enumerate(
+                zip(cls.RAQ_MIN_TRG_LIST, cls.RAQ_MAX_TRG_LIST)
+            ):
+                if min_k < 2 or min_k > max_k:
+                    raise ValueError(
+                        f"RAQ layer {layer_index} target range must satisfy "
+                        f"2 <= min <= max, got [{min_k},{max_k}]"
+                    )
+                if min_k & (min_k - 1) != 0 or max_k & (max_k - 1) != 0:
+                    raise ValueError(
+                        f"RAQ layer {layer_index} target bounds must be powers "
+                        f"of two, got [{min_k},{max_k}]"
+                    )
+                if min_k < cls.RAQ_MIN_TRG or max_k > cls.RAQ_MAX_TRG:
+                    raise ValueError(
+                        f"RAQ layer {layer_index} target range [{min_k},{max_k}] "
+                        f"must stay inside scalar range "
+                        f"[{cls.RAQ_MIN_TRG},{cls.RAQ_MAX_TRG}]"
+                    )
+            if cls.RAQ_TARGET_LIST is not None:
+                if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
+                    raise ValueError(
+                        "SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH"
+                    )
+                for layer_index, (target, min_k, max_k) in enumerate(
+                    zip(
+                        cls.RAQ_TARGET_LIST,
+                        cls.RAQ_MIN_TRG_LIST,
+                        cls.RAQ_MAX_TRG_LIST,
+                    )
+                ):
+                    if target < min_k or target > max_k:
+                        raise ValueError(
+                            f"SIMVQ_RAQ_TARGET_LIST layer {layer_index} contains "
+                            f"{target}, outside [{min_k},{max_k}]"
+                        )
+                    if target & (target - 1) != 0:
+                        raise ValueError(
+                            f"SIMVQ_RAQ_TARGET_LIST layer {layer_index} contains "
+                            f"{target}, which is not a power of two"
+                        )
             if cls.RAQ_LATENT_DISTILL_WEIGHT < 0:
                 raise ValueError("SIMVQ_RAQ_LATENT_DISTILL_WEIGHT must be >= 0")
             if (
@@ -583,18 +680,34 @@ class Config:
                 )
             if cls.RAQ_USE_CURRICULUM:
                 curriculum_lists = {
-                    "SIMVQ_RAQ_CURRICULUM_EARLY_LIST": cls.RAQ_CURRICULUM_EARLY_LIST,
-                    "SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST": cls.RAQ_CURRICULUM_MIDDLE_LIST,
-                    "SIMVQ_RAQ_CURRICULUM_LATE_LIST": cls.RAQ_CURRICULUM_LATE_LIST,
+                    "SIMVQ_RAQ_CURRICULUM_EARLY_LISTS": cls.RAQ_CURRICULUM_EARLY_LISTS,
+                    "SIMVQ_RAQ_CURRICULUM_MIDDLE_LISTS": cls.RAQ_CURRICULUM_MIDDLE_LISTS,
+                    "SIMVQ_RAQ_CURRICULUM_LATE_LISTS": cls.RAQ_CURRICULUM_LATE_LISTS,
                 }
-                for name, values in curriculum_lists.items():
-                    if not values:
-                        raise ValueError(f"{name} must not be empty")
-                    for value in values:
-                        if value < cls.RAQ_MIN_TRG or value > cls.RAQ_MAX_TRG:
-                            raise ValueError(f"{name} contains {value}, outside RAQ target range")
-                        if value & (value - 1) != 0:
-                            raise ValueError(f"{name} contains {value}, which is not a power of two")
+                for name, values_by_layer in curriculum_lists.items():
+                    if len(values_by_layer) != cls.UNET_DEPTH:
+                        raise ValueError(
+                            f"{name} length ({len(values_by_layer)}) must equal "
+                            f"UNET_DEPTH ({cls.UNET_DEPTH})"
+                        )
+                    for layer_index, values in enumerate(values_by_layer):
+                        if not values:
+                            raise ValueError(
+                                f"{name} layer {layer_index} must not be empty"
+                            )
+                        min_k = cls.RAQ_MIN_TRG_LIST[layer_index]
+                        max_k = cls.RAQ_MAX_TRG_LIST[layer_index]
+                        for value in values:
+                            if value < min_k or value > max_k:
+                                raise ValueError(
+                                    f"{name} layer {layer_index} contains {value}, "
+                                    f"outside [{min_k},{max_k}]"
+                                )
+                            if value & (value - 1) != 0:
+                                raise ValueError(
+                                    f"{name} layer {layer_index} contains {value}, "
+                                    "which is not a power of two"
+                                )
             # for target in cls.RAQ_TARGET_LIST:
             #     if target < cls.RAQ_MIN_TRG or target > cls.RAQ_MAX_TRG:
             #         raise ValueError("Every RAQ target K must be inside [RAQ_MIN_TRG, RAQ_MAX_TRG]")
@@ -639,6 +752,14 @@ class Config:
             ),
             "raq_min_trg": cls.RAQ_MIN_TRG,
             "raq_max_trg": cls.RAQ_MAX_TRG,
+            "raq_min_trg_list": (
+                list(cls.RAQ_MIN_TRG_LIST)
+                if cls.RAQ_MIN_TRG_LIST is not None else None
+            ),
+            "raq_max_trg_list": (
+                list(cls.RAQ_MAX_TRG_LIST)
+                if cls.RAQ_MAX_TRG_LIST is not None else None
+            ),
             "raq_repulsion_weight": cls.RAQ_REPULSION_WEIGHT,
             "raq_latent_distill_weight": cls.RAQ_LATENT_DISTILL_WEIGHT,
             "raq_latent_distill_final_weight": cls.RAQ_LATENT_DISTILL_FINAL_WEIGHT,
@@ -648,6 +769,15 @@ class Config:
             "raq_curriculum_early_list": list(cls.RAQ_CURRICULUM_EARLY_LIST),
             "raq_curriculum_middle_list": list(cls.RAQ_CURRICULUM_MIDDLE_LIST),
             "raq_curriculum_late_list": list(cls.RAQ_CURRICULUM_LATE_LIST),
+            "raq_curriculum_early_lists": [
+                list(values) for values in cls.RAQ_CURRICULUM_EARLY_LISTS
+            ],
+            "raq_curriculum_middle_lists": [
+                list(values) for values in cls.RAQ_CURRICULUM_MIDDLE_LISTS
+            ],
+            "raq_curriculum_late_lists": [
+                list(values) for values in cls.RAQ_CURRICULUM_LATE_LISTS
+            ],
             "raq_recon_grad_mode": cls.RAQ_RECON_GRAD_MODE,
             "raq_generator_type": cls.RAQ_GENERATOR_TYPE,
             "raq_routed_src_enabled": cls.RAQ_ROUTED_SRC_ENABLED,

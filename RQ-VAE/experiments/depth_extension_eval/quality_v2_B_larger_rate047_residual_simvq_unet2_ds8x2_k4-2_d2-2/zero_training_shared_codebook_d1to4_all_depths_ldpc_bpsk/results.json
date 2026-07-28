@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "method": {
+    "name": "residual_simvq_zero_training_shared_codebook_depth_sweep",
+    "zero_training": true,
+    "saved_migrated_checkpoint": false,
+    "adaptive_stop_used": false,
+    "expansion_mode": "change_rq_depth_only_reuse_frozen_embed_and_learned_projection",
+    "warning": "Only depths 1 and 2 contributed to training. Depths 3 and 4 and their summed decoder latents are out of training distribution, so quality is not guaranteed to improve."
+  },
+  "checkpoint": {
+    "path": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_residual_simvq_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+    "sha256_before": "37b66c33b08995247e8ea650cf6605b43f0d5d0c42ef69cd01cfac4e11218566",
+    "sha256_after": "37b66c33b08995247e8ea650cf6605b43f0d5d0c42ef69cd01cfac4e11218566",
+    "unchanged": true,
+    "quantizer_type": "residual_simvq",
+    "num_embeddings_list": [
+      4,
+      2
+    ],
+    "embedding_dim_list": [
+      256,
+      512
+    ],
+    "checkpoint_rq_depth_list": [
+      2,
+      2
+    ],
+    "shared_codebook": true
+  },
+  "runtime_extension": {
+    "loaded_rq_depth_list": [
+      2,
+      2
+    ],
+    "runtime_rq_depth_list": [
+      4,
+      4
+    ],
+    "added_registered_parameters": 0,
+    "added_registered_buffers": 0,
+    "added_state_dict_keys": 0,
+    "same_projected_codebook_object_per_scale": [
+      true,
+      true
+    ],
+    "tested_depths": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "channel_tested_depths": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "restored_rq_depth_list": [
+      2,
+      2
+    ],
+    "unique_parameter_count_before": 246,
+    "unique_parameter_count_after": 246,
+    "unique_buffer_count_before": 0,
+    "unique_buffer_count_after": 0,
+    "state_dict_key_count_before": 246,
+    "state_dict_key_count_after": 246,
+    "projected_codebook_sha256_before": [
+      "2895b1e82187c8ec57b7a067868fa350799767d3dab7016e14eb768ff0af52c6",
+      "a17382ae0677a0877c8721e9eea27ab0993efb7c749e748277c5b16381d6b5c0"
+    ],
+    "projected_codebook_sha256_after": [
+      "2895b1e82187c8ec57b7a067868fa350799767d3dab7016e14eb768ff0af52c6",
+      "a17382ae0677a0877c8721e9eea27ab0993efb7c749e748277c5b16381d6b5c0"
+    ],
+    "projected_codebook_weights_unchanged": true
+  },
+  "evaluation": {
+    "seed": 42,
+    "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+    "device": "cuda:0",
+    "cuda_visible_devices": "1",
+    "cuda_device_name": "NVIDIA GeForce RTX 4090 D",
+    "depth2_legacy_no_channel_reference_check": {
+      "depth": 2,
+      "rq_depth_list": [
+        2,
+        2
+      ],
+      "num_images": 24,
+      "source_bits_per_image": 4608,
+      "source_bpp": 0.0703125,
+      "ldpc_bpsk_rgb_transmission_ratio": 0.046875,
+      "psnr": 23.65243186553319,
+      "ms_ssim": 0.873721342610208,
+      "final_residual_rms_per_scale": [
+        0.5278489476119994,
+        0.1560929494396882
+      ]
+    },
+    "no_channel": {
+      "depth_results": [
+        {
+          "depth": 1,
+          "rq_depth_list": [
+            1,
+            1
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 2304,
+          "source_bpp": 0.03515625,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.0234375,
+          "psnr": 21.535925219456356,
+          "ms_ssim": 0.8223134251507949,
+          "final_residual_rms_per_scale": [
+            0.551238763636317,
+            0.16427665389430585
+          ]
+        },
+        {
+          "depth": 2,
+          "rq_depth_list": [
+            2,
+            2
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 4608,
+          "source_bpp": 0.0703125,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.046875,
+          "psnr": 23.65243186553319,
+          "ms_ssim": 0.873721342610208,
+          "final_residual_rms_per_scale": [
+            0.5278489476119994,
+            0.1560929494396882
+          ]
+        },
+        {
+          "depth": 3,
+          "rq_depth_list": [
+            3,
+            3
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 6912,
+          "source_bpp": 0.10546875,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.0703125,
+          "psnr": 23.265211631854374,
+          "ms_ssim": 0.8635855119337762,
+          "final_residual_rms_per_scale": [
+            0.505145267811302,
+            0.15690620049143367
+          ]
+        },
+        {
+          "depth": 4,
+          "rq_depth_list": [
+            4,
+            4
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 9216,
+          "source_bpp": 0.140625,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.09375,
+          "psnr": 22.52600188056628,
+          "ms_ssim": 0.8552572969262829,
+          "final_residual_rms_per_scale": [
+            0.506347356865833,
+            0.160414689051826
+          ]
+        }
+      ],
+      "residual_rms_by_scale": [
+        [
+          0.551238763636317,
+          0.5278489476119994,
+          0.505145267811302,
+          0.506347356865833
+        ],
+        [
+          0.16427665389430585,
+          0.1560929494396882,
+          0.15690620049143367,
+          0.160414689051826
+        ]
+      ],
+      "num_images": 24,
+      "total_image_pixels": 1572864,
+      "max_runtime_rq_depth_list": [
+        4,
+        4
+      ]
+    },
+    "channel": {
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "modulation": "bpsk",
+      "snrs_db": [
+        0,
+        3,
+        6,
+        9,
+        12
+      ],
+      "depth_results": [
+        {
+          "depth": 1,
+          "rq_depth_list": [
+            1,
+            1
+          ],
+          "source_bits_per_image": 2304,
+          "source_bpp": 0.03515625,
+          "ldpc_blocks_per_image": 18,
+          "source_padding_bits_per_image": 0,
+          "coded_bits_per_image": 4608,
+          "coded_bpp": 0.0703125,
+          "modulated_symbols_per_image": 4608.0,
+          "rgb_transmission_ratio": 0.0234375,
+          "results": {
+            "0": {
+              "psnr": 21.5327750146389,
+              "ms_ssim": 0.8217057491060388
+            },
+            "3": {
+              "psnr": 21.535925219456356,
+              "ms_ssim": 0.8223134251507949
+            },
+            "6": {
+              "psnr": 21.535925219456356,
+              "ms_ssim": 0.8223134251507949
+            },
+            "9": {
+              "psnr": 21.535925219456356,
+              "ms_ssim": 0.8223134251507949
+            },
+            "12": {
+              "psnr": 21.535925219456356,
+              "ms_ssim": 0.8223134251507949
+            }
+          }
+        },
+        {
+          "depth": 2,
+          "rq_depth_list": [
+            2,
+            2
+          ],
+          "source_bits_per_image": 4608,
+          "source_bpp": 0.0703125,
+          "ldpc_blocks_per_image": 36,
+          "source_padding_bits_per_image": 0,
+          "coded_bits_per_image": 9216,
+          "coded_bpp": 0.140625,
+          "modulated_symbols_per_image": 9216.0,
+          "rgb_transmission_ratio": 0.046875,
+          "results": {
+            "0": {
+              "psnr": 23.617565631866455,
+              "ms_ssim": 0.8731000731264452
+            },
+            "3": {
+              "psnr": 23.65243186553319,
+              "ms_ssim": 0.873721342610208
+            },
+            "6": {
+              "psnr": 23.65243186553319,
+              "ms_ssim": 0.873721342610208
+            },
+            "9": {
+              "psnr": 23.65243186553319,
+              "ms_ssim": 0.873721342610208
+            },
+            "12": {
+              "psnr": 23.65243186553319,
+              "ms_ssim": 0.873721342610208
+            }
+          }
+        },
+        {
+          "depth": 3,
+          "rq_depth_list": [
+            3,
+            3
+          ],
+          "source_bits_per_image": 6912,
+          "source_bpp": 0.10546875,
+          "ldpc_blocks_per_image": 54,
+          "source_padding_bits_per_image": 0,
+          "coded_bits_per_image": 13824,
+          "coded_bpp": 0.2109375,
+          "modulated_symbols_per_image": 13824.0,
+          "rgb_transmission_ratio": 0.0703125,
+          "results": {
+            "0": {
+              "psnr": 23.24583555261294,
+              "ms_ssim": 0.8631544187218134
+            },
+            "3": {
+              "psnr": 23.265211631854374,
+              "ms_ssim": 0.8635855119337762
+            },
+            "6": {
+              "psnr": 23.265211631854374,
+              "ms_ssim": 0.8635855119337762
+            },
+            "9": {
+              "psnr": 23.265211631854374,
+              "ms_ssim": 0.8635855119337762
+            },
+            "12": {
+              "psnr": 23.265211631854374,
+              "ms_ssim": 0.8635855119337762
+            }
+          }
+        },
+        {
+          "depth": 4,
+          "rq_depth_list": [
+            4,
+            4
+          ],
+          "source_bits_per_image": 9216,
+          "source_bpp": 0.140625,
+          "ldpc_blocks_per_image": 72,
+          "source_padding_bits_per_image": 0,
+          "coded_bits_per_image": 18432,
+          "coded_bpp": 0.28125,
+          "modulated_symbols_per_image": 18432.0,
+          "rgb_transmission_ratio": 0.09375,
+          "results": {
+            "0": {
+              "psnr": 22.510631779829662,
+              "ms_ssim": 0.854892618147283
+            },
+            "3": {
+              "psnr": 22.52600188056628,
+              "ms_ssim": 0.8552572969262829
+            },
+            "6": {
+              "psnr": 22.52600188056628,
+              "ms_ssim": 0.8552572969262829
+            },
+            "9": {
+              "psnr": 22.52600188056628,
+              "ms_ssim": 0.8552572969262829
+            },
+            "12": {
+              "psnr": 22.52600188056628,
+              "ms_ssim": 0.8552572969262829
+            }
+          }
+        }
+      ]
+    }
+  }
+}

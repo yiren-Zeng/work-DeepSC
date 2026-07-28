@@ -1,0 +1,407 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16/best_vq_deepsc.pth",
+  "kodak_dir": "/workspace/yi/work/Kodak",
+  "tile_size": 256,
+  "num_embeddings_list": [
+    128,
+    16
+  ],
+  "tests": {
+    "no_channel": {
+      "psnr": 25.762528975804646,
+      "ms_ssim": 0.9349524264532194,
+      "per_image": [
+        {
+          "file": "kodim01.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 23.36667776107788,
+          "ms_ssim": 0.914775013579031
+        },
+        {
+          "file": "kodim02.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 28.172025680541992,
+          "ms_ssim": 0.9238875496738316
+        },
+        {
+          "file": "kodim03.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 29.368884563446045,
+          "ms_ssim": 0.9584465876869489
+        },
+        {
+          "file": "kodim04.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.892754077911377,
+          "ms_ssim": 0.9365996295237736
+        },
+        {
+          "file": "kodim05.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 21.907672882080078,
+          "ms_ssim": 0.9086437905004482
+        },
+        {
+          "file": "kodim06.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.235591888427734,
+          "ms_ssim": 0.9162154420049791
+        },
+        {
+          "file": "kodim07.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.27327823638916,
+          "ms_ssim": 0.954785141521749
+        },
+        {
+          "file": "kodim08.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 20.461366176605225,
+          "ms_ssim": 0.9244833249022149
+        },
+        {
+          "file": "kodim09.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 28.017799854278564,
+          "ms_ssim": 0.9595365502643426
+        },
+        {
+          "file": "kodim10.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.78770685195923,
+          "ms_ssim": 0.9540454211641268
+        },
+        {
+          "file": "kodim11.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 25.694434642791748,
+          "ms_ssim": 0.9347989045245546
+        },
+        {
+          "file": "kodim12.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 28.374686241149902,
+          "ms_ssim": 0.9471637150646183
+        },
+        {
+          "file": "kodim13.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 20.698912143707275,
+          "ms_ssim": 0.8898999324054622
+        },
+        {
+          "file": "kodim14.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.004158973693848,
+          "ms_ssim": 0.9171493048952039
+        },
+        {
+          "file": "kodim15.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.22900390625,
+          "ms_ssim": 0.9502232603640999
+        },
+        {
+          "file": "kodim16.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.64726161956787,
+          "ms_ssim": 0.9412879169202252
+        },
+        {
+          "file": "kodim17.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.689075469970703,
+          "ms_ssim": 0.9577724674336145
+        },
+        {
+          "file": "kodim18.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 23.845961093902588,
+          "ms_ssim": 0.9084206674516774
+        },
+        {
+          "file": "kodim19.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 24.779961109161377,
+          "ms_ssim": 0.939037596191213
+        },
+        {
+          "file": "kodim20.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.548093795776367,
+          "ms_ssim": 0.9541021241552071
+        },
+        {
+          "file": "kodim21.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.72223997116089,
+          "ms_ssim": 0.9428242572698948
+        },
+        {
+          "file": "kodim22.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 26.266155242919922,
+          "ms_ssim": 0.9199865462448852
+        },
+        {
+          "file": "kodim23.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 28.12413454055786,
+          "ms_ssim": 0.9551837998927126
+        },
+        {
+          "file": "kodim24.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 23.192858695983887,
+          "ms_ssim": 0.9295892912424483
+        }
+      ]
+    },
+    "bpsk_snr0": {
+      "psnr": 25.701008637746174,
+      "ms_ssim": 0.9332941820007242,
+      "per_image": [
+        {
+          "file": "kodim01.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 23.363523483276367,
+          "ms_ssim": 0.9146103386872858
+        },
+        {
+          "file": "kodim02.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.925450801849365,
+          "ms_ssim": 0.9186298155226351
+        },
+        {
+          "file": "kodim03.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 29.3050479888916,
+          "ms_ssim": 0.9563538523238511
+        },
+        {
+          "file": "kodim04.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.888612747192383,
+          "ms_ssim": 0.9363330412213091
+        },
+        {
+          "file": "kodim05.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 21.907672882080078,
+          "ms_ssim": 0.9086437905004482
+        },
+        {
+          "file": "kodim06.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.17591094970703,
+          "ms_ssim": 0.9136927546587195
+        },
+        {
+          "file": "kodim07.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.217178344726562,
+          "ms_ssim": 0.9529697250876382
+        },
+        {
+          "file": "kodim08.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 20.461366176605225,
+          "ms_ssim": 0.9244833249022149
+        },
+        {
+          "file": "kodim09.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.769219875335693,
+          "ms_ssim": 0.9504585507868435
+        },
+        {
+          "file": "kodim10.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.72514820098877,
+          "ms_ssim": 0.9527773984437579
+        },
+        {
+          "file": "kodim11.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 25.692875385284424,
+          "ms_ssim": 0.9346173406770668
+        },
+        {
+          "file": "kodim12.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 28.374686241149902,
+          "ms_ssim": 0.9471637150646183
+        },
+        {
+          "file": "kodim13.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 20.663084983825684,
+          "ms_ssim": 0.8876343397417118
+        },
+        {
+          "file": "kodim14.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.004158973693848,
+          "ms_ssim": 0.9171493048952039
+        },
+        {
+          "file": "kodim15.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.22900390625,
+          "ms_ssim": 0.9502232603640999
+        },
+        {
+          "file": "kodim16.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.64726161956787,
+          "ms_ssim": 0.9412879169202252
+        },
+        {
+          "file": "kodim17.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 27.610018253326416,
+          "ms_ssim": 0.9561021077368619
+        },
+        {
+          "file": "kodim18.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 23.58015775680542,
+          "ms_ssim": 0.9045953941580698
+        },
+        {
+          "file": "kodim19.png",
+          "height": 768,
+          "width": 512,
+          "tile_count": 6,
+          "psnr": 24.567267894744873,
+          "ms_ssim": 0.9359103864899573
+        },
+        {
+          "file": "kodim20.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 27.51734733581543,
+          "ms_ssim": 0.9527815566415997
+        },
+        {
+          "file": "kodim21.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 24.672081470489502,
+          "ms_ssim": 0.9408201300203968
+        },
+        {
+          "file": "kodim22.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 26.242058277130127,
+          "ms_ssim": 0.9179909510460466
+        },
+        {
+          "file": "kodim23.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 28.12413454055786,
+          "ms_ssim": 0.9551837998927126
+        },
+        {
+          "file": "kodim24.png",
+          "height": 512,
+          "width": 768,
+          "tile_count": 6,
+          "psnr": 23.16093921661377,
+          "ms_ssim": 0.9286475722341087
+        }
+      ]
+    }
+  }
+}

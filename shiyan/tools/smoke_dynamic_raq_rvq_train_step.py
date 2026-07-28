@@ -53,6 +53,8 @@ def build_model(cfg, device):
         raq_target_list=cfg.RAQ_TARGET_LIST,
         raq_min_trg=cfg.RAQ_MIN_TRG,
         raq_max_trg=cfg.RAQ_MAX_TRG,
+        raq_min_trg_list=getattr(cfg, "RAQ_MIN_TRG_LIST", None),
+        raq_max_trg_list=getattr(cfg, "RAQ_MAX_TRG_LIST", None),
         raq_recon_grad_mode=cfg.RAQ_RECON_GRAD_MODE,
         raq_generator_type=cfg.RAQ_GENERATOR_TYPE,
         raq_routed_src_enabled=cfg.RAQ_ROUTED_SRC_ENABLED,

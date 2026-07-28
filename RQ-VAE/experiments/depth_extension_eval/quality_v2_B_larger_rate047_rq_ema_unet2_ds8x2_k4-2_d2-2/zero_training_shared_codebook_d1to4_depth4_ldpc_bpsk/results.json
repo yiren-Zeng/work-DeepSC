@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "method": {
+    "name": "zero_training_shared_codebook_depth_extension",
+    "zero_training": true,
+    "saved_migrated_checkpoint": false,
+    "expansion_mode": "same_codebook_object_alias_per_scale",
+    "adaptive_stop_used": false,
+    "warning": "Depths above 2 were not trained. Their residual distribution and the resulting summed decoder latent are out of training distribution, so quality is not guaranteed to improve."
+  },
+  "checkpoint": {
+    "path": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+    "sha256_before": "442f71c2642eb76f2609b097177e315838eba2e69ed6ceb632226a6cc476a772",
+    "sha256_after": "442f71c2642eb76f2609b097177e315838eba2e69ed6ceb632226a6cc476a772",
+    "unchanged": true,
+    "quantizer_type": "rq_ema",
+    "num_embeddings_list": [
+      4,
+      2
+    ],
+    "embedding_dim_list": [
+      256,
+      512
+    ],
+    "checkpoint_rq_depth_list": [
+      2,
+      2
+    ],
+    "shared_codebook": true
+  },
+  "runtime_extension": {
+    "loaded_rq_depth_list": [
+      2,
+      2
+    ],
+    "runtime_rq_depth_list": [
+      4,
+      4
+    ],
+    "added_codebook_references_per_scale": [
+      2,
+      2
+    ],
+    "shared_object_per_scale": [
+      true,
+      true
+    ],
+    "unique_parameter_count_before": 244,
+    "unique_parameter_count_after": 244,
+    "unique_buffer_count_before": 4,
+    "unique_buffer_count_after": 4,
+    "codebook_sha256_before": [
+      "1148ae5a334d808e3153fab93711490b4cdbad0c17b48ae443a2445ff3506e48",
+      "12fbe9bc09a6e6fdfb0f97e6d28f14e26844dc715f5fa3682530bb9531287817"
+    ],
+    "codebook_sha256_after": [
+      "1148ae5a334d808e3153fab93711490b4cdbad0c17b48ae443a2445ff3506e48",
+      "12fbe9bc09a6e6fdfb0f97e6d28f14e26844dc715f5fa3682530bb9531287817"
+    ],
+    "codebook_weights_unchanged": true
+  },
+  "evaluation": {
+    "seed": 42,
+    "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+    "device": "cuda:0",
+    "cuda_visible_devices": "2",
+    "cuda_device_name": "NVIDIA GeForce RTX 4090 D",
+    "depth2_legacy_no_channel_reference_check": {
+      "depth": 2,
+      "rq_depth_list": [
+        2,
+        2
+      ],
+      "num_images": 24,
+      "source_bits_per_image": 4608,
+      "source_bpp": 0.0703125,
+      "ldpc_bpsk_rgb_transmission_ratio": 0.046875,
+      "psnr": 23.552703460057575,
+      "ms_ssim": 0.8718672917102491,
+      "final_residual_rms_per_scale": [
+        0.1942965333321104,
+        0.08694596641367314
+      ]
+    },
+    "no_channel": {
+      "depth_results": [
+        {
+          "depth": 1,
+          "rq_depth_list": [
+            1,
+            1
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 2304,
+          "source_bpp": 0.03515625,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.0234375,
+          "psnr": 21.091733624537785,
+          "ms_ssim": 0.815975261976113,
+          "final_residual_rms_per_scale": [
+            0.2102401413838742,
+            0.09545731908310992
+          ]
+        },
+        {
+          "depth": 2,
+          "rq_depth_list": [
+            2,
+            2
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 4608,
+          "source_bpp": 0.0703125,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.046875,
+          "psnr": 23.552703460057575,
+          "ms_ssim": 0.8718672917102491,
+          "final_residual_rms_per_scale": [
+            0.1942965333321104,
+            0.08694596641367314
+          ]
+        },
+        {
+          "depth": 3,
+          "rq_depth_list": [
+            3,
+            3
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 6912,
+          "source_bpp": 0.10546875,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.0703125,
+          "psnr": 22.378216336170834,
+          "ms_ssim": 0.8597513178736635,
+          "final_residual_rms_per_scale": [
+            0.17630550446815638,
+            0.08511401618163124
+          ]
+        },
+        {
+          "depth": 4,
+          "rq_depth_list": [
+            4,
+            4
+          ],
+          "num_images": 24,
+          "source_bits_per_image": 9216,
+          "source_bpp": 0.140625,
+          "ldpc_bpsk_rgb_transmission_ratio": 0.09375,
+          "psnr": 21.039101978143055,
+          "ms_ssim": 0.8450607132747249,
+          "final_residual_rms_per_scale": [
+            0.17421131354330588,
+            0.08948716944038297
+          ]
+        }
+      ],
+      "residual_rms_by_scale": [
+        [
+          0.2102401413838742,
+          0.1942965333321104,
+          0.17630550446815638,
+          0.17421131354330588
+        ],
+        [
+          0.09545731908310992,
+          0.08694596641367314,
+          0.08511401618163124,
+          0.08948716944038297
+        ]
+      ],
+      "num_images": 24,
+      "total_image_pixels": 1572864,
+      "max_runtime_rq_depth_list": [
+        4,
+        4
+      ]
+    },
+    "channel": {
+      "target_depth": 4,
+      "rq_depth_list": [
+        4,
+        4
+      ],
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "modulation": "bpsk",
+      "source_bits_per_image": 9216,
+      "ldpc_blocks_per_image": 72,
+      "source_padding_bits_per_image": 0,
+      "coded_bits_per_image": 18432,
+      "coded_bpp": 0.28125,
+      "modulated_symbols_per_image": 18432.0,
+      "rgb_transmission_ratio": 0.09375,
+      "snrs_db": [
+        0,
+        3,
+        6,
+        9,
+        12
+      ],
+      "results": {
+        "0": {
+          "psnr": 21.015438338120777,
+          "ms_ssim": 0.8436606961420133
+        },
+        "3": {
+          "psnr": 21.039101978143055,
+          "ms_ssim": 0.8450607132747249
+        },
+        "6": {
+          "psnr": 21.039101978143055,
+          "ms_ssim": 0.8450607132747249
+        },
+        "9": {
+          "psnr": 21.039101978143055,
+          "ms_ssim": 0.8450607132747249
+        },
+        "12": {
+          "psnr": 21.039101978143055,
+          "ms_ssim": 0.8450607132747249
+        }
+      }
+    }
+  }
+}

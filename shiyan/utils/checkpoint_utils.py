@@ -127,6 +127,8 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         raq_target_list=getattr(cfg, "RAQ_TARGET_LIST", None),
         raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", None),
         raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", None),
+        raq_min_trg_list=getattr(cfg, "RAQ_MIN_TRG_LIST", None),
+        raq_max_trg_list=getattr(cfg, "RAQ_MAX_TRG_LIST", None),
         raq_recon_grad_mode=getattr(cfg, "RAQ_RECON_GRAD_MODE", "ste"),
         raq_generator_type=getattr(cfg, "RAQ_GENERATOR_TYPE", "encoder_decoder"),
         raq_routed_src_enabled=getattr(cfg, "RAQ_ROUTED_SRC_ENABLED", False),

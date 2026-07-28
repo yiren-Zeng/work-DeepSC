@@ -1,0 +1,13 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_LPIPS_unet2_ds8x2_k64-256/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    64,
+    256
+  ],
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.8942482408717973,
+      "psnr": 24.317386746406555
+    }
+  }
+}

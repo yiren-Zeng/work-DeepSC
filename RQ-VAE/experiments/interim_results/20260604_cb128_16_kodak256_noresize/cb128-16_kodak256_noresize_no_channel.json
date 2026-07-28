@@ -1,0 +1,15 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_cb128-16_unet2_ds8x2_k128-16/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    128,
+    16
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.9313138463201037,
+      "psnr": 24.79790026942889
+    }
+  }
+}
