@@ -3,6 +3,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 import os
 import random
+import numpy as np
 from datetime import datetime
 from config import Config
 from models.deepsc import DeepSC
@@ -195,6 +196,28 @@ def sample_dynamic_raq_rvq_for_epoch(epoch, cfg):
     return target_list, rvq_k_lists, phase
 
 
+def sample_independent_raq_rvq_for_epoch(epoch, cfg):
+    """Independently sample K for every scale/residual-stage RAQ."""
+    values_by_layer, phase = raq_curriculum_values_for_epoch(epoch, cfg)
+    depth = int(cfg.INDEPENDENT_RAQ_RVQ_DEPTH)
+    if values_by_layer is not None:
+        return [
+            [random.choice(values) for _ in range(depth)]
+            for values in values_by_layer
+        ], phase
+
+    min_values = getattr(cfg, "RAQ_MIN_TRG_LIST", None)
+    max_values = getattr(cfg, "RAQ_MAX_TRG_LIST", None)
+    if min_values is None:
+        min_values = [cfg.RAQ_MIN_TRG] * cfg.NUM_DOWNSAMPLE_BLOCKS
+    if max_values is None:
+        max_values = [cfg.RAQ_MAX_TRG] * cfg.NUM_DOWNSAMPLE_BLOCKS
+    return [
+        [sample_trg(min_k, max_k) for _ in range(depth)]
+        for min_k, max_k in zip(min_values, max_values)
+    ], phase
+
+
 RAQ_ONLY_BRANCHES = {"raq_warmup", "raq_finetune", "raq_channel"}
 RAQ_JOINTLITE_BRANCHES = {"raq_jointlite", "raq_jointlite_channel"}
 
@@ -242,11 +265,17 @@ def configure_trainable_parameters(model, cfg):
     set_module_trainable(model, False)
     if branch in RAQ_JOINTLITE_BRANCHES:
         set_raq_trainable(model.raqs, True)
-        if getattr(model, "use_dynamic_raq_rvq", False):
+        if (
+            getattr(model, "use_dynamic_raq_rvq", False)
+            or getattr(model, "use_independent_raq_rvq", False)
+        ):
             set_raq_trainable(model.raqs_rvq_stage2, True)
     else:
         set_module_trainable(model.raqs, True)
-        if getattr(model, "use_dynamic_raq_rvq", False):
+        if (
+            getattr(model, "use_dynamic_raq_rvq", False)
+            or getattr(model, "use_independent_raq_rvq", False)
+        ):
             set_module_trainable(model.raqs_rvq_stage2, True)
 
     if branch in {"raq_finetune", "raq_channel"}:
@@ -345,6 +374,15 @@ def main():
           f"eval K={cfg.RAQ_TARGET_LIST}, repulsion={cfg.RAQ_REPULSION_WEIGHT}")
     print(f"  - 动态RAQ-RVQ训练: {cfg.USE_DYNAMIC_RAQ_RVQ}, "
           f"stage2_zero={cfg.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD}")
+    print(f"  - 共享码本RAQ-RVQ训练: {cfg.USE_SHARED_RAQ_RVQ}, "
+          f"depth={cfg.SHARED_RAQ_RVQ_DEPTH}, zero_codeword=False, "
+          "residual_monotonicity=False")
+    print(
+        "  - 独立码本RAQ-RVQ训练: "
+        f"{cfg.USE_INDEPENDENT_RAQ_RVQ}, "
+        f"depth={cfg.INDEPENDENT_RAQ_RVQ_DEPTH}, "
+        f"eval K={cfg.INDEPENDENT_RAQ_RVQ_K_LISTS}"
+    )
     print(f"  - RAQ课程采样: {cfg.RAQ_USE_CURRICULUM}, "
           f"early={cfg.RAQ_CURRICULUM_EARLY_LISTS}, "
           f"middle={cfg.RAQ_CURRICULUM_MIDDLE_LISTS}, "
@@ -455,6 +493,11 @@ def main():
         raq_routed_src_threshold=cfg.RAQ_ROUTED_SRC_THRESHOLD,
         use_dynamic_raq_rvq=cfg.USE_DYNAMIC_RAQ_RVQ,
         dynamic_raq_rvq_zero_codeword=cfg.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD,
+        use_shared_raq_rvq=cfg.USE_SHARED_RAQ_RVQ,
+        shared_raq_rvq_depth=cfg.SHARED_RAQ_RVQ_DEPTH,
+        use_independent_raq_rvq=cfg.USE_INDEPENDENT_RAQ_RVQ,
+        independent_raq_rvq_depth=cfg.INDEPENDENT_RAQ_RVQ_DEPTH,
+        independent_raq_rvq_k_lists=cfg.INDEPENDENT_RAQ_RVQ_K_LISTS,
     ).to(device)
 
     # 加载预训练权重默认禁用；本实验要求从零开始训练。
@@ -542,6 +585,10 @@ def main():
         start_epoch = checkpoint['epoch'] + 1
         best_val_loss = checkpoint.get('best_val_loss', float('inf'))
         torch.set_rng_state(checkpoint['rng_state'].cpu())
+        if checkpoint.get("python_rng_state") is not None:
+            random.setstate(checkpoint["python_rng_state"])
+        if checkpoint.get("numpy_rng_state") is not None:
+            np.random.set_state(checkpoint["numpy_rng_state"])
         if torch.cuda.is_available() and checkpoint['cuda_rng_state'] is not None:
             cuda_states = [s.cpu() if isinstance(s, torch.Tensor) else s for s in checkpoint['cuda_rng_state']]
             num_current_gpus = torch.cuda.device_count()
@@ -615,7 +662,15 @@ def main():
 
             do_step = ((i + 1) % accumulation_steps == 0) or ((i + 1) == len(train_dataloader))
             if cfg.USE_RAQ and i % accumulation_steps == 0:
-                if cfg.USE_DYNAMIC_RAQ_RVQ:
+                if cfg.USE_INDEPENDENT_RAQ_RVQ:
+                    current_rvq_k_lists, raq_sampling_phase = (
+                        sample_independent_raq_rvq_for_epoch(epoch, cfg)
+                    )
+                    current_raq_trg_list = [
+                        max(stage_sizes)
+                        for stage_sizes in current_rvq_k_lists
+                    ]
+                elif cfg.USE_DYNAMIC_RAQ_RVQ:
                     current_raq_trg_list, current_rvq_k_lists, raq_sampling_phase = (
                         sample_dynamic_raq_rvq_for_epoch(epoch, cfg)
                     )
@@ -627,7 +682,12 @@ def main():
                 real_images,
                 raq_trg_list=current_raq_trg_list if cfg.USE_RAQ else None,
                 raq_rvq_k_lists=(
-                    current_rvq_k_lists if cfg.USE_DYNAMIC_RAQ_RVQ else None
+                    current_rvq_k_lists
+                    if (
+                        cfg.USE_DYNAMIC_RAQ_RVQ
+                        or cfg.USE_INDEPENDENT_RAQ_RVQ
+                    )
+                    else None
                 ),
             )
 
@@ -711,6 +771,11 @@ def main():
                           f"(sampling={raq_sampling_phase})")
                     if cfg.USE_DYNAMIC_RAQ_RVQ:
                         print(f"  Dynamic RVQ stage K: {out['rvq_k_lists']}")
+                    if cfg.USE_INDEPENDENT_RAQ_RVQ:
+                        print(
+                            "  Independent RVQ four K: "
+                            f"{out['rvq_k_lists']}"
+                        )
                     if out.get("source_route_list") is not None:
                         print(f"  RAQ source route this accumulation: {out['source_route_list']}")
                 if current_snr is not None:
@@ -779,12 +844,25 @@ def main():
         val_src_codebook_anchor_sum = 0
         with torch.no_grad():
             val_raq_target_list = (
-                list(cfg.RAQ_TARGET_LIST) if cfg.USE_DYNAMIC_RAQ_RVQ else None
+                list(cfg.RAQ_TARGET_LIST)
+                if (
+                    cfg.USE_DYNAMIC_RAQ_RVQ
+                    or cfg.USE_SHARED_RAQ_RVQ
+                    or cfg.USE_INDEPENDENT_RAQ_RVQ
+                )
+                else None
             )
-            val_rvq_k_lists = (
-                resolve_rvq_stage_k_lists(val_raq_target_list)
-                if cfg.USE_DYNAMIC_RAQ_RVQ else None
-            )
+            if cfg.USE_INDEPENDENT_RAQ_RVQ:
+                val_rvq_k_lists = [
+                    list(stage_sizes)
+                    for stage_sizes in cfg.INDEPENDENT_RAQ_RVQ_K_LISTS
+                ]
+            elif cfg.USE_DYNAMIC_RAQ_RVQ:
+                val_rvq_k_lists = resolve_rvq_stage_k_lists(
+                    val_raq_target_list
+                )
+            else:
+                val_rvq_k_lists = None
             for real_images in val_dataloader:
                 real_images = real_images.to(device, non_blocking=True)
                 out = deepsc_model.forward_val(
@@ -916,6 +994,8 @@ def main():
             'scheduler_state_dict': scheduler_g.state_dict(),
             'best_val_loss': best_val_loss,
             'rng_state': torch.get_rng_state(),
+            'python_rng_state': random.getstate(),
+            'numpy_rng_state': np.random.get_state(),
             'cuda_rng_state': torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
         }
         torch.save(checkpoint, cfg.RESUME_PATH)

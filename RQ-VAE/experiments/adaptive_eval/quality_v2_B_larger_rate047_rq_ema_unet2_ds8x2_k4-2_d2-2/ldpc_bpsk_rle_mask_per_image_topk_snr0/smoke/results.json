@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "evaluation": "adaptive_per_image_per_scale_topk_fixed_width_rle_mask_ldpc_half_bpsk_snr0",
+  "checkpoint": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "image_order": [
+    "kodim01.png"
+  ],
+  "num_images": 1,
+  "quantizer_type": "rq_ema",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "selection": {
+    "scope": "each image and each scale independently",
+    "active_count_rule": "floor(target_active_rate * token_count + 0.5)",
+    "ordering": "first-stage error descending; ties use ascending raster index",
+    "thresholds_per_scan_point": 2,
+    "thresholds_transmitted": false,
+    "threshold_bits_counted": false
+  },
+  "transport": {
+    "mask_scan_order": "row-major raster order",
+    "mask_coding": "one start bit plus fixed-width binary (run_length-1) fields",
+    "run_length_bits_per_scale": [
+      10,
+      8
+    ],
+    "raw_mask_fallback": false,
+    "logical_frames_per_image": "first_s0, first_s1, mask_rle_s0, mask_rle_s1, second_active_s0, second_active_s1",
+    "corrupt_rle_concealment": "crop decoded overflow; extend the last emitted run value through decoded underflow",
+    "active_payload_mapping": "map A_tx decoded refinement indices to received-mask active positions in raster order; truncate surplus payload or zero-fill surplus received active positions",
+    "framing_metadata": "segment boundaries, shapes, K, source segment lengths, and A_tx are assumed known out of band",
+    "framing_overhead_counted": false
+  },
+  "channel": {
+    "ldpc": "Sionna 5G LDPC",
+    "k": 128,
+    "n": 256,
+    "rate": 0.5,
+    "modulation": "bpsk",
+    "channel": "awgn",
+    "snr_db": 0.0,
+    "seed_per_activation_point": 42
+  },
+  "results": [
+    {
+      "scan_id": 0,
+      "source": "per_image_per_scale_exact_topk",
+      "target_active_rates": [
+        0.5,
+        0.5
+      ],
+      "threshold_count": 2,
+      "threshold_summary": [
+        {
+          "scale": 0,
+          "threshold_count": 1,
+          "threshold_min": 0.025096550583839417,
+          "threshold_mean": 0.025096550583839417,
+          "threshold_max": 0.025096550583839417,
+          "images_with_boundary_tie_split": 0,
+          "target_active_count_per_image": 512,
+          "token_count_per_image": 1024,
+          "actual_active_rate_per_image": 0.5
+        },
+        {
+          "scale": 1,
+          "threshold_count": 1,
+          "threshold_min": 0.002777809277176857,
+          "threshold_mean": 0.002777809277176857,
+          "threshold_max": 0.002777809277176857,
+          "images_with_boundary_tie_split": 0,
+          "target_active_count_per_image": 128,
+          "token_count_per_image": 256,
+          "actual_active_rate_per_image": 0.5
+        }
+      ],
+      "per_image_selection": [
+        {
+          "image_index": 0,
+          "image_number": 1,
+          "image_name": "kodim01.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.025096550583839417,
+              "target_active_rate": 0.5,
+              "token_count": 1024,
+              "target_active_count": 512,
+              "active_count": 512,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 511,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.02500881627202034
+            },
+            {
+              "scale": 1,
+              "threshold": 0.002777809277176857,
+              "target_active_rate": 0.5,
+              "token_count": 256,
+              "target_active_count": 128,
+              "active_count": 128,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 127,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.0027721512597054243
+            }
+          ]
+        }
+      ],
+      "rate": {
+        "num_images": 1,
+        "total_image_pixels": 65536,
+        "first_stage_bits": 2304,
+        "raw_mask_bits_reference": 1280,
+        "rle_mask_bits": 4036,
+        "active_second_bits": 1152,
+        "raw_explicit_source_bits_reference": 4736,
+        "rle_source_bits": 7492,
+        "raw_explicit_source_bpp_reference": 0.072265625,
+        "rle_source_bpp": 0.11431884765625,
+        "source_bits_saved_vs_raw": -2756,
+        "source_saving_ratio_vs_raw": -0.5819256756756757,
+        "raw_explicit_coded_bits_with_ldpc_padding_reference": 9472,
+        "rle_coded_bits_with_ldpc_padding": 15360,
+        "coded_bits_saved_vs_raw": -5888,
+        "raw_explicit_coded_bpp_reference": 0.14453125,
+        "rle_coded_bpp": 0.234375,
+        "rle_bpsk_channel_uses_per_rgb_value": 0.078125,
+        "framing_overhead_counted": false,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_images": 1,
+            "token_count": 1024,
+            "tx_active_count": 512,
+            "first_stage_source_bits": 2048,
+            "raw_mask_source_bits_reference": 1024,
+            "rle_mask_source_bits": 3011,
+            "active_second_source_bits": 1024,
+            "rle_run_count": 301,
+            "first_stage_coded_bits": 4096,
+            "raw_mask_coded_bits_reference": 2048,
+            "rle_mask_coded_bits": 6144,
+            "active_second_coded_bits": 2048,
+            "ldpc_padding_bits": 61,
+            "token_count_per_image": 1024,
+            "tx_active_count_per_image": 512,
+            "tx_active_ratio": 0.5,
+            "rle_run_count_mean_per_image": 301.0,
+            "rle_run_count_min_per_image": 301,
+            "rle_run_count_max_per_image": 301,
+            "rle_mask_source_bits_mean_per_image": 3011.0,
+            "rle_mask_source_bits_min_per_image": 3011,
+            "rle_mask_source_bits_max_per_image": 3011,
+            "mask_source_bits_saved_vs_raw": -1987,
+            "mask_source_saving_ratio": -1.9404296875,
+            "second_layer_source_bits_raw_reference": 2048,
+            "second_layer_source_bits_rle": 4035,
+            "second_layer_source_bits_saved": -1987,
+            "second_layer_coded_bits_raw_reference": 4096,
+            "second_layer_coded_bits_rle": 8192,
+            "second_layer_coded_bits_saved": -4096,
+            "total_coded_bits_raw_reference": 8192,
+            "total_coded_bits_rle": 12288
+          },
+          {
+            "scale": 1,
+            "num_images": 1,
+            "token_count": 256,
+            "tx_active_count": 128,
+            "first_stage_source_bits": 256,
+            "raw_mask_source_bits_reference": 256,
+            "rle_mask_source_bits": 1025,
+            "active_second_source_bits": 128,
+            "rle_run_count": 128,
+            "first_stage_coded_bits": 512,
+            "raw_mask_coded_bits_reference": 512,
+            "rle_mask_coded_bits": 2304,
+            "active_second_coded_bits": 256,
+            "ldpc_padding_bits": 127,
+            "token_count_per_image": 256,
+            "tx_active_count_per_image": 128,
+            "tx_active_ratio": 0.5,
+            "rle_run_count_mean_per_image": 128.0,
+            "rle_run_count_min_per_image": 128,
+            "rle_run_count_max_per_image": 128,
+            "rle_mask_source_bits_mean_per_image": 1025.0,
+            "rle_mask_source_bits_min_per_image": 1025,
+            "rle_mask_source_bits_max_per_image": 1025,
+            "mask_source_bits_saved_vs_raw": -769,
+            "mask_source_saving_ratio": -3.00390625,
+            "second_layer_source_bits_raw_reference": 384,
+            "second_layer_source_bits_rle": 1153,
+            "second_layer_source_bits_saved": -769,
+            "second_layer_coded_bits_raw_reference": 768,
+            "second_layer_coded_bits_rle": 2560,
+            "second_layer_coded_bits_saved": -1792,
+            "total_coded_bits_raw_reference": 1280,
+            "total_coded_bits_rle": 3072
+          }
+        ]
+      },
+      "channel": {
+        "snr_db": 0.0,
+        "psnr": 21.713353563151276,
+        "ms_ssim": 0.8115354550853948,
+        "source_bits": 7492,
+        "source_bpp": 0.11431884765625,
+        "coded_bits_with_ldpc_padding": 15360,
+        "coded_bpp_with_ldpc_padding": 0.234375,
+        "bpsk_channel_uses_per_rgb_value": 0.078125,
+        "ldpc_padding_bits": 188,
+        "source_bit_errors": 0,
+        "source_ber_after_ldpc": 0.0,
+        "segment_source_bits": {
+          "first": 2304,
+          "mask_rle": 4036,
+          "second_active": 1152
+        },
+        "segment_bit_errors": {
+          "first": 0,
+          "mask_rle": 0,
+          "second_active": 0
+        },
+        "images_with_source_errors": 0,
+        "per_scale": [
+          {
+            "scale": 0,
+            "source_bits": 6083,
+            "coded_bits": 12288,
+            "source_bit_errors": 0,
+            "rle_source_bits": 3011,
+            "rle_source_bit_errors": 0,
+            "rle_start_bit_errors": 0,
+            "rle_length_bit_errors": 0,
+            "tx_active_count": 512,
+            "rx_active_count": 512,
+            "semantic_mask_bit_errors": 0,
+            "mask_token_count": 1024,
+            "structurally_valid_rle_frames": 1,
+            "exact_mask_frames": 1,
+            "active_count_mismatch_frames": 0,
+            "zero_filled_second_indices": 0,
+            "truncated_second_indices": 0,
+            "source_ber_after_ldpc": 0.0,
+            "rle_source_ber_after_ldpc": 0.0,
+            "semantic_mask_ber": 0.0,
+            "tx_active_ratio": 0.5,
+            "rx_active_ratio": 0.5,
+            "structurally_valid_rle_frame_rate": 1.0,
+            "exact_mask_frame_rate": 1.0
+          },
+          {
+            "scale": 1,
+            "source_bits": 1409,
+            "coded_bits": 3072,
+            "source_bit_errors": 0,
+            "rle_source_bits": 1025,
+            "rle_source_bit_errors": 0,
+            "rle_start_bit_errors": 0,
+            "rle_length_bit_errors": 0,
+            "tx_active_count": 128,
+            "rx_active_count": 128,
+            "semantic_mask_bit_errors": 0,
+            "mask_token_count": 256,
+            "structurally_valid_rle_frames": 1,
+            "exact_mask_frames": 1,
+            "active_count_mismatch_frames": 0,
+            "zero_filled_second_indices": 0,
+            "truncated_second_indices": 0,
+            "source_ber_after_ldpc": 0.0,
+            "rle_source_ber_after_ldpc": 0.0,
+            "semantic_mask_ber": 0.0,
+            "tx_active_ratio": 0.5,
+            "rx_active_ratio": 0.5,
+            "structurally_valid_rle_frame_rate": 1.0,
+            "exact_mask_frame_rate": 1.0
+          }
+        ],
+        "per_image": [
+          {
+            "image_index": 0,
+            "image_number": 1,
+            "source_bits": 7492,
+            "coded_bits": 15360,
+            "source_bit_errors": 0,
+            "psnr": 21.713353563151276,
+            "ms_ssim": 0.8115354550853948,
+            "scales": [
+              {
+                "scale": 0,
+                "tx_active_count": 512,
+                "rx_active_count": 512,
+                "semantic_mask_bit_errors": 0,
+                "semantic_mask_ber": 0.0,
+                "rle_source_bits": 3011,
+                "rle_coded_bits": 6144,
+                "rle_source_bit_errors": 0,
+                "rle_run_count": 301,
+                "structurally_valid": true,
+                "length_sum_error": 0,
+                "zero_filled_second_indices": 0,
+                "truncated_second_indices": 0
+              },
+              {
+                "scale": 1,
+                "tx_active_count": 128,
+                "rx_active_count": 128,
+                "semantic_mask_bit_errors": 0,
+                "semantic_mask_ber": 0.0,
+                "rle_source_bits": 1025,
+                "rle_coded_bits": 2304,
+                "rle_source_bit_errors": 0,
+                "rle_run_count": 128,
+                "structurally_valid": true,
+                "length_sum_error": 0,
+                "zero_filled_second_indices": 0,
+                "truncated_second_indices": 0
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

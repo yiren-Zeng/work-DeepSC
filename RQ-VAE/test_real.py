@@ -38,6 +38,12 @@ def test_real(
     num_embeddings_list = inferred["num_embeddings_list"]
     quantizer_type = inferred["quantizer_type"]
     rq_depth_list = inferred.get("rq_depth_list", [1] * len(num_embeddings_list))
+    rq_codebook_size_lists = inferred.get("rq_codebook_size_lists")
+    transport_codebook_sizes = (
+        rq_codebook_size_lists
+        if quantizer_type == "stagewise_residual_simvq"
+        else num_embeddings_list
+    )
     if inferred["quantizer_type"] == "none" and not no_channel:
         raise ValueError("No-quantization checkpoints only support --no-channel evaluation.")
     print(f"码本大小: {num_embeddings_list} (inferred from checkpoint)")
@@ -51,6 +57,12 @@ def test_real(
     elif quantizer_type == "residual_simvq":
         print(
             f"Residual-SimVQ深度: {rq_depth_list}, "
+            f"shared={inferred.get('rq_shared_codebook')}"
+        )
+    elif quantizer_type == "stagewise_residual_simvq":
+        print(
+            "Stagewise Residual-SimVQ码本: "
+            f"{rq_codebook_size_lists}, "
             f"shared={inferred.get('rq_shared_codebook')}"
         )
 
@@ -68,7 +80,12 @@ def test_real(
         inferred["embedding_dim_list"],
         (256, 256),
         rq_depth_list
-        if quantizer_type in {"rq_ema", "residual_simvq"}
+        if quantizer_type in {
+            "rq_ema", "residual_simvq", "stagewise_residual_simvq"
+        }
+        else None,
+        rq_codebook_size_lists
+        if quantizer_type == "stagewise_residual_simvq"
         else None,
     )
     bits_per_256_image = source_bpp * 256 * 256
@@ -107,8 +124,14 @@ def test_real(
         for snr in test_snrs:
             print(f"\n正在测试 SNR = {snr} dB ...")
             mean_ms_ssim, mean_psnr = evaluate_ldpc_channel(
-                deepsc_model, test_dataloader, num_embeddings_list, snr, ldpc_code, device,
-                modulation=modulation)
+                deepsc_model,
+                test_dataloader,
+                transport_codebook_sizes,
+                snr,
+                ldpc_code,
+                device,
+                modulation=modulation,
+            )
             results[snr] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
             print(f"SNR {snr} dB | {quantizer_type} Avg MS-SSIM: {mean_ms_ssim:.4f} | Avg PSNR: {mean_psnr:.4f} dB")
 
@@ -129,6 +152,7 @@ def test_real(
             "num_embeddings_list": num_embeddings_list,
             "embedding_dim_list": inferred["embedding_dim_list"],
             "rq_depth_list": rq_depth_list,
+            "rq_codebook_size_lists": rq_codebook_size_lists,
             "rq_ema_decay": inferred.get("rq_ema_decay"),
             "rq_restart_unused_codes": inferred.get("rq_restart_unused_codes"),
             "rq_shared_codebook": inferred.get("rq_shared_codebook"),

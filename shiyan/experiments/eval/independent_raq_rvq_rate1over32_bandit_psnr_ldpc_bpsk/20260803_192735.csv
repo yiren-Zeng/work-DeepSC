@@ -1,0 +1,3 @@
+channel_profile,ldpc_rate,modulation,snr_db,target_ratio,k_scale0_stage0,k_scale0_stage1,k_scale1_stage0,k_scale1_stage1,selected,channel_symbols_per_image,actual_ratio,confirm_psnr_mean_db,confirm_psnr_std_db,confirm_psnr_ci95_db,confirm_ms_ssim_mean,report_psnr_mean_db,report_psnr_std_db,report_psnr_ci95_db,report_ms_ssim_mean
+ldpc12_bpsk,0.5,bpsk,0,1/32,2,2,8,2,True,6144,1/32,21.876271979676357,0.006347502385591887,0.015769342703947063,0.8295804006998866,21.86321041981379,0.008243906721108262,0.01023452117201955,0.8291450838206977
+ldpc12_bpsk,0.5,bpsk,0,1/32,2,2,4,4,False,6144,1/32,21.27390421099133,0.007522110095086746,0.018687465516435853,0.818574732175655,,,,

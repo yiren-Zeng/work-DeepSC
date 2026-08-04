@@ -15,6 +15,9 @@ from utils.reproducibility import setup_seed
 
 
 def _print_raq_rvq_diagnostics(diagnostics):
+    stream_packing = diagnostics.get("stream_packing")
+    if stream_packing is not None:
+        print(f"[Test RAQ-RVQ] payload stream packing: {stream_packing}")
     quantization = diagnostics.get("rvq_quantization", {})
     for scale in quantization.get("per_scale", []):
         print(
@@ -38,21 +41,42 @@ def _print_raq_rvq_diagnostics(diagnostics):
         )
 
     for stage in diagnostics.get("per_stage", []):
-        message = (
-            f"[Test RAQ-RVQ] TX scale {stage['scale']} stage {stage['stage']}: "
-            f"K={stage['num_embeddings']}, payload={stage['payload_bits']} bit, "
-            f"LDPC-padding={stage['ldpc_padding_bits']} bit, "
-            f"coded={stage['coded_bits']} bit, transmitted={stage['transmitted_bits']} bit, "
-            f"symbols={stage['channel_symbols']}, payload_bpp={stage['payload_bpp']:.8f}, "
-            f"transmitted_bpp={stage['transmitted_bpp']:.8f}, "
-            f"transmission_ratio={stage['transmission_ratio']:.8f}"
-        )
+        if stream_packing == "combined":
+            message = (
+                f"[Test RAQ-RVQ] TX segment scale {stage['scale']} "
+                f"stage {stage['stage']}: K={stage['num_embeddings']}, "
+                f"payload={stage['payload_bits']} bit, "
+                f"payload_bpp={stage['payload_bpp']:.8f}"
+            )
+        else:
+            message = (
+                f"[Test RAQ-RVQ] TX scale {stage['scale']} stage {stage['stage']}: "
+                f"K={stage['num_embeddings']}, payload={stage['payload_bits']} bit, "
+                f"LDPC-padding={stage['ldpc_padding_bits']} bit, "
+                f"coded={stage['coded_bits']} bit, transmitted={stage['transmitted_bits']} bit, "
+                f"symbols={stage['channel_symbols']}, payload_bpp={stage['payload_bpp']:.8f}, "
+                f"transmitted_bpp={stage['transmitted_bpp']:.8f}, "
+                f"transmission_ratio={stage['transmission_ratio']:.8f}"
+            )
         if stage.get("ber") is not None:
             message += (
                 f", BER={stage['ber']:.8f}, "
                 f"index_error_rate={stage['index_error_rate']:.8f}"
             )
         print(message)
+
+    combined = diagnostics.get("combined_stream")
+    if combined:
+        print(
+            f"[Test RAQ-RVQ] TX combined stream: "
+            f"payload={combined['payload_bits']} bit, "
+            f"LDPC-padding={combined['ldpc_padding_bits']} bit, "
+            f"coded={combined['coded_bits']} bit, "
+            f"transmitted={combined['transmitted_bits']} bit, "
+            f"symbols={combined['channel_symbols']}, "
+            f"transmission_ratio={combined['transmission_ratio']:.8f}, "
+            f"BER={combined['ber']:.8f}"
+        )
 
     total = diagnostics.get("total", {})
     if total:
@@ -81,7 +105,9 @@ def _print_raq_rvq_diagnostics(diagnostics):
 @torch.no_grad()
 def test_real(
     checkpoint_path=None, test_snrs=None, json_output=None, no_channel=False,
-    modulation="bpsk", LDPC_N = 256, LDPC_R = 0.5):
+    modulation="bpsk", LDPC_N=256, LDPC_R=0.5,
+    stream_packing="per_stage",
+):
     cfg = Config()
     cfg.validate()
     setup_seed(42)
@@ -91,11 +117,33 @@ def test_real(
     checkpoint_path = checkpoint_path or os.path.join(cfg.CHECKPOINT_DIR, "best_vq_deepsc.pth")
 
     print("=" * 40)
-    test_raq_rvq_enabled = bool(getattr(cfg, "TEST_USE_RAQ_RVQ", False))
+    shared_raq_rvq_enabled = bool(
+        getattr(cfg, "USE_SHARED_RAQ_RVQ", False)
+    )
+    independent_raq_rvq_enabled = bool(
+        getattr(cfg, "USE_INDEPENDENT_RAQ_RVQ", False)
+    )
+    test_raq_rvq_enabled = bool(
+        getattr(cfg, "TEST_USE_RAQ_RVQ", False)
+        or shared_raq_rvq_enabled
+        or independent_raq_rvq_enabled
+    )
     branch_name = (
-        "测试期两级RAQ-RVQ支路"
-        if test_raq_rvq_enabled
-        else ("RAQ动态目标码本支路" if getattr(cfg, "USE_RAQ", False) else "SimVQ支路")
+        "训练式独立码本RAQ-RVQ支路"
+        if independent_raq_rvq_enabled
+        else (
+            "训练式共享码本RAQ-RVQ支路"
+            if shared_raq_rvq_enabled
+            else (
+                "测试期两级RAQ-RVQ支路"
+                if test_raq_rvq_enabled
+                else (
+                    "RAQ动态目标码本支路"
+                    if getattr(cfg, "USE_RAQ", False)
+                    else "SimVQ支路"
+                )
+            )
+        )
     )
     print(f"开始 {branch_name} 真实环境测试 (Real Transmission Chain)")
     if no_channel:
@@ -103,6 +151,7 @@ def test_real(
     else:
         print(f"LDPC: n={LDPC_N}, k={int(LDPC_N * LDPC_R)}, R={LDPC_R}")
         print(f"调制: {modulation.upper()}")
+        print(f"Payload 打包: {stream_packing}")
     print(f"Loading checkpoint from {checkpoint_path}")
 
     deepsc_model, inferred = build_model_from_checkpoint(checkpoint_path, cfg, device)
@@ -118,27 +167,67 @@ def test_real(
         print(f"测试 SNR: {test_snrs} dB")
     rvq_k_lists = None
     if test_raq_rvq_enabled:
-        rvq_depth = int(getattr(cfg, "TEST_RAQ_RVQ_DEPTH", 2))
-        rvq_k_lists = resolve_rvq_stage_k_lists(
-            num_embeddings_list,
-            rvq_depth=rvq_depth,
-            stage_k_lists=getattr(cfg, "TEST_RAQ_RVQ_K_LISTS", None),
-            min_k=getattr(
-                cfg, "RAQ_MIN_TRG_LIST", getattr(cfg, "RAQ_MIN_TRG", None)
-            ),
-            max_k=getattr(
-                cfg, "RAQ_MAX_TRG_LIST", getattr(cfg, "RAQ_MAX_TRG", None)
-            ),
-        )
+        if independent_raq_rvq_enabled:
+            rvq_depth = int(
+                getattr(cfg, "INDEPENDENT_RAQ_RVQ_DEPTH", 2)
+            )
+            rvq_k_lists = [
+                list(stage_sizes)
+                for stage_sizes in cfg.INDEPENDENT_RAQ_RVQ_K_LISTS
+            ]
+        elif shared_raq_rvq_enabled:
+            rvq_depth = int(getattr(cfg, "SHARED_RAQ_RVQ_DEPTH", 2))
+            rvq_k_lists = [
+                [int(k)] * rvq_depth for k in num_embeddings_list
+            ]
+        else:
+            rvq_depth = int(getattr(cfg, "TEST_RAQ_RVQ_DEPTH", 2))
+            rvq_k_lists = resolve_rvq_stage_k_lists(
+                num_embeddings_list,
+                rvq_depth=rvq_depth,
+                stage_k_lists=getattr(
+                    cfg, "TEST_RAQ_RVQ_K_LISTS", None
+                ),
+                min_k=getattr(
+                    cfg,
+                    "RAQ_MIN_TRG_LIST",
+                    getattr(cfg, "RAQ_MIN_TRG", None),
+                ),
+                max_k=getattr(
+                    cfg,
+                    "RAQ_MAX_TRG_LIST",
+                    getattr(cfg, "RAQ_MAX_TRG", None),
+                ),
+            )
         print(f"[Test RAQ-RVQ] enabled=True, depth={rvq_depth}")
         for scale_index, (k_total, stage_k_list) in enumerate(
             zip(num_embeddings_list, rvq_k_lists)
         ):
-            print(
-                f"[Test RAQ-RVQ] scale {scale_index}: "
-                f"K_total={k_total} -> stage_K={stage_k_list}"
+            layout = (
+                f"independent_stage_K={stage_k_list}"
+                if independent_raq_rvq_enabled
+                else (
+                    f"shared_K={k_total} -> stage_K={stage_k_list}"
+                    if shared_raq_rvq_enabled
+                    else f"K_total={k_total} -> stage_K={stage_k_list}"
+                )
             )
-        if getattr(cfg, "USE_DYNAMIC_RAQ_RVQ", False):
+            print(
+                f"[Test RAQ-RVQ] scale {scale_index}: {layout}"
+            )
+        if independent_raq_rvq_enabled:
+            print(
+                "[Test RAQ-RVQ] trained independent branch: every "
+                "scale/stage pair owns a distinct RAQ generator and "
+                "codebook; no reserved zero codeword."
+            )
+        elif shared_raq_rvq_enabled:
+            print(
+                "[Test RAQ-RVQ] trained strict shared branch: one RAQ "
+                "codebook tensor per scale is reused by both residual stages; "
+                "no reserved zero codeword."
+            )
+        elif getattr(cfg, "USE_DYNAMIC_RAQ_RVQ", False):
             print(
                 "[Test RAQ-RVQ] trained dynamic residual branch: stage 2 uses "
                 "its independent allocation-conditioned RAQ generator."
@@ -191,12 +280,13 @@ def test_real(
                     device,
                     modulation=modulation,
                     return_diagnostics=True,
+                    stream_packing=stream_packing,
                 )
                 _print_raq_rvq_diagnostics(diagnostics)
             else:
                 mean_ms_ssim, mean_psnr = evaluate_ldpc_channel(
                     deepsc_model, test_dataloader, num_embeddings_list, snr, ldpc_code, device,
-                    modulation=modulation)
+                    modulation=modulation, stream_packing=stream_packing)
                 diagnostics = None
             results[snr] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
             if diagnostics is not None:
@@ -221,17 +311,29 @@ def test_real(
             "num_embeddings_list": num_embeddings_list,
             "ldpc_rate": LDPC_R,
             "modulation": modulation,
+            "stream_packing": stream_packing,
             "results": {str(condition): metrics for condition, metrics in results.items()},
         }
         if rvq_k_lists is not None:
             payload.update({
                 "test_raq_rvq_enabled": True,
-                "rvq_depth": int(getattr(cfg, "TEST_RAQ_RVQ_DEPTH", 2)),
+                "rvq_depth": int(rvq_depth),
                 "rvq_k_lists": rvq_k_lists,
                 "rvq_training_mode": (
-                    "trained_dynamic_residual"
-                    if getattr(cfg, "USE_DYNAMIC_RAQ_RVQ", False)
-                    else "test_time_zero_shot"
+                    "trained_independent_codebook_residual"
+                    if independent_raq_rvq_enabled
+                    else (
+                        "trained_shared_codebook_residual"
+                        if shared_raq_rvq_enabled
+                        else (
+                            "trained_dynamic_residual"
+                            if getattr(cfg, "USE_DYNAMIC_RAQ_RVQ", False)
+                            else "test_time_zero_shot"
+                        )
+                    )
+                ),
+                "independent_raq_rvq_enabled": (
+                    independent_raq_rvq_enabled
                 ),
             })
         with open(json_output, "w", encoding="utf-8") as handle:
@@ -250,5 +352,20 @@ if __name__ == "__main__":
     parser.add_argument("--modulation", choices=["bpsk", "qpsk","16qam"], default="bpsk")
     parser.add_argument("--ldpc_n", type=int, default=256)
     parser.add_argument("--ldpc_k", type=float, default=0.5)
+    parser.add_argument(
+        "--stream-packing",
+        choices=["per_stage", "combined"],
+        default="per_stage",
+        help="Use four stage-wise LDPC payloads or one concatenated payload.",
+    )
     args = parser.parse_args()
-    test_real(args.checkpoint, args.snrs, args.json_output, args.no_channel, args.modulation, args.ldpc_n, args.ldpc_k)
+    test_real(
+        args.checkpoint,
+        args.snrs,
+        args.json_output,
+        args.no_channel,
+        args.modulation,
+        args.ldpc_n,
+        args.ldpc_k,
+        args.stream_packing,
+    )

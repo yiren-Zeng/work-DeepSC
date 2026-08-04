@@ -20,7 +20,6 @@ NEW_SCRIPTS = [
     ROOT / "scripts/train/current/run_rq_ema_k4-2_d2-2_rate047.sh",
     ROOT / "scripts/eval/test_rq_ema_k4-2_d2-2_rate047.sh",
     ROOT / "scripts/eval/test_rq_ema_k4-2_d2-2_rate047_nochannel.sh",
-    ROOT / "scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive.sh",
     ROOT
     / "scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive_topk_ldpc_bpsk.sh",
     ROOT

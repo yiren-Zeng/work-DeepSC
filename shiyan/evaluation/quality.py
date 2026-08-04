@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-
 from communications.channel import awgn_channel
 from communications.modulation import (
     bpsk_demodulate,
@@ -372,6 +371,8 @@ def _build_diagnostics(
     ldpc_code=None,
     rvq_quantization_records=None,
     single_stream_reference=None,
+    stream_packing=None,
+    packed_stream_totals=None,
 ):
     channel_enabled = mode in {"ldpc", "uncoded"}
     per_stage = [
@@ -385,6 +386,56 @@ def _build_diagnostics(
         "per_stage": per_stage,
         "total": _total_record(per_stage, source_sizes, channel_enabled),
     }
+    if stream_packing is not None:
+        diagnostics["stream_packing"] = stream_packing
+    if packed_stream_totals is not None:
+        packed = {key: int(value) for key, value in packed_stream_totals.items()}
+        total = diagnostics["total"]
+        if packed["payload_bits"] != total["payload_bits"]:
+            raise RuntimeError(
+                "Combined-stream payload accounting does not match the nested "
+                f"stage payloads: {packed['payload_bits']} != {total['payload_bits']}."
+            )
+        if packed["bit_errors"] != total["bit_errors"]:
+            raise RuntimeError(
+                "Combined-stream bit-error accounting does not match the decoded "
+                f"stage segments: {packed['bit_errors']} != {total['bit_errors']}."
+            )
+        for key in (
+            "ldpc_input_bits",
+            "ldpc_padding_bits",
+            "coded_bits",
+            "modulation_padding_bits",
+            "transmitted_bits",
+            "channel_symbols",
+            "bit_errors",
+        ):
+            total[key] = packed[key]
+        total["payload_bpp"] = _rate(total["payload_bits"], source_sizes[1])
+        total["coded_bpp"] = _rate(total["coded_bits"], source_sizes[1])
+        total["transmitted_bpp"] = _rate(
+            total["transmitted_bits"], source_sizes[1]
+        )
+        total["channel_uses_per_pixel"] = _rate(
+            total["channel_symbols"], source_sizes[1]
+        )
+        total["transmission_ratio"] = _rate(
+            total["channel_symbols"], source_sizes[2]
+        )
+        total["ber"] = _rate(total["bit_errors"], total["payload_bits"])
+
+        combined_stream = dict(packed)
+        combined_stream["source_pixels"] = int(source_sizes[1])
+        combined_stream["source_values"] = int(source_sizes[2])
+        combined_stream["payload_bpp"] = total["payload_bpp"]
+        combined_stream["coded_bpp"] = total["coded_bpp"]
+        combined_stream["transmitted_bpp"] = total["transmitted_bpp"]
+        combined_stream["channel_uses_per_pixel"] = total[
+            "channel_uses_per_pixel"
+        ]
+        combined_stream["transmission_ratio"] = total["transmission_ratio"]
+        combined_stream["ber"] = total["ber"]
+        diagnostics["combined_stream"] = combined_stream
     if rvq_enabled:
         diagnostics["rvq_quantization"] = _finalize_rvq_quantization(
             rvq_quantization_records or {}
@@ -479,7 +530,7 @@ def _transmit_ldpc_stream(
     ldpc_encode,
     ldpc_decode,
 ):
-    """Transmit exactly one scale/stage stream and expose both padding layers."""
+    """Transmit exactly one payload stream and expose both padding layers."""
     flat_bits = np.asarray(flat_bits, dtype=np.uint8).reshape(-1)
     payload_bits = len(flat_bits)
 
@@ -591,6 +642,7 @@ def evaluate_ldpc_channel(
     device,
     modulation="bpsk",
     return_diagnostics=False,
+    stream_packing="per_stage",
 ):
     from communications.ldpc_coding import ldpc_decode, ldpc_encode
 
@@ -601,6 +653,12 @@ def evaluate_ldpc_channel(
     }
     if modulation not in modulators:
         raise ValueError(f"Unsupported modulation: {modulation}")
+    stream_packing = str(stream_packing).strip().lower()
+    if stream_packing not in {"per_stage", "combined"}:
+        raise ValueError(
+            "stream_packing must be either 'per_stage' or 'combined', got "
+            f"{stream_packing!r}."
+        )
     modulate, calculate_llr = modulators[modulation]
     modulation_bits = _MODULATION_BITS[modulation]
 
@@ -611,6 +669,16 @@ def evaluate_ldpc_channel(
     records = {}
     rvq_quantization_records = {}
     single_stream_reference = {}
+    packed_stream_totals = {
+        "payload_bits": 0,
+        "ldpc_input_bits": 0,
+        "ldpc_padding_bits": 0,
+        "coded_bits": 0,
+        "modulation_padding_bits": 0,
+        "transmitted_bits": 0,
+        "channel_symbols": 0,
+        "bit_errors": 0,
+    }
     total_images = total_pixels = total_values = 0
     saw_rvq = None
 
@@ -634,7 +702,82 @@ def evaluate_ldpc_channel(
                 _stream_length_reference(payload_bits, ldpc_code, modulation_bits),
             )
 
-        if rvq_enabled:
+        if rvq_enabled and stream_packing == "combined":
+            segments = []
+            recovered_indices_list = [[] for _ in out["indices"]]
+            for scale_idx, (stage_indices, stage_ks) in enumerate(
+                zip(out["indices"], rvq_k_lists)
+            ):
+                for stage_idx, (indices, num_embeddings) in enumerate(
+                    zip(stage_indices, stage_ks)
+                ):
+                    flat_bits, original_shape, _ = index_tensor_to_bits(
+                        indices, num_embeddings
+                    )
+                    flat_bits = np.asarray(flat_bits, dtype=np.uint8).reshape(-1)
+                    segments.append(
+                        (
+                            scale_idx,
+                            stage_idx,
+                            indices,
+                            num_embeddings,
+                            original_shape,
+                            flat_bits,
+                        )
+                    )
+
+            combined_bits = np.concatenate(
+                [segment[-1] for segment in segments]
+            ).astype(np.uint8, copy=False)
+            decoded_bits, channel_stats = _transmit_ldpc_stream(
+                combined_bits,
+                target_snr,
+                ldpc_code,
+                device,
+                modulate,
+                calculate_llr,
+                modulation_bits,
+                ldpc_encode,
+                ldpc_decode,
+            )
+            _add_stream_lengths(
+                packed_stream_totals,
+                {"payload_bits": len(combined_bits), **channel_stats},
+            )
+
+            offset = 0
+            for (
+                scale_idx,
+                stage_idx,
+                indices,
+                num_embeddings,
+                original_shape,
+                sent_bits,
+            ) in segments:
+                end = offset + len(sent_bits)
+                recovered_bits = decoded_bits[offset:end]
+                offset = end
+                recovered = bits_to_index_tensor(
+                    recovered_bits, original_shape, num_embeddings
+                ).to(device)
+                recovered_indices_list[scale_idx].append(recovered)
+
+                key = (scale_idx, stage_idx)
+                records.setdefault(
+                    key, _new_stage_record(scale_idx, stage_idx, num_embeddings)
+                )
+                _update_stage_record(
+                    records[key], real_image, indices, recovered
+                )
+                records[key]["bit_errors"] += int(
+                    np.count_nonzero(recovered_bits != sent_bits)
+                )
+            if offset != len(decoded_bits):
+                raise RuntimeError(
+                    "Combined-stream decoded payload was not consumed exactly: "
+                    f"{offset} != {len(decoded_bits)}."
+                )
+        elif rvq_enabled:
             recovered_indices_list = []
             for scale_idx, (stage_indices, stage_ks) in enumerate(
                 zip(out["indices"], rvq_k_lists)
@@ -742,6 +885,12 @@ def evaluate_ldpc_channel(
         ldpc_code=ldpc_code,
         rvq_quantization_records=rvq_quantization_records,
         single_stream_reference=single_stream_reference,
+        stream_packing=stream_packing,
+        packed_stream_totals=(
+            packed_stream_totals
+            if bool(saw_rvq) and stream_packing == "combined"
+            else None
+        ),
     )
     result = (np.mean(ms_ssim_scores), np.mean(psnr_scores))
     return (*result, diagnostics) if return_diagnostics else result

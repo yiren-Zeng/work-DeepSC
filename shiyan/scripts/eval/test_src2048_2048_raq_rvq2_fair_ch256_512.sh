@@ -23,7 +23,7 @@ export SIMVQ_TEST_RAQ_RVQ_DEPTH="2"
 # Ordered per-scale RVQ stage sizes. Override at launch, for example:
 # SIMVQ_TEST_RAQ_RVQ_K_LISTS='32,64;8,2' bash scripts/eval/...
 # The same configuration can also be written as JSON: [[32,64],[8,2]].
-export SIMVQ_TEST_RAQ_RVQ_K_LISTS="${SIMVQ_TEST_RAQ_RVQ_K_LISTS:-4,4;4,4}"
+export SIMVQ_TEST_RAQ_RVQ_K_LISTS="${SIMVQ_TEST_RAQ_RVQ_K_LISTS:-64,32;4,4}"
 export SIMVQ_RAQ_MIN_TRG="2"
 export SIMVQ_RAQ_MAX_TRG="2048"
 export SIMVQ_RAQ_REPULSION_WEIGHT="0.00"

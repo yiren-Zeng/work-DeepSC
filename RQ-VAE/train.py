@@ -23,7 +23,11 @@ from utils.checkpoint_utils import (
 )
 
 
-RQ_MONITOR_QUANTIZER_TYPES = frozenset({"rq_ema", "residual_simvq"})
+RQ_MONITOR_QUANTIZER_TYPES = frozenset({
+    "rq_ema",
+    "residual_simvq",
+    "stagewise_residual_simvq",
+})
 
 
 def _uses_rq_monitoring(quantizer_type):
@@ -56,16 +60,36 @@ def build_optimizer_parameter_groups(
     frozen_embedding_names = []
 
     for name, parameter in model.named_parameters():
-        is_codebook_embedding = ".codebook.embed." in f".{name}"
+        is_stagewise_codebook = (
+            quantizer_type == "stagewise_residual_simvq"
+            and ".codebooks." in f".{name}"
+        )
+        is_codebook_embedding = (
+            ".codebook.embed." in f".{name}"
+            or (
+                is_stagewise_codebook
+                and ".embed." in f".{name}"
+            )
+        )
         is_projection = (
             ".codebook.proj." in f".{name}" or ".qbridge." in f".{name}"
+            or (
+                is_stagewise_codebook
+                and ".proj." in f".{name}"
+            )
         )
         if is_codebook_embedding:
             frozen_embedding_params.append(parameter)
             frozen_embedding_names.append(name)
-            if quantizer_type == "residual_simvq" and parameter.requires_grad:
+            if (
+                quantizer_type in {
+                    "residual_simvq", "stagewise_residual_simvq"
+                }
+                and parameter.requires_grad
+            ):
                 raise RuntimeError(
-                    "Residual-SimVQ base embeddings must remain frozen: " + name
+                    "Residual-SimVQ base embeddings must remain frozen: "
+                    + name
                 )
         if not parameter.requires_grad:
             continue
@@ -104,6 +128,11 @@ def build_optimizer_parameter_groups(
         and (
             ".codebook.proj." in f".{name}"
             or ".qbridge." in f".{name}"
+            or (
+                quantizer_type == "stagewise_residual_simvq"
+                and ".codebooks." in f".{name}"
+                and ".proj." in f".{name}"
+            )
         )
     }
     if projection_ids != expected_projection_ids:
@@ -126,13 +155,22 @@ def build_optimizer_parameter_groups(
 
 
 def projection_gradient_norms(model):
-    """Return one L2 gradient norm per scale's shared codebook projection."""
+    """Return one aggregate projection-gradient norm per quantized scale."""
     norms = []
     for quantizer in getattr(model, "vector_quantizers", []):
+        codebooks = []
         codebook = getattr(quantizer, "codebook", None)
-        projection = getattr(codebook, "proj", None)
+        if codebook is not None:
+            codebooks.append(codebook)
+        else:
+            codebooks.extend(list(getattr(quantizer, "codebooks", [])))
         squared_norm = None
-        if projection is not None:
+        seen_projections = set()
+        for stage_codebook in codebooks:
+            projection = getattr(stage_codebook, "proj", None)
+            if projection is None or id(projection) in seen_projections:
+                continue
+            seen_projections.add(id(projection))
             for parameter in projection.parameters():
                 if parameter.grad is None:
                     continue
@@ -405,6 +443,12 @@ def main():
             "  - Residual-SimVQ: shared projected codebook, "
             f"shared={cfg.RQ_SHARED_CODEBOOK}, projection_lr={cfg.CODEBOOK_PROJ_LR}"
         )
+    elif cfg.QUANTIZER_TYPE == "stagewise_residual_simvq":
+        print(
+            "  - Stagewise Residual-SimVQ: independent projected codebooks, "
+            f"K/depth={cfg.RQ_CODEBOOK_SIZE_LISTS}, "
+            f"projection_lr={cfg.CODEBOOK_PROJ_LR}"
+        )
     print(f"  - 逐层量化轴: {cfg.QUANTIZER_AXIS_LIST}")
     print(f"  - CVQ codeword shape: {cfg.CVQ_CODEWORD_SHAPES}")
     print(f"  - Nested channel dropout alpha: {cfg.NESTED_CHANNEL_DROPOUT_ALPHA}")
@@ -474,6 +518,7 @@ def main():
         rq_ema_decay=cfg.RQ_EMA_DECAY,
         rq_restart_unused_codes=cfg.RQ_RESTART_UNUSED_CODES,
         rq_shared_codebook=cfg.RQ_SHARED_CODEBOOK,
+        rq_codebook_size_lists=cfg.RQ_CODEBOOK_SIZE_LISTS,
     ).to(device)
 
     # 加载预训练权重（如果指定）
@@ -531,7 +576,9 @@ def main():
         f"码本变换层 {len(optimizer_audit['projection_names'])} 个 "
         f"(lr={cfg.CODEBOOK_PROJ_LR})"
     )
-    if cfg.QUANTIZER_TYPE == "residual_simvq":
+    if cfg.QUANTIZER_TYPE in {
+        "residual_simvq", "stagewise_residual_simvq"
+    }:
         print(
             "[Info] Residual-SimVQ optimizer audit: projections="
             f"{optimizer_audit['projection_names']}, frozen_embeddings="
@@ -635,7 +682,9 @@ def main():
             snr_desc = "clean" if current_snr is None else f"{current_snr:.2f} dB"
 
             if do_step:
-                if cfg.QUANTIZER_TYPE == "residual_simvq":
+                if cfg.QUANTIZER_TYPE in {
+                    "residual_simvq", "stagewise_residual_simvq"
+                }:
                     _accumulate_projection_gradient_norms(
                         train_rq_accumulator, deepsc_model
                     )
@@ -754,21 +803,28 @@ def main():
                 max_batches=20,
                 device=device
             )
-            if cfg.QUANTIZER_TYPE == "residual_simvq":
+            if cfg.QUANTIZER_TYPE in {
+                "residual_simvq", "stagewise_residual_simvq"
+            }:
                 for scale_index, scale_stats in enumerate(cb_stats["src"]):
                     scale_stats["projection_grad_norm"] = (
                         train_rq_diagnostics[scale_index][
                             "projection_grad_norm"
                         ]
                     )
-            print_codebook_utilization(cb_stats, cfg.NUM_EMBEDDINGS_LIST)
+            codebook_sizes = (
+                cfg.RQ_CODEBOOK_SIZE_LISTS
+                if cfg.QUANTIZER_TYPE == "stagewise_residual_simvq"
+                else cfg.NUM_EMBEDDINGS_LIST
+            )
+            print_codebook_utilization(cb_stats, codebook_sizes)
             write_codebook_tensorboard(writer, cb_stats, epoch)
             append_codebook_records(
                 cfg.CODEBOOK_METRICS_PATH,
                 run_id,
                 epoch + 1,
                 cb_stats,
-                cfg.NUM_EMBEDDINGS_LIST,
+                codebook_sizes,
             )
 
         is_best = avg_val_loss < best_val_loss

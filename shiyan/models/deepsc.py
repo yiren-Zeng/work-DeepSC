@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import os
+import math
 import random
 from .semantic_encoder import SemanticEncoder
 from .semantic_decoder import SemanticDecoder
@@ -8,9 +9,14 @@ from .vector_quantizer import ChannelwiseVectorQuantizer, VanillaVectorQuantizer
 from .channel import FiniteBlocklengthChannel
 from .attention import BottleneckAttentionStack
 from .raq import RAQ
+from .independent_raq_rvq import quantize_independent_raq_rvq
+from .shared_raq_rvq import quantize_shared_raq_rvq
 from .swinir_enhance import SwinIREnhance
 from utils.math_utils import sample_trg
-from utils.raq_rvq import resolve_rvq_stage_k_lists
+from utils.raq_rvq import (
+    resolve_rvq_stage_k_lists,
+    validate_independent_rvq_k_lists,
+)
 
 
 class DeepSC(nn.Module):
@@ -62,6 +68,11 @@ class DeepSC(nn.Module):
                  raq_routed_src_threshold=16,
                  use_dynamic_raq_rvq=False,
                  dynamic_raq_rvq_zero_codeword=True,
+                 use_shared_raq_rvq=False,
+                 shared_raq_rvq_depth=2,
+                 use_independent_raq_rvq=False,
+                 independent_raq_rvq_depth=2,
+                 independent_raq_rvq_k_lists=None,
                  test_use_raq_rvq=False,
                  test_raq_rvq_depth=2,
                  test_raq_rvq_k_lists=None,
@@ -183,8 +194,36 @@ class DeepSC(nn.Module):
         self.use_raq = bool(use_raq)
         self.use_dynamic_raq_rvq = bool(use_dynamic_raq_rvq)
         self.dynamic_raq_rvq_zero_codeword = bool(dynamic_raq_rvq_zero_codeword)
+        self.use_shared_raq_rvq = bool(use_shared_raq_rvq)
+        self.shared_raq_rvq_depth = int(shared_raq_rvq_depth)
+        self.use_independent_raq_rvq = bool(use_independent_raq_rvq)
+        self.independent_raq_rvq_depth = int(independent_raq_rvq_depth)
+        self.independent_raq_rvq_k_lists = (
+            [list(stage_sizes) for stage_sizes in independent_raq_rvq_k_lists]
+            if independent_raq_rvq_k_lists is not None else None
+        )
         if self.use_dynamic_raq_rvq and not self.use_raq:
             raise ValueError("dynamic RAQ-RVQ requires use_raq=True")
+        if self.use_shared_raq_rvq and not self.use_raq:
+            raise ValueError("shared RAQ-RVQ requires use_raq=True")
+        if self.use_independent_raq_rvq and not self.use_raq:
+            raise ValueError("independent RAQ-RVQ requires use_raq=True")
+        if sum((
+            int(self.use_shared_raq_rvq),
+            int(self.use_dynamic_raq_rvq),
+            int(self.use_independent_raq_rvq),
+        )) > 1:
+            raise ValueError(
+                "shared, dynamic, and independent RAQ-RVQ are distinct "
+                "training modes"
+            )
+        if self.use_shared_raq_rvq and self.shared_raq_rvq_depth != 2:
+            raise ValueError("shared RAQ-RVQ currently requires depth=2")
+        if (
+            self.use_independent_raq_rvq
+            and self.independent_raq_rvq_depth != 2
+        ):
+            raise ValueError("independent RAQ-RVQ currently requires depth=2")
         # Plain inference controls only: these do not add parameters, buffers,
         # or modules and therefore do not change the checkpoint state_dict.
         self.test_use_raq_rvq = bool(test_use_raq_rvq)
@@ -195,11 +234,34 @@ class DeepSC(nn.Module):
         )
         if self.test_use_raq_rvq and not self.use_raq:
             raise ValueError("test-time RAQ-RVQ requires use_raq=True")
+        if self.test_use_raq_rvq and self.use_shared_raq_rvq:
+            raise ValueError(
+                "trained shared RAQ-RVQ does not use the legacy zero-shot test mode"
+            )
+        if self.test_use_raq_rvq and self.use_independent_raq_rvq:
+            raise ValueError(
+                "trained independent RAQ-RVQ does not use the legacy "
+                "zero-shot test mode"
+            )
         if self.test_use_raq_rvq and self.test_raq_rvq_depth != 2:
             raise ValueError("test-time RAQ-RVQ currently supports depth=2 only")
         self.raq_recon_grad_mode = str(raq_recon_grad_mode).lower()
         if self.raq_recon_grad_mode not in {"ste", "dual"}:
             raise ValueError("raq_recon_grad_mode must be 'ste' or 'dual'")
+        if self.use_shared_raq_rvq and self.raq_recon_grad_mode != "ste":
+            raise ValueError("shared RAQ-RVQ requires raq_recon_grad_mode='ste'")
+        if (
+            self.use_independent_raq_rvq
+            and self.raq_recon_grad_mode != "ste"
+        ):
+            raise ValueError(
+                "independent RAQ-RVQ requires raq_recon_grad_mode='ste'"
+            )
+        if self.use_independent_raq_rvq and self.raq_routed_src_enabled:
+            raise ValueError(
+                "independent RAQ-RVQ currently requires routed source "
+                "codebooks to be disabled"
+            )
         self.raq_generator_type = str(raq_generator_type).replace("-", "_").lower()
         if self.raq_generator_type not in {"encoder_decoder", "decoder_only"}:
             raise ValueError("raq_generator_type must be 'encoder_decoder' or 'decoder_only'")
@@ -291,6 +353,16 @@ class DeepSC(nn.Module):
                     min_k=self.raq_min_trg_list,
                     max_k=self.raq_max_trg_list,
                 )
+            if self.use_independent_raq_rvq:
+                self.independent_raq_rvq_k_lists = (
+                    validate_independent_rvq_k_lists(
+                        self.independent_raq_rvq_k_lists,
+                        num_scales=num_downsample_blocks,
+                        rvq_depth=self.independent_raq_rvq_depth,
+                        min_k=self.raq_min_trg_list,
+                        max_k=self.raq_max_trg_list,
+                    )
+                )
             # self.raq_target_list = list(raq_target_list)
             # if len(self.raq_target_list) != num_downsample_blocks:
             #     raise ValueError("raq_target_list length must match num_downsample_blocks")
@@ -310,7 +382,7 @@ class DeepSC(nn.Module):
                         generator_type=self.raq_generator_type,
                     )
                 )
-                if self.use_dynamic_raq_rvq:
+                if self.use_dynamic_raq_rvq or self.use_independent_raq_rvq:
                     self.raqs_rvq_stage2.append(
                         RAQ(
                             embedding_dim=Di,
@@ -319,7 +391,7 @@ class DeepSC(nn.Module):
                             n_embed_max_trg=max_k,
                             device=device,
                             generator_type=self.raq_generator_type,
-                            allocation_conditioned=True,
+                            allocation_conditioned=self.use_dynamic_raq_rvq,
                         )
                     )
 
@@ -452,6 +524,262 @@ class DeepSC(nn.Module):
         if self.dynamic_raq_rvq_zero_codeword:
             codebook = torch.cat([torch.zeros_like(codebook[:1]), codebook[1:]], dim=0)
         return codebook
+
+    def _forward_shared_raq_rvq(
+        self,
+        encoder_features,
+        target_list,
+        use_channel,
+        snr_tensor,
+        current_rc,
+        current_mod_bits,
+        ste_channel,
+    ):
+        """Train the strict shared-codebook RAQ + residual SimVQ branch.
+
+        Each scale generates exactly one dynamic codebook and reuses that same
+        tensor at every residual depth.  There is no reserved zero codeword and
+        no residual-monotonicity constraint, matching the original
+        Residual-SimVQ contract.
+        """
+        quantized_raq = []
+        z_q_raq_list = []
+        vq_losses_raq = []
+        codebooks_flat = []
+        codebooks_nested = []
+        indices_nested = []
+        source_codebooks_list = []
+        residual_mse_list = []
+        loss_details_per_scale = []
+
+        for i, feat in enumerate(encoder_features):
+            shared_k = int(target_list[i])
+            source_quantizer, _, _ = self._select_source_quantizer(i, shared_k)
+            source_codebook = source_quantizer.transformed_weight()
+            source_codebooks_list.append(source_codebook)
+
+            # Generate once before entering the residual-depth logic.  Calling
+            # the Transformer once per depth would violate strict sharing in
+            # train mode because its dropout can produce different tensors.
+            shared_codebook = self._generate_raq_codebook(
+                i, shared_k, source_codebook=source_codebook
+            )
+            rvq = quantize_shared_raq_rvq(
+                source_quantizer,
+                feat,
+                shared_codebook,
+                depth=self.shared_raq_rvq_depth,
+            )
+
+            clean_sum_raw = rvq["quantized_raw"]
+            quantized_clean = rvq["quantized"]
+            encoding_indices = rvq["indices"]
+            stage_indices = [
+                encoding_indices[..., depth_index]
+                for depth_index in range(self.shared_raq_rvq_depth)
+            ]
+
+            if use_channel:
+                # Preserve the original Residual-SimVQ channel contract: the
+                # BHWD index tensor is corrupted as one same-K payload.
+                corrupted_indices, _ = self.channel.apply_channel_noise(
+                    encoding_indices,
+                    shared_k,
+                    snr_tensor,
+                    current_rc,
+                    mod_bits=current_mod_bits,
+                )
+                noisy_sum_raw = torch.zeros_like(clean_sum_raw)
+                for depth_index in range(self.shared_raq_rvq_depth):
+                    noisy_sum_raw = noisy_sum_raw + (
+                        source_quantizer.get_quantized_features(
+                            corrupted_indices[..., depth_index],
+                            output_spatial_size=feat.shape[-2:],
+                            codebook_weight=shared_codebook,
+                        )
+                    )
+                quantized_final = (
+                    quantized_clean
+                    + (noisy_sum_raw - clean_sum_raw).detach()
+                    if ste_channel
+                    else noisy_sum_raw
+                )
+            else:
+                quantized_final = quantized_clean
+
+            quantized_raq.append(quantized_final)
+            z_q_raq_list.append(clean_sum_raw)
+            vq_losses_raq.append(rvq["loss"])
+            codebooks_flat.append(shared_codebook)
+            codebooks_nested.append(
+                [shared_codebook] * self.shared_raq_rvq_depth
+            )
+            indices_nested.append(stage_indices)
+            residual_mse_list.append(
+                list(rvq["residual_mse_per_depth"].unbind())
+            )
+            loss_details_per_scale.append({
+                "codebook_loss": rvq["codebook_loss"],
+                "commitment_loss": rvq["commitment_loss"],
+                "codebook_loss_per_depth": rvq[
+                    "codebook_loss_per_depth"
+                ],
+                "commitment_loss_per_depth": rvq[
+                    "commitment_loss_per_depth"
+                ],
+            })
+
+        reconstructed_images_raq = self._decode_features(quantized_raq)
+        return {
+            "reconstructed_images": reconstructed_images_raq,
+            "vq_losses": vq_losses_raq,
+            "reconstructed_images_raq": reconstructed_images_raq,
+            "vq_losses_raq": vq_losses_raq,
+            "source_codebooks_list": source_codebooks_list,
+            "W_trg_list": codebooks_flat,
+            "rvq_codebooks_list": codebooks_nested,
+            "rvq_indices_list": indices_nested,
+            "z_q_raq_list": z_q_raq_list,
+            "raq_target_list": list(target_list),
+            "rvq_k_lists": [
+                [int(k)] * self.shared_raq_rvq_depth for k in target_list
+            ],
+            "rvq_residual_mse_list": residual_mse_list,
+            "rvq_loss_details": loss_details_per_scale,
+            "shared_raq_rvq_enabled": True,
+            "shared_raq_rvq_depth": self.shared_raq_rvq_depth,
+        }
+
+    def _forward_independent_raq_rvq(
+        self,
+        encoder_features,
+        rvq_k_lists,
+        use_channel,
+        snr_tensor,
+        current_rc,
+        current_mod_bits,
+        ste_channel,
+    ):
+        """Train four independently generated scale/stage RAQ codebooks."""
+        rvq_k_lists = validate_independent_rvq_k_lists(
+            rvq_k_lists,
+            num_scales=len(encoder_features),
+            rvq_depth=self.independent_raq_rvq_depth,
+            min_k=self.raq_min_trg_list,
+            max_k=self.raq_max_trg_list,
+        )
+        quantized_raq = []
+        z_q_raq_list = []
+        vq_losses_raq = []
+        codebooks_flat = []
+        codebooks_nested = []
+        indices_nested = []
+        source_codebooks_list = []
+        residual_mse_list = []
+        loss_details_per_scale = []
+
+        for scale_index, (feat, stage_k_list) in enumerate(
+            zip(encoder_features, rvq_k_lists)
+        ):
+            source_quantizer, _, _ = self._select_source_quantizer(
+                scale_index, max(stage_k_list)
+            )
+            source_codebook = source_quantizer.transformed_weight()
+            source_codebooks_list.append(source_codebook)
+            stage_generators = (
+                self.raqs[scale_index],
+                self.raqs_rvq_stage2[scale_index],
+            )
+            stage_codebooks = [
+                generator.generate_codebook_transformer(
+                    int(stage_k), source_codebook
+                )
+                for generator, stage_k in zip(
+                    stage_generators, stage_k_list
+                )
+            ]
+            rvq = quantize_independent_raq_rvq(
+                source_quantizer,
+                feat,
+                stage_codebooks,
+            )
+            clean_sum_raw = rvq["quantized_raw"]
+            if use_channel:
+                noisy_sum_raw = torch.zeros_like(clean_sum_raw)
+                for stage_index, (
+                    stage_indices,
+                    stage_k,
+                    stage_codebook,
+                ) in enumerate(zip(
+                    rvq["indices"],
+                    stage_k_list,
+                    stage_codebooks,
+                )):
+                    corrupted_indices, _ = self.channel.apply_channel_noise(
+                        stage_indices,
+                        int(stage_k),
+                        snr_tensor,
+                        current_rc,
+                        mod_bits=current_mod_bits,
+                    )
+                    noisy_sum_raw = noisy_sum_raw + (
+                        source_quantizer.get_quantized_features(
+                            corrupted_indices,
+                            output_spatial_size=feat.shape[-2:],
+                            codebook_weight=stage_codebook,
+                        )
+                    )
+                quantized_final = (
+                    rvq["quantized"]
+                    + (noisy_sum_raw - clean_sum_raw).detach()
+                    if ste_channel
+                    else noisy_sum_raw
+                )
+            else:
+                quantized_final = rvq["quantized"]
+
+            quantized_raq.append(quantized_final)
+            z_q_raq_list.append(clean_sum_raw)
+            vq_losses_raq.append(rvq["loss"])
+            codebooks_flat.extend(stage_codebooks)
+            codebooks_nested.append(stage_codebooks)
+            indices_nested.append(rvq["indices"])
+            residual_mse_list.append(
+                list(rvq["residual_mse_per_depth"].unbind())
+            )
+            loss_details_per_scale.append({
+                "codebook_loss": rvq["codebook_loss"],
+                "commitment_loss": rvq["commitment_loss"],
+                "codebook_loss_per_depth": rvq[
+                    "codebook_loss_per_depth"
+                ],
+                "commitment_loss_per_depth": rvq[
+                    "commitment_loss_per_depth"
+                ],
+            })
+
+        reconstructed_images_raq = self._decode_features(quantized_raq)
+        return {
+            "reconstructed_images": reconstructed_images_raq,
+            "vq_losses": vq_losses_raq,
+            "reconstructed_images_raq": reconstructed_images_raq,
+            "vq_losses_raq": vq_losses_raq,
+            "source_codebooks_list": source_codebooks_list,
+            "W_trg_list": codebooks_flat,
+            "rvq_codebooks_list": codebooks_nested,
+            "rvq_indices_list": indices_nested,
+            "z_q_raq_list": z_q_raq_list,
+            "raq_target_list": [
+                list(stage_sizes) for stage_sizes in rvq_k_lists
+            ],
+            "rvq_k_lists": [
+                list(stage_sizes) for stage_sizes in rvq_k_lists
+            ],
+            "rvq_residual_mse_list": residual_mse_list,
+            "rvq_loss_details": loss_details_per_scale,
+            "independent_raq_rvq_enabled": True,
+            "independent_raq_rvq_depth": self.independent_raq_rvq_depth,
+        }
 
     def _forward_dynamic_raq_rvq(
         self,
@@ -591,7 +919,29 @@ class DeepSC(nn.Module):
 
         encoder_features = self.semantic_encoder(x)
         encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
-        target_list = list(raq_trg_list or self._sample_raq_target_list()) if self.use_raq else None
+        if self.use_raq and self.use_independent_raq_rvq:
+            independent_k_lists = validate_independent_rvq_k_lists(
+                (
+                    raq_rvq_k_lists
+                    if raq_rvq_k_lists is not None
+                    else self.independent_raq_rvq_k_lists
+                ),
+                num_scales=len(encoder_features),
+                rvq_depth=self.independent_raq_rvq_depth,
+                min_k=self.raq_min_trg_list,
+                max_k=self.raq_max_trg_list,
+            )
+            # Independent mode disables routed source codebooks.  This flat
+            # representative keeps the unchanged source branch interface.
+            target_list = [
+                max(stage_sizes) for stage_sizes in independent_k_lists
+            ]
+        else:
+            independent_k_lists = None
+            target_list = (
+                list(raq_trg_list or self._sample_raq_target_list())
+                if self.use_raq else None
+            )
 
         quantized_src = []
         z_q_src_list = [] if self.use_raq else None
@@ -651,6 +1001,36 @@ class DeepSC(nn.Module):
             "channel_prob": self.channel_prob,
         }
         if not self.use_raq:
+            return result
+
+        if self.use_shared_raq_rvq:
+            rvq_result = self._forward_shared_raq_rvq(
+                encoder_features,
+                target_list,
+                use_channel,
+                snr_tensor,
+                current_rc,
+                current_mod_bits,
+                ste_channel,
+            )
+            rvq_result["z_q_src_list"] = z_q_src_list
+            rvq_result["source_route_list"] = source_route_list
+            result.update(rvq_result)
+            return result
+
+        if self.use_independent_raq_rvq:
+            rvq_result = self._forward_independent_raq_rvq(
+                encoder_features,
+                independent_k_lists,
+                use_channel,
+                snr_tensor,
+                current_rc,
+                current_mod_bits,
+                ste_channel,
+            )
+            rvq_result["z_q_src_list"] = z_q_src_list
+            rvq_result["source_route_list"] = source_route_list
+            result.update(rvq_result)
             return result
 
         if self.use_dynamic_raq_rvq:
@@ -744,6 +1124,254 @@ class DeepSC(nn.Module):
             raq_trg_list=raq_trg_list,
             raq_rvq_k_lists=raq_rvq_k_lists,
         )
+
+    def _forward_test_shared_raq_rvq(self, encoder_features):
+        """Encode with the trained strict shared-codebook RAQ-RVQ branch."""
+        indices_by_scale = []
+        codebooks_by_scale = []
+        feature_shapes = []
+        rvq_k_lists = []
+        diagnostics = []
+
+        for i, feat in enumerate(encoder_features):
+            shared_k = int(self.raq_target_list[i])
+            min_k = self.raq_min_trg_list[i]
+            max_k = self.raq_max_trg_list[i]
+            if not min_k <= shared_k <= max_k:
+                raise ValueError(
+                    f"shared RAQ-RVQ scale {i} K={shared_k} is outside "
+                    f"[{min_k},{max_k}]"
+                )
+
+            source_quantizer, _, source_route = self._select_source_quantizer(
+                i, shared_k
+            )
+            source_codebook = source_quantizer.transformed_weight()
+            shared_codebook = self._generate_raq_codebook(
+                i, shared_k, source_codebook=source_codebook
+            )
+            rvq = quantize_shared_raq_rvq(
+                source_quantizer,
+                feat,
+                shared_codebook,
+                depth=self.shared_raq_rvq_depth,
+            )
+
+            encoding_indices = rvq["indices"]
+            stage_indices = [
+                encoding_indices[..., depth_index]
+                for depth_index in range(self.shared_raq_rvq_depth)
+            ]
+            stage_k_list = [shared_k] * self.shared_raq_rvq_depth
+            residual_mse_energies = [
+                float(value.item())
+                for value in rvq["residual_mse_per_depth"]
+            ]
+            bits_per_index = shared_k.bit_length() - 1
+            stage_diagnostics = []
+            for stage_index, (indices, residual_mse) in enumerate(
+                zip(stage_indices, residual_mse_energies)
+            ):
+                stage_diagnostics.append({
+                    "stage_index": stage_index,
+                    "k": shared_k,
+                    "bits_per_index": bits_per_index,
+                    "index_min": int(indices.detach().min().item()),
+                    "index_max": int(indices.detach().max().item()),
+                    "codebook_size": int(shared_codebook.shape[0]),
+                    "payload_bits": int(
+                        indices.numel() * bits_per_index
+                    ),
+                    "residual_mse_energy": residual_mse,
+                })
+
+            token_count = int(
+                feat.shape[0] * feat.shape[-2] * feat.shape[-1]
+            )
+            payload_bits = sum(
+                stage["payload_bits"] for stage in stage_diagnostics
+            )
+            expected_payload_bits = (
+                token_count
+                * self.shared_raq_rvq_depth
+                * bits_per_index
+            )
+            diagnostics.append({
+                "scale_index": i,
+                "source_route": source_route,
+                # This is the bit-equivalent single-stage size used only by
+                # legacy diagnostics; the generated codebook size is shared_k.
+                "k_total": shared_k ** self.shared_raq_rvq_depth,
+                "shared_k": shared_k,
+                "stage_k_list": stage_k_list,
+                "input_mse_energy": float(
+                    feat.detach().pow(2).mean().item()
+                ),
+                "residual_mse_energies": residual_mse_energies,
+                "final_residual_mse_energy": residual_mse_energies[-1],
+                "quantized_sum_mse_energy": float(
+                    rvq["quantized_raw"].detach().pow(2).mean().item()
+                ),
+                "stage_diagnostics": stage_diagnostics,
+                "payload_bits": payload_bits,
+                "baseline_payload_bits": expected_payload_bits,
+                "bit_budget_matches": (
+                    payload_bits == expected_payload_bits
+                ),
+                "shared_codebook_identity_verified": all(
+                    codebook is shared_codebook
+                    for codebook in (
+                        [shared_codebook] * self.shared_raq_rvq_depth
+                    )
+                ),
+            })
+            indices_by_scale.append(stage_indices)
+            codebooks_by_scale.append(
+                [shared_codebook] * self.shared_raq_rvq_depth
+            )
+            feature_shapes.append(tuple(feat.shape[-2:]))
+            rvq_k_lists.append(stage_k_list)
+
+        return {
+            "indices": indices_by_scale,
+            "feature_shapes": feature_shapes,
+            "num_embeddings_list": rvq_k_lists,
+            "branch": "shared_raq_rvq",
+            "codebooks": codebooks_by_scale,
+            "raq_target_list": list(self.raq_target_list),
+            "rvq_k_lists": rvq_k_lists,
+            "test_raq_rvq_enabled": True,
+            "shared_raq_rvq_enabled": True,
+            "rvq_depth": self.shared_raq_rvq_depth,
+            "rvq_diagnostics": diagnostics,
+        }
+
+    def _forward_test_independent_raq_rvq(self, encoder_features):
+        """Encode with four trained, independently generated RAQ codebooks."""
+        rvq_k_lists = validate_independent_rvq_k_lists(
+            self.independent_raq_rvq_k_lists,
+            num_scales=len(encoder_features),
+            rvq_depth=self.independent_raq_rvq_depth,
+            min_k=self.raq_min_trg_list,
+            max_k=self.raq_max_trg_list,
+        )
+        indices_by_scale = []
+        codebooks_by_scale = []
+        feature_shapes = []
+        diagnostics = []
+
+        for scale_index, (feat, stage_k_list) in enumerate(
+            zip(encoder_features, rvq_k_lists)
+        ):
+            source_quantizer, _, source_route = (
+                self._select_source_quantizer(
+                    scale_index, max(stage_k_list)
+                )
+            )
+            source_codebook = source_quantizer.transformed_weight()
+            stage_generators = (
+                self.raqs[scale_index],
+                self.raqs_rvq_stage2[scale_index],
+            )
+            stage_codebooks = [
+                generator.generate_codebook_transformer(
+                    int(stage_k), source_codebook
+                )
+                for generator, stage_k in zip(
+                    stage_generators, stage_k_list
+                )
+            ]
+            rvq = quantize_independent_raq_rvq(
+                source_quantizer,
+                feat,
+                stage_codebooks,
+            )
+            residual_mse_energies = [
+                float(value.item())
+                for value in rvq["residual_mse_per_depth"]
+            ]
+            stage_diagnostics = []
+            for stage_index, (
+                indices,
+                stage_k,
+                stage_codebook,
+                residual_mse,
+            ) in enumerate(zip(
+                rvq["indices"],
+                stage_k_list,
+                stage_codebooks,
+                residual_mse_energies,
+            )):
+                bits_per_index = int(stage_k).bit_length() - 1
+                stage_diagnostics.append({
+                    "stage_index": stage_index,
+                    "k": int(stage_k),
+                    "bits_per_index": bits_per_index,
+                    "index_min": int(indices.detach().min().item()),
+                    "index_max": int(indices.detach().max().item()),
+                    "codebook_size": int(stage_codebook.shape[0]),
+                    "payload_bits": int(
+                        indices.numel() * bits_per_index
+                    ),
+                    "residual_mse_energy": residual_mse,
+                })
+
+            token_count = int(
+                feat.shape[0] * feat.shape[-2] * feat.shape[-1]
+            )
+            expected_payload_bits = token_count * sum(
+                int(stage_k).bit_length() - 1
+                for stage_k in stage_k_list
+            )
+            payload_bits = sum(
+                stage["payload_bits"] for stage in stage_diagnostics
+            )
+            diagnostics.append({
+                "scale_index": scale_index,
+                "source_route": source_route,
+                "k_total": math.prod(stage_k_list),
+                "stage_k_list": list(stage_k_list),
+                "input_mse_energy": float(
+                    feat.detach().pow(2).mean().item()
+                ),
+                "residual_mse_energies": residual_mse_energies,
+                "final_residual_mse_energy": residual_mse_energies[-1],
+                "quantized_sum_mse_energy": float(
+                    rvq["quantized_raw"].detach().pow(2).mean().item()
+                ),
+                "stage_diagnostics": stage_diagnostics,
+                "payload_bits": payload_bits,
+                "baseline_payload_bits": expected_payload_bits,
+                "bit_budget_matches": (
+                    payload_bits == expected_payload_bits
+                ),
+                "independent_codebook_identity_verified": (
+                    stage_codebooks[0] is not stage_codebooks[1]
+                ),
+            })
+            indices_by_scale.append(rvq["indices"])
+            codebooks_by_scale.append(stage_codebooks)
+            feature_shapes.append(tuple(feat.shape[-2:]))
+
+        return {
+            "indices": indices_by_scale,
+            "feature_shapes": feature_shapes,
+            "num_embeddings_list": [
+                list(stage_sizes) for stage_sizes in rvq_k_lists
+            ],
+            "branch": "independent_raq_rvq",
+            "codebooks": codebooks_by_scale,
+            "raq_target_list": [
+                list(stage_sizes) for stage_sizes in rvq_k_lists
+            ],
+            "rvq_k_lists": [
+                list(stage_sizes) for stage_sizes in rvq_k_lists
+            ],
+            "test_raq_rvq_enabled": True,
+            "independent_raq_rvq_enabled": True,
+            "rvq_depth": self.independent_raq_rvq_depth,
+            "rvq_diagnostics": diagnostics,
+        }
 
     def _forward_test_raq_rvq(self, encoder_features):
         """Build nested two-stage RAQ indices/codebooks for each U-Net scale.
@@ -861,6 +1489,12 @@ class DeepSC(nn.Module):
         encoder_features[-1] = self.bottleneck_attention(encoder_features[-1])
         if self.quantizer_type == "none":
             return {"indices": encoder_features}
+        if self.use_raq and self.use_shared_raq_rvq:
+            return self._forward_test_shared_raq_rvq(encoder_features)
+        if self.use_raq and self.use_independent_raq_rvq:
+            return self._forward_test_independent_raq_rvq(
+                encoder_features
+            )
         if self.use_raq and self.test_use_raq_rvq:
             return self._forward_test_raq_rvq(encoder_features)
         indices_list = []

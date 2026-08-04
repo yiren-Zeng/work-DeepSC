@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import math
 
+from utils.bit_utils import bits_per_index
+
 
 class FiniteBlocklengthChannel(nn.Module):
     def __init__(self, channel_coding_rate, coded_block_length_bits, device):
@@ -38,7 +40,69 @@ class FiniteBlocklengthChannel(nn.Module):
 
         return ber
 
-    def apply_channel_noise(self, indices, num_embeddings, snr_db, rc=None, mod_bits=2):
+    @staticmethod
+    def _normalize_num_embeddings(num_embeddings):
+        if isinstance(num_embeddings, (list, tuple)):
+            if not num_embeddings:
+                raise ValueError(
+                    "per-depth num_embeddings must not be empty"
+                )
+            normalized = [int(value) for value in num_embeddings]
+            for value in normalized:
+                bits_per_index(value)
+            return normalized
+
+        normalized = int(num_embeddings)
+        bits_per_index(normalized)
+        return normalized
+
+    @staticmethod
+    def _apply_fixed_width_noise(indices, num_embeddings, ber):
+        width = bits_per_index(num_embeddings)
+        bits = torch.zeros(
+            (*indices.shape, width),
+            device=indices.device,
+            dtype=torch.float,
+        )
+
+        for bit_index in range(width):
+            bits[..., bit_index] = ((indices >> bit_index) & 1).float()
+
+        if isinstance(ber, torch.Tensor):
+            probability = ber.to(device=indices.device, dtype=bits.dtype)
+        else:
+            probability = float(ber)
+        mask = torch.bernoulli(torch.ones_like(bits) * probability)
+        corrupted_bits = torch.abs(bits - mask)
+
+        corrupted_indices = torch.zeros_like(indices)
+        for bit_index in range(width):
+            corrupted_indices += (
+                corrupted_bits[..., bit_index].to(dtype=indices.dtype)
+                * (2 ** bit_index)
+            )
+
+        return torch.clamp(
+            corrupted_indices, 0, num_embeddings - 1
+        )
+
+    def apply_channel_noise(
+        self,
+        indices,
+        num_embeddings,
+        snr_db,
+        rc=None,
+        mod_bits=2,
+    ):
+        num_embeddings = self._normalize_num_embeddings(num_embeddings)
+        if isinstance(num_embeddings, list):
+            if indices.ndim < 1 or indices.shape[-1] != len(num_embeddings):
+                actual_depth = indices.shape[-1] if indices.ndim >= 1 else None
+                raise ValueError(
+                    f"indices has depth {actual_depth}, but num_embeddings "
+                    f"specifies {len(num_embeddings)} depths"
+                )
+
         ber = self.compute_ber(snr_db, rc=rc, mod_bits=mod_bits)
 
         if isinstance(ber, torch.Tensor):
@@ -47,19 +111,19 @@ class FiniteBlocklengthChannel(nn.Module):
         elif ber < 1e-9:
             return indices, ber
 
-        bits_per_token = int(math.ceil(math.log2(num_embeddings)))
-        bits = torch.zeros((*indices.shape, bits_per_token), device=self.device, dtype=torch.float)
-
-        for i in range(bits_per_token):
-            bits[..., i] = ((indices >> i) & 1).float()
-
-        mask = torch.bernoulli(torch.full_like(bits, ber))
-        corrupted_bits = torch.abs(bits - mask)
-
-        corrupted_indices = torch.zeros_like(indices)
-        for i in range(bits_per_token):
-            corrupted_indices += corrupted_bits[..., i].long() * (2 ** i)
-
-        corrupted_indices = torch.clamp(corrupted_indices, 0, num_embeddings - 1)
+        if isinstance(num_embeddings, list):
+            corrupted_indices = torch.empty_like(indices)
+            for depth_index, depth_num_embeddings in enumerate(num_embeddings):
+                corrupted_indices[..., depth_index] = (
+                    self._apply_fixed_width_noise(
+                        indices[..., depth_index],
+                        depth_num_embeddings,
+                        ber,
+                    )
+                )
+        else:
+            corrupted_indices = self._apply_fixed_width_noise(
+                indices, num_embeddings, ber
+            )
 
         return corrupted_indices, ber

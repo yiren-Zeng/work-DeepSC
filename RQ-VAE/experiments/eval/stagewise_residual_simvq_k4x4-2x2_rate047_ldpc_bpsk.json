@@ -1,0 +1,56 @@
+{
+  "checkpoint": "checkpoints/quality_v2_B_larger_rate047_stagewise_residual_simvq_unet2_ds8x2_k4x4-2x2_d2-2/best_vq_deepsc.pth",
+  "quantizer_type": "stagewise_residual_simvq",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "embedding_dim_list": [
+    256,
+    512
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "rq_codebook_size_lists": [
+    [
+      4,
+      4
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "rq_ema_decay": 0.99,
+  "rq_restart_unused_codes": false,
+  "rq_shared_codebook": false,
+  "source_bits_per_256_image": 4608.0,
+  "source_bpp": 0.0703125,
+  "transmission_ratio": 0.046875,
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "results": {
+    "0": {
+      "ms_ssim": 0.8948479116542659,
+      "psnr": 24.19539178411166
+    },
+    "3": {
+      "ms_ssim": 0.8973264523316556,
+      "psnr": 24.346987158060074
+    },
+    "6": {
+      "ms_ssim": 0.8973264523316556,
+      "psnr": 24.346987158060074
+    },
+    "9": {
+      "ms_ssim": 0.8973264523316556,
+      "psnr": 24.346987158060074
+    },
+    "12": {
+      "ms_ssim": 0.8973264523316556,
+      "psnr": 24.346987158060074
+    }
+  }
+}

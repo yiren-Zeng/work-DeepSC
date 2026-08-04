@@ -191,6 +191,51 @@ class RvqEvaluationTest(unittest.TestCase):
         self.assertTrue(total["payload_bits_match_single_stage_budget"])
         json.dumps(diagnostics)
 
+    def test_combined_packing_uses_one_ldpc_stream_and_restores_four_stages(self):
+        model = _RvqModel()
+        call_lengths = []
+        fake_ldpc = _fake_ldpc_module(call_lengths)
+        with mock.patch.dict(
+            sys.modules, {"communications.ldpc_coding": fake_ldpc}
+        ), mock.patch.object(
+            quality, "awgn_channel", side_effect=lambda symbols, snr: symbols
+        ), mock.patch.object(
+            quality, "_image_quality", return_value=(1.0, 100.0)
+        ):
+            ms_ssim, psnr, diagnostics = quality.evaluate_ldpc_channel(
+                model,
+                self.loader,
+                [2048, 2048],
+                100,
+                self.code,
+                "cpu",
+                modulation="16qam",
+                return_diagnostics=True,
+                stream_packing="combined",
+            )
+
+        self.assertEqual((ms_ssim, psnr), (1.0, 100.0))
+        self.assertEqual(call_lengths, [22])
+        for scale in range(2):
+            self.assertEqual(int(model.received[scale][0]), [5, 7][scale])
+            self.assertEqual(int(model.received[scale][1]), [3, 2][scale])
+
+        self.assertEqual(diagnostics["stream_packing"], "combined")
+        total = diagnostics["total"]
+        self.assertEqual(total["payload_bits"], 22)
+        self.assertEqual(total["ldpc_input_bits"], 25)
+        self.assertEqual(total["ldpc_padding_bits"], 3)
+        self.assertEqual(total["coded_bits"], 50)
+        self.assertEqual(total["modulation_padding_bits"], 2)
+        self.assertEqual(total["transmitted_bits"], 52)
+        self.assertEqual(total["channel_symbols"], 13)
+        self.assertEqual(total["bit_errors"], 0)
+        self.assertEqual(total["index_errors"], 0)
+        self.assertTrue(total["coded_bits_match_single_stream"])
+        self.assertTrue(total["transmitted_bits_match_single_stream"])
+        self.assertTrue(total["payload_bits_match_single_stage_budget"])
+        json.dumps(diagnostics)
+
     def test_flat_path_keeps_one_ldpc_stream_and_two_value_default(self):
         model = _FlatModel()
         call_lengths = []

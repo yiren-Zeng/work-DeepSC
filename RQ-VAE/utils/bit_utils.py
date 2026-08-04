@@ -19,20 +19,72 @@ def _validate_scale_lists(indices_list, num_embeddings_list):
         )
 
 
+def _normalize_num_embeddings_spec(spec, scale):
+    """Normalize one scale's codebook specification.
+
+    A scalar keeps the legacy contract where every entry in the scale tensor
+    uses the same codebook size.  A list/tuple assigns one codebook size to
+    each entry of the final (RQ-depth) dimension.
+    """
+    if isinstance(spec, np.ndarray):
+        if spec.ndim == 0:
+            spec = spec.item()
+        else:
+            spec = spec.tolist()
+
+    if isinstance(spec, (list, tuple)):
+        if not spec:
+            raise ValueError(
+                f"num_embeddings_list[{scale}] depth specification must not be empty"
+            )
+        normalized = [int(value) for value in spec]
+        for value in normalized:
+            bits_per_index(value)
+        return normalized
+
+    normalized = int(spec)
+    bits_per_index(normalized)
+    return normalized
+
+
+def _normalize_num_embeddings_list(num_embeddings_list):
+    return [
+        _normalize_num_embeddings_spec(spec, scale)
+        for scale, spec in enumerate(num_embeddings_list)
+    ]
+
+
+def _validate_depth_shape(token_shape, depth_spec, scale):
+    if len(token_shape) < 1:
+        raise ValueError(
+            f"indices_list[{scale}] needs a final RQ-depth dimension for "
+            "a per-depth codebook specification"
+        )
+    if token_shape[-1] != len(depth_spec):
+        raise ValueError(
+            f"indices_list[{scale}] has depth {token_shape[-1]}, but "
+            f"num_embeddings_list[{scale}] specifies {len(depth_spec)} depths"
+        )
+
+
 def count_index_bits(indices_list, num_embeddings_list):
     """Return exact source-bit counts without serializing the indices.
 
     The transmission helpers intentionally operate on one image at a time.  A
     residual-quantizer tensor therefore has shape ``[1, H, W, D]`` and its
-    serialized shape metadata is ``[H, W, D]``.  Rejecting larger batches here
-    prevents the old implementation's silent loss of the batch dimension.
+    serialized shape metadata is ``[H, W, D]``.  A scalar codebook size keeps
+    the legacy behavior of assigning one bit width to every tensor entry.  A
+    depth list assigns a potentially different width to each entry of ``D``.
+    Rejecting larger batches here prevents the old implementation's silent
+    loss of the batch dimension.
     """
     _validate_scale_lists(indices_list, num_embeddings_list)
+    normalized_specs = _normalize_num_embeddings_list(num_embeddings_list)
     per_scale_bits = []
     per_scale_shapes = []
     per_scale_bits_per_index = []
 
-    for scale, (indices, n_embed) in enumerate(zip(indices_list, num_embeddings_list)):
+    for scale, (indices, spec) in enumerate(zip(indices_list, normalized_specs)):
         if not isinstance(indices, torch.Tensor):
             raise TypeError(f"indices_list[{scale}] must be a torch.Tensor")
         if indices.ndim < 2:
@@ -43,11 +95,21 @@ def count_index_bits(indices_list, num_embeddings_list):
             raise ValueError(
                 "bit serialization supports batch_size=1 only; serialize each image separately"
             )
-        width = bits_per_index(n_embed)
         token_shape = tuple(int(value) for value in indices.shape[1:])
         per_scale_shapes.append(token_shape)
-        per_scale_bits_per_index.append(width)
-        per_scale_bits.append(int(np.prod(token_shape, dtype=np.int64)) * width)
+
+        if isinstance(spec, list):
+            _validate_depth_shape(token_shape, spec, scale)
+            widths = [bits_per_index(value) for value in spec]
+            token_count = int(np.prod(token_shape[:-1], dtype=np.int64))
+            per_scale_bits_per_index.append(widths)
+            per_scale_bits.append(token_count * sum(widths))
+        else:
+            width = bits_per_index(spec)
+            per_scale_bits_per_index.append(width)
+            per_scale_bits.append(
+                int(np.prod(token_shape, dtype=np.int64)) * width
+            )
 
     return {
         "total_bits": int(sum(per_scale_bits)),
@@ -58,29 +120,62 @@ def count_index_bits(indices_list, num_embeddings_list):
 
 
 def indices_to_bits(indices_list, num_embeddings_list, return_stats=False):
-    stats = count_index_bits(indices_list, num_embeddings_list)
+    normalized_specs = _normalize_num_embeddings_list(num_embeddings_list)
+    stats = count_index_bits(indices_list, normalized_specs)
     bit_stream_parts = []
 
-    for scale, (indices, n_embed, width) in enumerate(
-        zip(indices_list, num_embeddings_list, stats["bits_per_index"])
+    for scale, (indices, spec, width_spec) in enumerate(
+        zip(indices_list, normalized_specs, stats["bits_per_index"])
     ):
-        idx_np = indices.detach().reshape(-1).cpu().numpy().astype(np.int64, copy=False)
-        if idx_np.size and (idx_np.min() < 0 or idx_np.max() >= int(n_embed)):
-            raise ValueError(
-                f"indices_list[{scale}] contains values outside [0, {int(n_embed) - 1}]"
+        idx_np = indices.detach().cpu().numpy().astype(np.int64, copy=False)
+
+        if isinstance(spec, list):
+            depth = len(spec)
+            token_indices = idx_np.reshape(-1, depth)
+            token_bits = np.empty(
+                (token_indices.shape[0], sum(width_spec)), dtype=np.uint8
             )
-        shifts = np.arange(width - 1, -1, -1, dtype=np.int64)
-        bits = ((idx_np[:, None] >> shifts) & 1).reshape(-1).astype(np.uint8)
-        bit_stream_parts.append(bits)
+            bit_offset = 0
+            for depth_index, (n_embed, width) in enumerate(
+                zip(spec, width_spec)
+            ):
+                values = token_indices[:, depth_index]
+                if values.size and (
+                    values.min() < 0 or values.max() >= n_embed
+                ):
+                    raise ValueError(
+                        f"indices_list[{scale}][..., {depth_index}] contains "
+                        f"values outside [0, {n_embed - 1}]"
+                    )
+                shifts = np.arange(width - 1, -1, -1, dtype=np.int64)
+                token_bits[:, bit_offset: bit_offset + width] = (
+                    (values[:, None] >> shifts) & 1
+                )
+                bit_offset += width
+            bit_stream_parts.append(token_bits.reshape(-1))
+        else:
+            flat_indices = idx_np.reshape(-1)
+            if flat_indices.size and (
+                flat_indices.min() < 0 or flat_indices.max() >= spec
+            ):
+                raise ValueError(
+                    f"indices_list[{scale}] contains values outside "
+                    f"[0, {spec - 1}]"
+                )
+            width = width_spec
+            shifts = np.arange(width - 1, -1, -1, dtype=np.int64)
+            bits = (
+                (flat_indices[:, None] >> shifts) & 1
+            ).reshape(-1).astype(np.uint8)
+            bit_stream_parts.append(bits)
 
     if bit_stream_parts:
         bit_stream = np.concatenate(bit_stream_parts)
     else:
         bit_stream = np.empty(0, dtype=np.uint8)
-    num_embeddings = [int(value) for value in num_embeddings_list]
     if return_stats:
-        return bit_stream, stats["spatial_dims"], num_embeddings, stats
-    return bit_stream, stats["spatial_dims"], num_embeddings
+        return bit_stream, stats["spatial_dims"], normalized_specs, stats
+    return bit_stream, stats["spatial_dims"], normalized_specs
 
 
 def bits_to_indices(bit_stream, original_spatial_dims, original_num_embeddings_list):
@@ -89,18 +184,27 @@ def bits_to_indices(bit_stream, original_spatial_dims, original_num_embeddings_l
             "original_spatial_dims and original_num_embeddings_list must have the same length"
         )
 
+    normalized_specs = _normalize_num_embeddings_list(
+        original_num_embeddings_list
+    )
     indices_list = []
     current_pos = 0
     bit_stream = np.asarray(bit_stream).reshape(-1)
 
-    for scale, n_embed in enumerate(original_num_embeddings_list):
-        n_embed = int(n_embed)
+    for scale, spec in enumerate(normalized_specs):
         dims = tuple(int(value) for value in original_spatial_dims[scale])
         if not dims or any(value <= 0 for value in dims):
             raise ValueError(f"Invalid token shape for scale {scale}: {dims}")
-        width = bits_per_index(n_embed)
-        num_indices_in_scale = int(np.prod(dims, dtype=np.int64))
-        num_bits_for_scale = num_indices_in_scale * width
+
+        if isinstance(spec, list):
+            _validate_depth_shape(dims, spec, scale)
+            widths = [bits_per_index(value) for value in spec]
+            num_tokens = int(np.prod(dims[:-1], dtype=np.int64))
+            num_bits_for_scale = num_tokens * sum(widths)
+        else:
+            width = bits_per_index(spec)
+            num_indices_in_scale = int(np.prod(dims, dtype=np.int64))
+            num_bits_for_scale = num_indices_in_scale * width
 
         scale_bits = bit_stream[current_pos: current_pos + num_bits_for_scale]
         if len(scale_bits) < num_bits_for_scale:
@@ -112,12 +216,40 @@ def bits_to_indices(bit_stream, original_spatial_dims, original_num_embeddings_l
         current_pos += num_bits_for_scale
 
         scale_bits = (np.asarray(scale_bits) != 0).astype(np.int64, copy=False)
-        scale_bits_reshaped = scale_bits.reshape(num_indices_in_scale, width)
-        powers = 1 << np.arange(width - 1, -1, -1, dtype=np.int64)
-        indices = np.sum(scale_bits_reshaped * powers, axis=1, dtype=np.int64)
-        # A corrupted fixed-width word may exceed a non-power-of-two codebook.
-        # Match the in-model channel's defensive clamping behavior.
-        indices = np.clip(indices, 0, n_embed - 1)
+
+        if isinstance(spec, list):
+            token_bits = scale_bits.reshape(num_tokens, sum(widths))
+            indices = np.empty((num_tokens, len(spec)), dtype=np.int64)
+            bit_offset = 0
+            for depth_index, (n_embed, width) in enumerate(zip(spec, widths)):
+                depth_bits = token_bits[
+                    :, bit_offset: bit_offset + width
+                ]
+                powers = 1 << np.arange(
+                    width - 1, -1, -1, dtype=np.int64
+                )
+                values = np.sum(
+                    depth_bits * powers, axis=1, dtype=np.int64
+                )
+                # A corrupted fixed-width word may exceed a non-power-of-two
+                # codebook. Match the in-model channel's defensive clamping.
+                indices[:, depth_index] = np.clip(
+                    values, 0, n_embed - 1
+                )
+                bit_offset += width
+        else:
+            scale_bits_reshaped = scale_bits.reshape(
+                num_indices_in_scale, width
+            )
+            powers = 1 << np.arange(
+                width - 1, -1, -1, dtype=np.int64
+            )
+            indices = np.sum(
+                scale_bits_reshaped * powers, axis=1, dtype=np.int64
+            )
+            # A corrupted fixed-width word may exceed a non-power-of-two
+            # codebook. Match the in-model channel's defensive clamping.
+            indices = np.clip(indices, 0, spec - 1)
 
         indices_list.append(torch.from_numpy(indices.reshape(dims)).long())
 

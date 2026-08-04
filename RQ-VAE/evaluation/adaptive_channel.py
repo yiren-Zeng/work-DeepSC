@@ -11,15 +11,10 @@ import torch
 
 from communications.channel import awgn_channel
 from communications.modulation import bpsk_llr, bpsk_modulate
-from evaluation.adaptive import (
-    AdaptiveSample,
-    _quality_metrics,
-    apply_adaptive_thresholds,
-)
+from evaluation.adaptive import _quality_metrics
 from utils.adaptive_transport import (
     AdaptiveTransportSegment,
     ldpc_segment_lengths,
-    pack_explicit_mask_segments,
     unpack_explicit_mask_segments,
 )
 
@@ -83,45 +78,6 @@ def _transmit_segment(
     if decoded.size < source_bits.size:
         decoded = np.pad(decoded, (0, source_bits.size - decoded.size))
     return (decoded[: source_bits.size] != 0).astype(np.uint8), lengths
-
-
-@torch.no_grad()
-def prepare_adaptive_packets(
-    model,
-    samples: Sequence[AdaptiveSample],
-    thresholds: Sequence[float],
-    num_embeddings_list: Sequence[int],
-) -> List[PreparedAdaptivePacket]:
-    """Prepare source packets once and cache their no-channel image metrics."""
-
-    packets: List[PreparedAdaptivePacket] = []
-    for sample in samples:
-        tx_indices, _ = apply_adaptive_thresholds(
-            sample.dense_indices,
-            sample.first_stage_errors,
-            thresholds,
-        )
-        segments, metadata = pack_explicit_mask_segments(
-            tx_indices, num_embeddings_list
-        )
-        reconstructed = model.reconstruct_from_adaptive_indices(
-            tx_indices, feature_shapes=sample.feature_shapes
-        )
-        clean_ms_ssim, clean_psnr = _quality_metrics(
-            sample.image, reconstructed
-        )
-        packets.append(
-            PreparedAdaptivePacket(
-                image=sample.image,
-                feature_shapes=list(sample.feature_shapes),
-                tx_indices=tx_indices,
-                segments=segments,
-                metadata=metadata,
-                clean_psnr=float(clean_psnr),
-                clean_ms_ssim=float(clean_ms_ssim),
-            )
-        )
-    return packets
 
 
 def summarize_prepared_packets(
@@ -287,6 +243,5 @@ def evaluate_adaptive_ldpc_bpsk(
 __all__ = [
     "PreparedAdaptivePacket",
     "evaluate_adaptive_ldpc_bpsk",
-    "prepare_adaptive_packets",
     "summarize_prepared_packets",
 ]

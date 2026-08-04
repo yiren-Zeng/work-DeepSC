@@ -24,10 +24,10 @@
 | 正式训练入口 | `scripts/train/current/run_rq_ema_k4-2_d2-2_rate047.sh` |
 | 无信道重建测试 | `scripts/eval/test_rq_ema_k4-2_d2-2_rate047_nochannel.sh` |
 | 真实 LDPC + 调制链路测试 | `scripts/eval/test_rq_ema_k4-2_d2-2_rate047.sh` |
-| Adaptive STOP 码率扫描 | `scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive.sh` |
+| 每图每尺度精确 Top-K 信道测试 | `scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive_topk_ldpc_bpsk.sh` |
 | 通用训练程序 | `train.py` |
 | 固定深度测试程序 | `test_real.py` |
-| Adaptive 测试程序 | `test_adaptive.py` |
+| Adaptive Top-K 测试程序 | `test_adaptive_topk_ldpc.py` |
 | 实验配置 | `config.py` |
 | EMA-RQ 量化器 | `models/rq_ema_quantizer.py` |
 | 总模型与信道接入 | `models/deepsc.py` |
@@ -222,7 +222,7 @@ transmission ratio = source_bpp / (LDPC rate × modulation bits × 3)
 | LDPC 1/2 + 16QAM | `0.01171875` |
 
 上述固定 `0.0703125 bpp` 是按定长索引计算的源端码率，不是熵编码后的实测文件
-大小。Adaptive STOP 的理想熵码率另见第 11 节。
+大小。Adaptive Top-K 的显式 mask 信道码率另见第 11 节。
 
 ## 7. 数据集与预处理
 
@@ -507,65 +507,31 @@ bash scripts/eval/test_rq_ema_k4-2_d2-2_rate047.sh \
 参数，就不会由 wrapper 自动补其他默认参数，因此始终建议显式写
 `--checkpoint`、`--snrs` 和 `--modulation`。
 
-## 11. 可选：Adaptive STOP 推理
+## 11. Adaptive 每图每尺度精确 Top-K 信道推理
 
-Adaptive STOP 是原始 `rq_ema` checkpoint 的独立评估接口，不改变固定深度
-训练，也不需要重新训练。它只支持每尺度 RQ depth 为 2 的模型：
+该接口使用原始 `rq_ema` checkpoint，不改变训练，也不需要重新训练。它只支持
+每尺度 RQ depth 为 2 的模型：
 
 1. 第一层正常量化所有 token；
-2. 计算每个 token 第一层之后的 channel-mean squared residual；
-3. 当误差小于阈值时 STOP；
-4. 第二层只量化未 STOP 的 token；
-5. 接收端通过 STOP/active 信息恢复第二层是否存在。
+2. 每张图片、每个尺度分别计算 token 的第一层残差；
+3. 按残差从大到小选择精确数量的 Top-K token 激活第二层；
+4. 发送第一层索引、1 bit/token 显式活动 mask 和激活位置的第二层索引；
+5. 所有数据经过 LDPC 1/2、BPSK 和 AWGN 信道后再重建。
 
-默认扫描：
+默认扫描 0% 到 100% 的第二层激活率以及 0、3、6、9、12 dB：
 
 ```bash
 cd /workspace/yi/work/RQ-VAE
-GPU_ID=2 \
-bash scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive.sh
+GPU_ID=3 \
+bash scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive_topk_ldpc_bpsk.sh
 ```
 
-默认的第二层目标 active ratio 为：
+每张图片、每个尺度的激活数按
+`floor(target_active_rate * token_count + 0.5)` 计算。误差相同时按 raster
+位置稳定打破平局。输出包含无信道质量、信道后 PSNR/MS-SSIM、LDPC 后 BER、
+显式 mask 源码率、LDPC 填充后的 coded bpp，以及逐图逐尺度阈值记录。
 
-```text
-1.00, 0.75, 0.50, 0.30, 0.20, 0.10, 0.00
-```
-
-扫描 100% 到 0%、步长 10%：
-
-```bash
-GPU_ID=2 \
-bash scripts/eval/test_rq_ema_k4-2_d2-2_rate047_adaptive.sh \
-  --target-active-rates 1.0 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.0 \
-  --json-output experiments/adaptive_eval/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/adaptive_scan_0to100_step10_new.json \
-  --csv-output experiments/adaptive_eval/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/adaptive_scan_0to100_step10_new.csv \
-  --plot-output experiments/adaptive_eval/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/adaptive_scan_0to100_step10_new.png
-```
-
-快速冒烟测试可加 `--max-images 2`。无 matplotlib 时可加 `--no-plot`。
-
-输出同时给出：
-
-- `ideal_bpp`：始终发送的第一层定长索引码率，加第二层
-  `{STOP, 0, ..., K-1}` 联合符号的零阶理想熵；
-- `exact_raw_bpp`：第一层定长索引码率，加 1 bit/token 的第二层活动 mask，
-  再加 active token 的第二层定长索引；
-- `dense_fixed_bpp`：两层全部发送时的固定码率；
-- PSNR 和 MS-SSIM。
-
-对应代码中的精确关系是：
-
-```text
-ideal_bpp
-  = first_stage_fixed_bpp + joint_stop_index_entropy_bpp
-
-exact_raw_bpp
-  = first_stage_fixed_bpp + raw_mask_bpp + raw_active_index_bpp
-```
-
-理想熵统计不包含 shape、header、阈值、概率表等信令开销，因此不等于实际压缩
-文件大小。
+快速冒烟测试可追加 `--max-images 2 --snrs 0`。
 
 ## 12. Checkpoint 与现有结果
 

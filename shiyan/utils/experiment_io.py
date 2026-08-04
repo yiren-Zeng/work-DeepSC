@@ -38,6 +38,23 @@ def append_codebook_records(path, run_id, epoch, results, num_embeddings_list):
         if "raq" in results:
             raq_sizes = [stats["usage_counts"].numel() for stats in results["raq"]]
             branches.append(("raq", results["raq"], raq_sizes))
+        for stage_index in range(results.get("raq_rvq_depth", 0)):
+            stage_stats = [
+                scale_stats[stage_index]
+                for scale_stats in results.get("raq_stages", [])
+            ]
+            if stage_stats:
+                stage_sizes = [
+                    stats["usage_counts"].numel()
+                    for stats in stage_stats
+                ]
+                branches.append(
+                    (
+                        f"raq_stage{stage_index}",
+                        stage_stats,
+                        stage_sizes,
+                    )
+                )
         for branch, branch_stats, codebook_sizes in branches:
             for layer, stats in enumerate(branch_stats):
                 writer.writerow({

@@ -52,6 +52,7 @@ class DeepSC(nn.Module):
                  rq_ema_decay=0.99,
                  rq_restart_unused_codes=True,
                  rq_shared_codebook=True,
+                 rq_codebook_size_lists=None,
                  ):
         super(DeepSC, self).__init__()
         quantizer_type = str(quantizer_type).lower()
@@ -75,6 +76,29 @@ class DeepSC(nn.Module):
             raise ValueError("rq_depth_list length must match num_downsample_blocks")
         if any(int(depth) < 1 for depth in rq_depth_list):
             raise ValueError("rq_depth_list entries must be positive")
+        if rq_codebook_size_lists is None:
+            rq_codebook_size_lists = [
+                [int(size)] * int(depth)
+                for size, depth in zip(num_embeddings_list, rq_depth_list)
+            ]
+        rq_codebook_size_lists = [
+            [int(size) for size in scale_sizes]
+            for scale_sizes in rq_codebook_size_lists
+        ]
+        if len(rq_codebook_size_lists) != num_downsample_blocks:
+            raise ValueError(
+                "rq_codebook_size_lists length must match "
+                "num_downsample_blocks"
+            )
+        for scale, (scale_sizes, depth) in enumerate(
+            zip(rq_codebook_size_lists, rq_depth_list)
+        ):
+            if len(scale_sizes) != int(depth):
+                raise ValueError(
+                    f"scale {scale} codebook count must equal its RQ depth"
+                )
+            if any(size < 2 for size in scale_sizes):
+                raise ValueError("RQ codebook sizes must be at least 2")
         if (
             quantizer_type in {"rq_ema", "residual_simvq"}
             and not rq_shared_codebook
@@ -82,6 +106,14 @@ class DeepSC(nn.Module):
             raise ValueError(
                 f"{quantizer_type} requires one shared codebook across RQ "
                 "depths per scale"
+            )
+        if (
+            quantizer_type == "stagewise_residual_simvq"
+            and rq_shared_codebook
+        ):
+            raise ValueError(
+                "stagewise_residual_simvq requires independent codebooks "
+                "and rq_shared_codebook=False"
             )
 
 
@@ -166,6 +198,21 @@ class DeepSC(nn.Module):
                     commitment_cost=float(commitment_cost),
                     shared_codebook=bool(rq_shared_codebook),
                 )
+            elif quantizer_type == "stagewise_residual_simvq":
+                if self.quantizer_axis_list[i] != "patch":
+                    raise ValueError(
+                        "stagewise_residual_simvq only supports direct "
+                        "patch-wise feature quantization"
+                    )
+                from .stagewise_residual_simvq_quantizer import (
+                    StagewiseResidualSimVQQuantizer,
+                )
+
+                quantizer = StagewiseResidualSimVQQuantizer(
+                    num_embeddings_per_depth=rq_codebook_size_lists[i],
+                    embedding_dim=embedding_dim_list[i],
+                    commitment_cost=float(commitment_cost),
+                )
             elif quantizer_type == "vitvq_nocompress":
                 from .vector_quantizer_vitvq import ViTvqNoCompressVectorQuantizer
 
@@ -186,6 +233,9 @@ class DeepSC(nn.Module):
         self.num_embeddings_list = num_embeddings_list
         self.embedding_dim_list = embedding_dim_list
         self.rq_depth_list = [int(depth) for depth in rq_depth_list]
+        self.rq_codebook_size_lists = [
+            list(scale_sizes) for scale_sizes in rq_codebook_size_lists
+        ]
         self.rq_ema_decay = float(rq_ema_decay)
         self.rq_restart_unused_codes = bool(rq_restart_unused_codes)
         self.rq_shared_codebook = bool(rq_shared_codebook)
@@ -293,9 +343,14 @@ class DeepSC(nn.Module):
             quantizer_diagnostics.append(self._quantizer_diagnostics(self.vector_quantizers[i]))
 
             if use_channel:
+                codebook_sizes = (
+                    self.rq_codebook_size_lists[i]
+                    if self.quantizer_type == "stagewise_residual_simvq"
+                    else self.num_embeddings_list[i]
+                )
                 corrupted_idx, _ = self.channel.apply_channel_noise(
                     encoding_idx,
-                    self.num_embeddings_list[i],
+                    codebook_sizes,
                     snr_tensor,
                     current_rc,
                     mod_bits=current_mod_bits
@@ -348,9 +403,14 @@ class DeepSC(nn.Module):
             quantizer_diagnostics.append(self._quantizer_diagnostics(self.vector_quantizers[i]))
 
             if use_channel:
+                codebook_sizes = (
+                    self.rq_codebook_size_lists[i]
+                    if self.quantizer_type == "stagewise_residual_simvq"
+                    else self.num_embeddings_list[i]
+                )
                 corrupted_idx, _ = self.channel.apply_channel_noise(
                     encoding_idx,
-                    self.num_embeddings_list[i],
+                    codebook_sizes,
                     snr_tensor,
                     current_rc,
                     mod_bits=current_mod_bits

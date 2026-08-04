@@ -234,9 +234,45 @@ def append_codebook_records(path, run_id, epoch, results, num_embeddings_list):
 
     rows = []
     for layer, stats in enumerate(results["src"]):
-        codebook_size = int(num_embeddings_list[layer])
+        configured_sizes = num_embeddings_list[layer]
+        if isinstance(configured_sizes, torch.Tensor):
+            configured_sizes = configured_sizes.detach().cpu().reshape(-1).tolist()
+        if isinstance(configured_sizes, (list, tuple)):
+            depth_codebook_sizes = [int(value) for value in configured_sizes]
+        else:
+            result_size_lists = results.get("rq_codebook_size_lists")
+            if result_size_lists is not None and layer < len(result_size_lists):
+                depth_codebook_sizes = [
+                    int(value) for value in result_size_lists[layer]
+                ]
+            else:
+                depth_codebook_sizes = []
+
+        flat_codebook_size = (
+            int(configured_sizes)
+            if not isinstance(configured_sizes, (list, tuple))
+            else None
+        )
+        aggregate_codebook_size = int(
+            stats.get(
+                "codebook_size",
+                sum(depth_codebook_sizes)
+                if depth_codebook_sizes
+                else flat_codebook_size,
+            )
+        )
         if supports_depth_rows:
-            for depth_stats in stats.get("per_depth", []):
+            for depth_index, depth_stats in enumerate(
+                stats.get("per_depth", [])
+            ):
+                depth_codebook_size = int(
+                    depth_stats.get(
+                        "codebook_size",
+                        depth_codebook_sizes[depth_index]
+                        if depth_index < len(depth_codebook_sizes)
+                        else flat_codebook_size,
+                    )
+                )
                 rows.append(
                     _codebook_row(
                         run_id,
@@ -244,7 +280,7 @@ def append_codebook_records(path, run_id, epoch, results, num_embeddings_list):
                         layer,
                         int(depth_stats.get("depth", len(rows))),
                         "depth",
-                        codebook_size,
+                        depth_codebook_size,
                         depth_stats,
                     )
                 )
@@ -255,7 +291,7 @@ def append_codebook_records(path, run_id, epoch, results, num_embeddings_list):
                 layer,
                 "",
                 "aggregate",
-                codebook_size,
+                aggregate_codebook_size,
                 stats,
             )
         )

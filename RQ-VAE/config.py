@@ -60,6 +60,13 @@ def _format_depth_list(depth_list):
     return "d" + "-".join(str(v) for v in depth_list)
 
 
+def _format_stagewise_k_lists(codebook_size_lists):
+    return "k" + "-".join(
+        "x".join(str(value) for value in scale_sizes)
+        for scale_sizes in codebook_size_lists
+    )
+
+
 def _experiment_name(
     family,
     depth,
@@ -67,9 +74,24 @@ def _experiment_name(
     num_embeddings_list,
     quantizer_type=None,
     rq_depth_list=None,
+    rq_codebook_size_lists=None,
 ):
     stride_part = "x".join(str(v) for v in strides) # [8,2] → "8x2"
     legacy_name = f"{family}_unet{depth}_ds{stride_part}_{_format_k_list(num_embeddings_list)}"
+    if quantizer_type == "stagewise_residual_simvq":
+        rq_depth_list = rq_depth_list or [1] * depth
+        if rq_codebook_size_lists is None:
+            rq_codebook_size_lists = [
+                [size] * rq_depth
+                for size, rq_depth in zip(
+                    num_embeddings_list, rq_depth_list
+                )
+            ]
+        return (
+            f"{family}_stagewise_residual_simvq_unet{depth}_ds{stride_part}_"
+            f"{_format_stagewise_k_lists(rq_codebook_size_lists)}_"
+            f"{_format_depth_list(rq_depth_list)}"
+        )
     if quantizer_type not in {"rq_ema", "residual_simvq"}:
         return legacy_name
     rq_depth_list = rq_depth_list or [1] * depth
@@ -84,22 +106,28 @@ def _experiment_name(
 
 def _source_bpp(strides, num_embeddings_list, quantizer_axis_list=None,
                 embedding_dim_list=None, image_size=(256, 256),
-                rq_depth_list=None):
+                rq_depth_list=None, rq_codebook_size_lists=None):
     bpp = 0.0
     cumulative_downsample = 1
     quantizer_axis_list = quantizer_axis_list or ["patch"] * len(num_embeddings_list)
     embedding_dim_list = embedding_dim_list or [None] * len(num_embeddings_list)
     rq_depth_list = rq_depth_list or [1] * len(num_embeddings_list)
     image_h, image_w = image_size
-    for stride, codebook_size, axis, embedding_dim, rq_depth in zip(
+    for scale, (stride, codebook_size, axis, embedding_dim, rq_depth) in enumerate(zip(
         strides,
         num_embeddings_list,
         quantizer_axis_list,
         embedding_dim_list,
         rq_depth_list,
-    ):
+    )):
         cumulative_downsample *= stride
-        bits = math.log2(codebook_size) * rq_depth
+        if rq_codebook_size_lists is None:
+            bits = math.log2(codebook_size) * rq_depth
+        else:
+            bits = sum(
+                math.log2(depth_size)
+                for depth_size in rq_codebook_size_lists[scale]
+            )
         if axis == "channel":
             token_count = embedding_dim
             bpp += token_count * bits / (image_h * image_w)
@@ -135,6 +163,38 @@ def _env_int_list(name, default):
     if not value:
         return list(default)
     return [int(item.strip()) for item in value.split(",") if item.strip()] # .split(",")，按照逗号切分字符串
+
+
+def _repeat_codebook_sizes(num_embeddings_list, rq_depth_list):
+    return [
+        [int(size)] * int(depth)
+        for size, depth in zip(num_embeddings_list, rq_depth_list)
+    ]
+
+
+def _first_codebook_sizes(codebook_size_lists):
+    return [int(scale_sizes[0]) for scale_sizes in codebook_size_lists]
+
+
+def _env_nested_int_list(name, default):
+    """Parse per-scale/per-depth integers such as ``8,2;2,2``."""
+    value = os.environ.get(name)
+    if not value:
+        return [list(scale_sizes) for scale_sizes in default]
+    scale_groups = [group.strip() for group in value.split(";")]
+    if any(not group for group in scale_groups):
+        raise ValueError(
+            f"{name} must use semicolons between scales, for example 8,2;2,2"
+        )
+    result = []
+    for group in scale_groups:
+        depth_sizes = [
+            int(item.strip()) for item in group.split(",") if item.strip()
+        ]
+        if not depth_sizes:
+            raise ValueError(f"{name} contains an empty scale")
+        result.append(depth_sizes)
+    return result
 
 
 def _env_float_list(name, default):
@@ -256,6 +316,14 @@ class Config:
     COMMITMENT_COST = 0.25
     QUANTIZER_TYPE = _env_str("SIMVQ_QUANTIZER_TYPE", "simvq").lower()
     RQ_DEPTH_LIST = _env_int_list("SIMVQ_RQ_DEPTH_LIST", [1] * UNET_DEPTH)
+    RQ_CODEBOOK_SIZE_LISTS = _env_nested_int_list(
+        "SIMVQ_RQ_CODEBOOK_SIZES",
+        _repeat_codebook_sizes(NUM_EMBEDDINGS_LIST, RQ_DEPTH_LIST),
+    )
+    if QUANTIZER_TYPE == "stagewise_residual_simvq":
+        NUM_EMBEDDINGS_LIST = _first_codebook_sizes(
+            RQ_CODEBOOK_SIZE_LISTS
+        )
     RQ_EMA_DECAY = _env_float("SIMVQ_RQ_EMA_DECAY", 0.99)
     RQ_RESTART_UNUSED_CODES = _env_int("SIMVQ_RQ_RESTART_UNUSED_CODES", 1) == 1
     RQ_SHARED_CODEBOOK = _env_int("SIMVQ_RQ_SHARED_CODEBOOK", 1) == 1
@@ -332,6 +400,7 @@ class Config:
         NUM_EMBEDDINGS_LIST,
         quantizer_type=QUANTIZER_TYPE,
         rq_depth_list=RQ_DEPTH_LIST,
+        rq_codebook_size_lists=RQ_CODEBOOK_SIZE_LISTS,
     )
     ESTIMATED_SOURCE_BPP = _source_bpp(
         DOWNSAMPLE_STRIDES,
@@ -340,7 +409,12 @@ class Config:
         EMBEDDING_DIM_LIST,
         TRAIN_IMAGE_SIZE,
         RQ_DEPTH_LIST
-        if QUANTIZER_TYPE in {"rq_ema", "residual_simvq"}
+        if QUANTIZER_TYPE in {
+            "rq_ema", "residual_simvq", "stagewise_residual_simvq"
+        }
+        else None,
+        RQ_CODEBOOK_SIZE_LISTS
+        if QUANTIZER_TYPE == "stagewise_residual_simvq"
         else None,
     )
     ESTIMATED_SOURCE_BITS_PER_IMAGE = (
@@ -353,7 +427,12 @@ class Config:
         EMBEDDING_DIM_LIST,
         TEST_IMAGE_SIZE,
         RQ_DEPTH_LIST
-        if QUANTIZER_TYPE in {"rq_ema", "residual_simvq"}
+        if QUANTIZER_TYPE in {
+            "rq_ema", "residual_simvq", "stagewise_residual_simvq"
+        }
+        else None,
+        RQ_CODEBOOK_SIZE_LISTS
+        if QUANTIZER_TYPE == "stagewise_residual_simvq"
         else None,
     )
     ESTIMATED_TEST_TRANSMISSION_RATIO = (
@@ -401,27 +480,50 @@ class Config:
             "vitvq_nocompress",
             "rq_ema",
             "residual_simvq",
+            "stagewise_residual_simvq",
             "none",
         }:
             raise ValueError(
                 "SIMVQ_QUANTIZER_TYPE must be simvq, vq, vitvq_nocompress, "
-                "rq_ema, residual_simvq, or none"
+                "rq_ema, residual_simvq, stagewise_residual_simvq, or none"
             )
         for axis in cls.QUANTIZER_AXIS_LIST:
             if axis not in {"patch", "channel"}:
                 raise ValueError("SIMVQ_QUANTIZER_AXIS_LIST entries must be patch or channel")
-        if cls.QUANTIZER_TYPE in {"rq_ema", "residual_simvq"}:
+        if cls.QUANTIZER_TYPE in {
+            "rq_ema", "residual_simvq", "stagewise_residual_simvq"
+        }:
             if any(axis != "patch" for axis in cls.QUANTIZER_AXIS_LIST):
                 raise ValueError(
                     f"{cls.QUANTIZER_TYPE} only supports patch-wise quantization"
                 )
-            if not cls.RQ_SHARED_CODEBOOK:
+            if (
+                cls.QUANTIZER_TYPE in {"rq_ema", "residual_simvq"}
+                and not cls.RQ_SHARED_CODEBOOK
+            ):
                 raise ValueError(
                     f"{cls.QUANTIZER_TYPE} requires SIMVQ_RQ_SHARED_CODEBOOK=1"
                 )
+            if (
+                cls.QUANTIZER_TYPE == "stagewise_residual_simvq"
+                and cls.RQ_SHARED_CODEBOOK
+            ):
+                raise ValueError(
+                    "stagewise_residual_simvq requires "
+                    "SIMVQ_RQ_SHARED_CODEBOOK=0"
+                )
             if any(depth <= 0 for depth in cls.RQ_DEPTH_LIST):
                 raise ValueError("SIMVQ_RQ_DEPTH_LIST entries must be positive integers")
-            if any(size < 2 or size & (size - 1) for size in cls.NUM_EMBEDDINGS_LIST):
+            codebook_sizes = (
+                [
+                    size
+                    for scale_sizes in cls.RQ_CODEBOOK_SIZE_LISTS
+                    for size in scale_sizes
+                ]
+                if cls.QUANTIZER_TYPE == "stagewise_residual_simvq"
+                else cls.NUM_EMBEDDINGS_LIST
+            )
+            if any(size < 2 or size & (size - 1) for size in codebook_sizes):
                 raise ValueError(
                     f"{cls.QUANTIZER_TYPE} codebook sizes must be powers of two "
                     "greater than or equal to 2"
@@ -449,7 +551,23 @@ class Config:
                 raise ValueError("rq_ema requires SIMVQ_LAYER_LOSS_WEIGHTS_INIT to be all 1")
             if any(weight != 1.0 for weight in cls.LAYER_LOSS_WEIGHTS_FINAL):
                 raise ValueError("rq_ema requires SIMVQ_LAYER_LOSS_WEIGHTS_FINAL to be all 1")
-        if cls.QUANTIZER_TYPE == "residual_simvq":
+        if cls.QUANTIZER_TYPE in {
+            "residual_simvq", "stagewise_residual_simvq"
+        }:
+            if cls.QUANTIZER_TYPE == "stagewise_residual_simvq":
+                if len(cls.RQ_CODEBOOK_SIZE_LISTS) != cls.UNET_DEPTH:
+                    raise ValueError(
+                        "SIMVQ_RQ_CODEBOOK_SIZES scale count must equal "
+                        "UNET_DEPTH"
+                    )
+                for scale, (sizes, depth) in enumerate(zip(
+                    cls.RQ_CODEBOOK_SIZE_LISTS, cls.RQ_DEPTH_LIST
+                )):
+                    if len(sizes) != int(depth):
+                        raise ValueError(
+                            "SIMVQ_RQ_CODEBOOK_SIZES depth count for scale "
+                            f"{scale} must equal RQ_DEPTH_LIST[{scale}]"
+                        )
             expected_init = _default_loss_weights_init(cls.UNET_DEPTH)
             expected_final = _default_loss_weights_final(cls.UNET_DEPTH)
             if any(
@@ -497,6 +615,10 @@ class Config:
             "num_embeddings_list": list(cls.NUM_EMBEDDINGS_LIST),
             "quantizer_type": cls.QUANTIZER_TYPE,
             "rq_depth_list": list(cls.RQ_DEPTH_LIST),
+            "rq_codebook_size_lists": [
+                list(scale_sizes)
+                for scale_sizes in cls.RQ_CODEBOOK_SIZE_LISTS
+            ],
             "rq_ema_decay": cls.RQ_EMA_DECAY,
             "rq_restart_unused_codes": cls.RQ_RESTART_UNUSED_CODES,
             "rq_shared_codebook": cls.RQ_SHARED_CODEBOOK,

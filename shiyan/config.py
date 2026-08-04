@@ -4,7 +4,10 @@ import os
 import math
 import json
 
-from utils.raq_rvq import resolve_rvq_stage_k_lists
+from utils.raq_rvq import (
+    resolve_rvq_stage_k_lists,
+    validate_independent_rvq_k_lists,
+)
 
 def _default_embedding_dims(base_channels, depth):
     return [base_channels * (2 ** (i + 1)) for i in range(depth)]
@@ -258,6 +261,21 @@ class Config:
     DYNAMIC_RAQ_RVQ_ZERO_CODEWORD = (
         _env_int("SIMVQ_DYNAMIC_RAQ_RVQ_ZERO_CODEWORD", 1) == 1
     )
+    # Strict fusion mode: RAQ generates one codebook per scale and all
+    # residual depths reuse that exact tensor.  It owns no extra stage modules.
+    USE_SHARED_RAQ_RVQ = _env_int("SIMVQ_USE_SHARED_RAQ_RVQ", 0) == 1
+    SHARED_RAQ_RVQ_DEPTH = _env_int("SIMVQ_SHARED_RAQ_RVQ_DEPTH", 2)
+    # Stage-wise trained mode: every scale/depth pair owns an independent RAQ
+    # generator and independently samples K from the active RAQ curriculum.
+    USE_INDEPENDENT_RAQ_RVQ = (
+        _env_int("SIMVQ_USE_INDEPENDENT_RAQ_RVQ", 0) == 1
+    )
+    INDEPENDENT_RAQ_RVQ_DEPTH = _env_int(
+        "SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH", 2
+    )
+    INDEPENDENT_RAQ_RVQ_K_LISTS = _env_nested_int_lists_optional(
+        "SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS"
+    )
     # Inference-only zero-shot residual RAQ experiment.  The two RVQ stages
     # share the already-trained RAQ generator; these flags add no model state.
     TEST_USE_RAQ_RVQ = _env_int("SIMVQ_TEST_USE_RAQ_RVQ", 0) == 1
@@ -418,14 +436,29 @@ class Config:
         EMBEDDING_DIM_LIST,
         _resize_tuple_from_env("SIMVQ_TEST_RESIZE", (768, 512)),
     )
-    _RAQ_BPP_K_LIST = RAQ_TARGET_LIST if (USE_RAQ and RAQ_TARGET_LIST is not None) else NUM_EMBEDDINGS_LIST
+    if USE_INDEPENDENT_RAQ_RVQ and INDEPENDENT_RAQ_RVQ_K_LISTS is not None:
+        # A product converts summed per-stage index bits into one equivalent K.
+        _RAQ_BPP_K_LIST = [
+            math.prod(stage_sizes)
+            for stage_sizes in INDEPENDENT_RAQ_RVQ_K_LISTS
+        ]
+        _RAQ_BPP_DEPTH_MULTIPLIER = 1
+    else:
+        _RAQ_BPP_K_LIST = (
+            RAQ_TARGET_LIST
+            if (USE_RAQ and RAQ_TARGET_LIST is not None)
+            else NUM_EMBEDDINGS_LIST
+        )
+        _RAQ_BPP_DEPTH_MULTIPLIER = (
+            SHARED_RAQ_RVQ_DEPTH if USE_SHARED_RAQ_RVQ else 1
+        )
     ESTIMATED_RAQ_TARGET_BPP = _source_bpp(
         DOWNSAMPLE_STRIDES,
         _RAQ_BPP_K_LIST,
         QUANTIZER_AXIS_LIST,
         EMBEDDING_DIM_LIST,
         _resize_tuple_from_env("SIMVQ_TEST_RESIZE", (768, 512)),
-    )
+    ) * _RAQ_BPP_DEPTH_MULTIPLIER
     ESTIMATED_TEST_TRANSMISSION_RATIO = (
         ESTIMATED_RAQ_TARGET_BPP / (CHANNEL_CODING_RATE_VAL * 1 * 3)
     )
@@ -486,6 +519,88 @@ class Config:
             raise ValueError("SIMVQ_RAQ_RECON_GRAD_MODE must be ste or dual")
         if cls.RAQ_GENERATOR_TYPE not in {"encoder_decoder", "decoder_only"}:
             raise ValueError("SIMVQ_RAQ_GENERATOR_TYPE must be encoder_decoder or decoder_only")
+        trained_rvq_modes = (
+            int(cls.USE_SHARED_RAQ_RVQ)
+            + int(cls.USE_DYNAMIC_RAQ_RVQ)
+            + int(cls.USE_INDEPENDENT_RAQ_RVQ)
+        )
+        if trained_rvq_modes > 1:
+            raise ValueError(
+                "shared, dynamic, and independent RAQ-RVQ training modes "
+                "are mutually exclusive"
+            )
+        if cls.USE_SHARED_RAQ_RVQ:
+            if not cls.USE_RAQ:
+                raise ValueError(
+                    "SIMVQ_USE_SHARED_RAQ_RVQ=1 requires SIMVQ_USE_RAQ=1"
+                )
+            if cls.USE_DYNAMIC_RAQ_RVQ:
+                raise ValueError(
+                    "shared RAQ-RVQ and dynamic RAQ-RVQ cannot be enabled together"
+                )
+            if cls.TEST_USE_RAQ_RVQ:
+                raise ValueError(
+                    "trained shared RAQ-RVQ cannot use the legacy zero-shot test mode"
+                )
+            if cls.SHARED_RAQ_RVQ_DEPTH != 2:
+                raise ValueError(
+                    "SIMVQ_SHARED_RAQ_RVQ_DEPTH must be 2"
+                )
+            if cls.RAQ_RECON_GRAD_MODE != "ste":
+                raise ValueError(
+                    "shared RAQ-RVQ requires SIMVQ_RAQ_RECON_GRAD_MODE=ste"
+                )
+            if cls.RAQ_TARGET_LIST is None:
+                raise ValueError(
+                    "SIMVQ_USE_SHARED_RAQ_RVQ=1 requires "
+                    "SIMVQ_RAQ_TARGET_LIST for deterministic validation"
+                )
+            if len(cls.RAQ_TARGET_LIST) != cls.UNET_DEPTH:
+                raise ValueError(
+                    "SIMVQ_RAQ_TARGET_LIST length must equal UNET_DEPTH "
+                    "for shared RAQ-RVQ"
+                )
+        if cls.USE_INDEPENDENT_RAQ_RVQ:
+            if not cls.USE_RAQ:
+                raise ValueError(
+                    "SIMVQ_USE_INDEPENDENT_RAQ_RVQ=1 requires "
+                    "SIMVQ_USE_RAQ=1"
+                )
+            if cls.TEST_USE_RAQ_RVQ:
+                raise ValueError(
+                    "trained independent RAQ-RVQ cannot use the legacy "
+                    "zero-shot test mode"
+                )
+            if cls.INDEPENDENT_RAQ_RVQ_DEPTH != 2:
+                raise ValueError(
+                    "SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH must be 2"
+                )
+            if cls.RAQ_RECON_GRAD_MODE != "ste":
+                raise ValueError(
+                    "independent RAQ-RVQ requires "
+                    "SIMVQ_RAQ_RECON_GRAD_MODE=ste"
+                )
+            if cls.RAQ_ROUTED_SRC_ENABLED:
+                raise ValueError(
+                    "independent RAQ-RVQ currently requires "
+                    "SIMVQ_RAQ_ROUTED_SRC_ENABLED=0"
+                )
+            if cls.RAQ_TARGET_LIST is None or len(
+                cls.RAQ_TARGET_LIST
+            ) != cls.UNET_DEPTH:
+                raise ValueError(
+                    "independent RAQ-RVQ requires SIMVQ_RAQ_TARGET_LIST "
+                    "with one nominal validation K per scale"
+                )
+            cls.INDEPENDENT_RAQ_RVQ_K_LISTS = (
+                validate_independent_rvq_k_lists(
+                    cls.INDEPENDENT_RAQ_RVQ_K_LISTS,
+                    num_scales=cls.UNET_DEPTH,
+                    rvq_depth=cls.INDEPENDENT_RAQ_RVQ_DEPTH,
+                    min_k=cls.RAQ_MIN_TRG_LIST,
+                    max_k=cls.RAQ_MAX_TRG_LIST,
+                )
+            )
         if cls.USE_DYNAMIC_RAQ_RVQ:
             if not cls.USE_RAQ:
                 raise ValueError("SIMVQ_USE_DYNAMIC_RAQ_RVQ=1 requires SIMVQ_USE_RAQ=1")
@@ -744,6 +859,18 @@ class Config:
             "raq_target_list": list(cls.RAQ_TARGET_LIST) if cls.RAQ_TARGET_LIST is not None else None,
             "use_dynamic_raq_rvq": cls.USE_DYNAMIC_RAQ_RVQ,
             "dynamic_raq_rvq_zero_codeword": cls.DYNAMIC_RAQ_RVQ_ZERO_CODEWORD,
+            "use_shared_raq_rvq": cls.USE_SHARED_RAQ_RVQ,
+            "shared_raq_rvq_depth": cls.SHARED_RAQ_RVQ_DEPTH,
+            "use_independent_raq_rvq": cls.USE_INDEPENDENT_RAQ_RVQ,
+            "independent_raq_rvq_depth": cls.INDEPENDENT_RAQ_RVQ_DEPTH,
+            "independent_raq_rvq_k_lists": (
+                [
+                    list(stage_sizes)
+                    for stage_sizes in cls.INDEPENDENT_RAQ_RVQ_K_LISTS
+                ]
+                if cls.INDEPENDENT_RAQ_RVQ_K_LISTS is not None
+                else None
+            ),
             "test_use_raq_rvq": cls.TEST_USE_RAQ_RVQ,
             "test_raq_rvq_depth": cls.TEST_RAQ_RVQ_DEPTH,
             "test_raq_rvq_k_lists": (

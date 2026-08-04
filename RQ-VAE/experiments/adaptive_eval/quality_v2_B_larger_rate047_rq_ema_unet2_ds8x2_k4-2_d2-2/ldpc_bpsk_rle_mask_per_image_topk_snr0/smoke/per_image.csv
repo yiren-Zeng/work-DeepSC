@@ -1,0 +1,3 @@
+target_active_rate,image_index,image_number,image_name,scale,threshold,tx_active_count,rx_active_count,rle_run_count,rle_source_bits,rle_coded_bits,rle_source_bit_errors,semantic_mask_bit_errors,semantic_mask_ber,structurally_valid,length_sum_error,zero_filled_second_indices,truncated_second_indices,image_source_bit_errors,image_psnr,image_ms_ssim
+0.5,0,1,kodim01.png,0,0.025096550583839417,512,512,301,3011,6144,0,0,0.0,True,0,0,0,0,21.713353563151276,0.8115354550853948
+0.5,0,1,kodim01.png,1,0.002777809277176857,128,128,128,1025,2304,0,0,0.0,True,0,0,0,0,21.713353563151276,0.8115354550853948

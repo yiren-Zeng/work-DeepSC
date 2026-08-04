@@ -139,6 +139,17 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         dynamic_raq_rvq_zero_codeword=getattr(
             cfg, "DYNAMIC_RAQ_RVQ_ZERO_CODEWORD", True
         ),
+        use_shared_raq_rvq=getattr(cfg, "USE_SHARED_RAQ_RVQ", False),
+        shared_raq_rvq_depth=getattr(cfg, "SHARED_RAQ_RVQ_DEPTH", 2),
+        use_independent_raq_rvq=getattr(
+            cfg, "USE_INDEPENDENT_RAQ_RVQ", False
+        ),
+        independent_raq_rvq_depth=getattr(
+            cfg, "INDEPENDENT_RAQ_RVQ_DEPTH", 2
+        ),
+        independent_raq_rvq_k_lists=getattr(
+            cfg, "INDEPENDENT_RAQ_RVQ_K_LISTS", None
+        ),
         test_use_raq_rvq=getattr(cfg, "TEST_USE_RAQ_RVQ", False),
         test_raq_rvq_depth=getattr(cfg, "TEST_RAQ_RVQ_DEPTH", 2),
         test_raq_rvq_k_lists=getattr(cfg, "TEST_RAQ_RVQ_K_LISTS", None),

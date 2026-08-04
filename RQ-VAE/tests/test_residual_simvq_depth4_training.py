@@ -28,6 +28,10 @@ TRAIN_SCRIPT = (
     ROOT
     / "scripts/train/current/run_residual_simvq_k4-2_d4-4_rate094.sh"
 )
+RESUME_SCRIPT = (
+    ROOT
+    / "scripts/train/current/resume_residual_simvq_k4-2_d4-4_rate094.sh"
+)
 NOCHANNEL_SCRIPT = (
     ROOT
     / "scripts/eval/test_residual_simvq_k4-2_d4-4_rate094_nochannel.sh"
@@ -262,3 +266,31 @@ def test_depth4_scripts_are_isolated_fresh_and_executable():
     assert "--snrs 0 3 6 9 12" in ldpc_content
     assert "--modulation bpsk" in ldpc_content
     assert "residual_simvq_k4-2_d4-4_rate094_ldpc_bpsk.json" in ldpc_content
+
+
+def test_depth4_resume_script_is_fail_closed_and_preserves_training_config():
+    assert RESUME_SCRIPT.is_file()
+    assert os.access(RESUME_SCRIPT, os.X_OK)
+    content = RESUME_SCRIPT.read_text(encoding="utf-8")
+    assert "cd /workspace/yi/work/RQ-VAE" in content
+    assert OLD_ROOT not in content
+    assert 'SIMVQ_EXP_FAMILY="quality_v2_B_larger_rate094"' in content
+    assert 'SIMVQ_QUANTIZER_TYPE="residual_simvq"' in content
+    assert 'SIMVQ_NUM_EMBEDDINGS_LIST="4,2"' in content
+    assert 'SIMVQ_RQ_DEPTH_LIST="4,4"' in content
+    assert 'SIMVQ_RESUME="1"' in content
+    assert "unset SIMVQ_PRETRAINED_CHECKPOINT" in content
+    assert 'GPU_ID="${GPU_ID:-1}"' in content
+    assert 'SIMVQ_TOTAL_BATCH_SIZE="${SIMVQ_TOTAL_BATCH_SIZE:-24}"' in content
+    assert 'SIMVQ_MICRO_BATCH_SIZE="${SIMVQ_MICRO_BATCH_SIZE:-24}"' in content
+    assert 'SIMVQ_NUM_EPOCHS="200"' in content
+    assert 'if [ ! -s "$CHECKPOINT_PATH" ]; then' in content
+    assert EXPERIMENT_NAME in content
+    syntax = subprocess.run(
+        ["bash", "-n", str(RESUME_SCRIPT)],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert syntax.returncode == 0, syntax.stderr

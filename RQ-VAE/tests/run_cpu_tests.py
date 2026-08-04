@@ -16,11 +16,16 @@ if str(PROJECT_ROOT) not in sys.path:
 
 TEST_MODULES = (
     "tests.test_residual_simvq_quantizer",
+    "tests.test_stagewise_residual_simvq_quantizer",
+    "tests.test_stagewise_transport",
+    "tests.test_stagewise_residual_simvq_integration",
+    "tests.test_stagewise_persistence_monitor",
     "tests.test_residual_simvq_training_contract",
     "tests.test_residual_simvq_depth4_training",
     "tests.test_residual_simvq_depth_extension",
     "tests.test_adaptive_topk",
     "tests.test_adaptive_transport",
+    "tests.test_adaptive_rle_transport",
     "tests.test_rq_ema_quantizer",
     "tests.test_rq_ema_adaptive",
     "tests.test_rq_ema_depth_extension",

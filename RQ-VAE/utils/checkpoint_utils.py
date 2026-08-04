@@ -18,6 +18,12 @@ def _plain_list(value):
     return list(value)
 
 
+def _plain_nested_lists(value):
+    if value is None:
+        return None
+    return [list(items) for items in value]
+
+
 def _plain_shapes(value):
     if value is None:
         return None
@@ -26,6 +32,30 @@ def _plain_shapes(value):
 
 def build_checkpoint_metadata(cfg):
     """Build a self-describing, pickle/JSON-friendly model configuration."""
+    quantizer_type = str(getattr(cfg, "QUANTIZER_TYPE", "simvq")).lower()
+    rq_codebook_size_lists = _plain_nested_lists(
+        getattr(cfg, "RQ_CODEBOOK_SIZE_LISTS", None)
+    )
+    if quantizer_type == "stagewise_residual_simvq":
+        if not rq_codebook_size_lists or any(
+            not codebook_sizes for codebook_sizes in rq_codebook_size_lists
+        ):
+            raise ValueError(
+                "stagewise_residual_simvq checkpoints require "
+                "non-empty RQ_CODEBOOK_SIZE_LISTS"
+            )
+        num_embeddings_list = [
+            int(codebook_sizes[0]) for codebook_sizes in rq_codebook_size_lists
+        ]
+        rq_depth_list = [len(codebook_sizes) for codebook_sizes in rq_codebook_size_lists]
+        rq_shared_codebook = False
+    else:
+        num_embeddings_list = _plain_list(cfg.NUM_EMBEDDINGS_LIST)
+        rq_depth_list = _plain_list(
+            getattr(cfg, "RQ_DEPTH_LIST", [1] * cfg.UNET_DEPTH)
+        )
+        rq_shared_codebook = bool(getattr(cfg, "RQ_SHARED_CODEBOOK", True))
+
     source_bits = getattr(cfg, "ESTIMATED_SOURCE_BITS_PER_IMAGE", None)
     if source_bits is not None:
         rounded = round(float(source_bits))
@@ -37,15 +67,18 @@ def build_checkpoint_metadata(cfg):
         "experiment_name": getattr(cfg, "EXPERIMENT_NAME", None),
         "experiment_family": getattr(cfg, "EXPERIMENT_FAMILY", None),
         "experiment_stage": getattr(cfg, "EXPERIMENT_STAGE", None),
-        "quantizer_type": str(getattr(cfg, "QUANTIZER_TYPE", "simvq")).lower(),
+        "quantizer_type": quantizer_type,
         "num_downsample_blocks": int(getattr(cfg, "NUM_DOWNSAMPLE_BLOCKS", cfg.UNET_DEPTH)),
         "unet_depth": int(cfg.UNET_DEPTH),
-        "num_embeddings_list": _plain_list(cfg.NUM_EMBEDDINGS_LIST),
+        # Keep the first depth's K in the historical flat field.  Consumers
+        # that understand stagewise RQ use rq_codebook_size_lists below.
+        "num_embeddings_list": num_embeddings_list,
         "embedding_dim_list": _plain_list(cfg.EMBEDDING_DIM_LIST),
-        "rq_depth_list": _plain_list(getattr(cfg, "RQ_DEPTH_LIST", [1] * cfg.UNET_DEPTH)),
+        "rq_depth_list": rq_depth_list,
+        "rq_codebook_size_lists": rq_codebook_size_lists,
         "rq_ema_decay": float(getattr(cfg, "RQ_EMA_DECAY", 0.99)),
         "rq_restart_unused_codes": bool(getattr(cfg, "RQ_RESTART_UNUSED_CODES", True)),
-        "rq_shared_codebook": bool(getattr(cfg, "RQ_SHARED_CODEBOOK", True)),
+        "rq_shared_codebook": rq_shared_codebook,
         "in_channels": int(cfg.IN_CHANNELS),
         "out_channels": int(cfg.OUT_CHANNELS),
         "base_channels": int(cfg.BASE_CHANNELS),
@@ -112,9 +145,9 @@ def build_checkpoint_metadata(cfg):
     }
     metadata["projected_embedding"] = {
         "enabled": metadata["quantizer_type"]
-        in {"simvq", "residual_simvq"},
+        in {"simvq", "residual_simvq", "stagewise_residual_simvq"},
         "base_embedding_frozen": metadata["quantizer_type"]
-        in {"simvq", "residual_simvq"},
+        in {"simvq", "residual_simvq", "stagewise_residual_simvq"},
         "projection_type": "linear",
         "projection_bias": False,
         "shared_across_rq_depth": bool(metadata["rq_shared_codebook"]),
@@ -216,6 +249,83 @@ def _is_rq_ema_state(state_dict):
         and (key.endswith("cluster_size_ema") or key.endswith("embed_ema"))
         for key in state_dict
     )
+
+
+def _is_stagewise_residual_simvq_state(state_dict):
+    return any(
+        _SCALE_RE.search(key)
+        and _CODEBOOK_DEPTH_RE.search(key)
+        and key.endswith("embed.weight")
+        for key in state_dict
+    )
+
+
+def _infer_stagewise_residual_simvq_config(state_dict):
+    groups = _state_by_scale(state_dict)
+    if not groups:
+        raise ValueError(
+            "No vector_quantizers.<scale> stagewise SimVQ state found in "
+            "checkpoint."
+        )
+
+    rq_codebook_size_lists = []
+    embedding_dim_list = []
+    for scale, entries in groups.items():
+        weights_by_depth = {}
+        for key, value in entries:
+            depth_match = _CODEBOOK_DEPTH_RE.search(key)
+            if (
+                depth_match is None
+                or not key.endswith("embed.weight")
+                or not isinstance(value, torch.Tensor)
+                or value.ndim != 2
+            ):
+                continue
+            depth = int(depth_match.group(1))
+            if depth in weights_by_depth:
+                raise ValueError(
+                    f"Checkpoint has multiple stagewise embedding weights "
+                    f"for scale {scale}, depth {depth}."
+                )
+            weights_by_depth[depth] = value
+        if not weights_by_depth:
+            raise ValueError(
+                f"Unable to infer stagewise codebooks for scale {scale}."
+            )
+        depths = sorted(weights_by_depth)
+        if depths != list(range(len(depths))):
+            raise ValueError(
+                f"Stagewise codebook depths for scale {scale} must be "
+                f"contiguous from zero, got {depths}."
+            )
+        dimensions = {
+            int(weights_by_depth[depth].shape[1]) for depth in depths
+        }
+        if len(dimensions) != 1:
+            raise ValueError(
+                f"Inconsistent stagewise embedding dimensions in scale "
+                f"{scale}: {sorted(dimensions)}"
+            )
+        rq_codebook_size_lists.append(
+            [int(weights_by_depth[depth].shape[0]) for depth in depths]
+        )
+        embedding_dim_list.append(dimensions.pop())
+
+    return {
+        "num_downsample_blocks": len(groups),
+        "num_embeddings_list": [
+            codebook_sizes[0]
+            for codebook_sizes in rq_codebook_size_lists
+        ],
+        "embedding_dim_list": embedding_dim_list,
+        "quantizer_type": "stagewise_residual_simvq",
+        "rq_depth_list": [
+            len(codebook_sizes)
+            for codebook_sizes in rq_codebook_size_lists
+        ],
+        "rq_codebook_size_lists": rq_codebook_size_lists,
+        "rq_shared_codebook": False,
+    }
 
 
 def _rq_scale_shape(entries):
@@ -371,6 +481,11 @@ def _metadata_list(metadata, key):
     return list(value) if value is not None else None
 
 
+def _metadata_nested_lists(metadata, key):
+    value = metadata.get(key)
+    return [list(items) for items in value] if value is not None else None
+
+
 def infer_codebook_config(state_dict, cfg=None, metadata=None):
     """Infer quantizer layout, preferring explicit v2 checkpoint metadata."""
     metadata = dict(metadata or {})
@@ -378,7 +493,65 @@ def infer_codebook_config(state_dict, cfg=None, metadata=None):
     if explicit_type is not None:
         explicit_type = str(explicit_type).lower()
 
-    if (
+    if explicit_type == "stagewise_residual_simvq":
+        state_inferred = (
+            _infer_stagewise_residual_simvq_config(state_dict)
+            if _is_stagewise_residual_simvq_state(state_dict)
+            else None
+        )
+        rq_codebook_size_lists = _metadata_nested_lists(
+            metadata, "rq_codebook_size_lists"
+        )
+        if rq_codebook_size_lists is None and cfg is not None:
+            rq_codebook_size_lists = _plain_nested_lists(
+                getattr(cfg, "RQ_CODEBOOK_SIZE_LISTS", None)
+            )
+        if rq_codebook_size_lists is None and state_inferred is not None:
+            rq_codebook_size_lists = state_inferred[
+                "rq_codebook_size_lists"
+            ]
+        if not rq_codebook_size_lists or any(
+            not codebook_sizes for codebook_sizes in rq_codebook_size_lists
+        ):
+            raise ValueError(
+                "A stagewise_residual_simvq checkpoint requires non-empty "
+                "rq_codebook_size_lists metadata."
+            )
+        embedding_dim_list = _metadata_list(metadata, "embedding_dim_list")
+        if embedding_dim_list is None and cfg is not None:
+            embedding_dim_list = _plain_list(
+                getattr(cfg, "EMBEDDING_DIM_LIST", None)
+            )
+        if embedding_dim_list is None and state_inferred is not None:
+            embedding_dim_list = state_inferred["embedding_dim_list"]
+        if embedding_dim_list is None:
+            raise ValueError(
+                "A stagewise_residual_simvq checkpoint requires "
+                "embedding_dim_list metadata or Config."
+            )
+        count = int(
+            metadata.get(
+                "num_downsample_blocks", len(rq_codebook_size_lists)
+            )
+        )
+        inferred = {
+            "num_downsample_blocks": count,
+            # This flat field intentionally represents the first RQ depth so
+            # old scale-oriented reporting remains meaningful.
+            "num_embeddings_list": [
+                int(codebook_sizes[0])
+                for codebook_sizes in rq_codebook_size_lists
+            ],
+            "embedding_dim_list": embedding_dim_list,
+            "quantizer_type": explicit_type,
+            "rq_depth_list": [
+                len(codebook_sizes)
+                for codebook_sizes in rq_codebook_size_lists
+            ],
+            "rq_codebook_size_lists": rq_codebook_size_lists,
+            "rq_shared_codebook": False,
+        }
+    elif (
         explicit_type in {"rq_ema", "residual_simvq"}
         and metadata.get("num_embeddings_list") is not None
         and metadata.get("embedding_dim_list") is not None
@@ -408,6 +581,11 @@ def infer_codebook_config(state_dict, cfg=None, metadata=None):
             )
     elif explicit_type == "rq_ema" or (explicit_type is None and _is_rq_ema_state(state_dict)):
         inferred = _infer_rq_ema_config(state_dict, cfg)
+    elif (
+        explicit_type is None
+        and _is_stagewise_residual_simvq_state(state_dict)
+    ):
+        inferred = _infer_stagewise_residual_simvq_config(state_dict)
     elif explicit_type == "residual_simvq":
         # Residual-SimVQ intentionally reuses the same single shared SimVQ
         # codebook keys as legacy SimVQ, so a bare state_dict cannot be
@@ -459,10 +637,14 @@ def infer_codebook_config(state_dict, cfg=None, metadata=None):
         "rq_ema_decay",
         "rq_restart_unused_codes",
         "rq_shared_codebook",
+        "rq_codebook_size_lists",
     ):
         if key in metadata and metadata[key] is not None:
             value = metadata[key]
-            inferred[key] = list(value) if key.endswith("_list") else value
+            if key == "rq_codebook_size_lists":
+                inferred[key] = [list(items) for items in value]
+            else:
+                inferred[key] = list(value) if key.endswith("_list") else value
     if explicit_type is not None:
         inferred["quantizer_type"] = explicit_type
 
@@ -470,6 +652,30 @@ def infer_codebook_config(state_dict, cfg=None, metadata=None):
     for key in ("num_embeddings_list", "embedding_dim_list", "rq_depth_list"):
         if key in inferred:
             inferred[key] = [int(value) for value in inferred[key]]
+    if "rq_codebook_size_lists" in inferred:
+        inferred["rq_codebook_size_lists"] = [
+            [int(value) for value in codebook_sizes]
+            for codebook_sizes in inferred["rq_codebook_size_lists"]
+        ]
+    if inferred["quantizer_type"] == "stagewise_residual_simvq":
+        rq_codebook_size_lists = inferred.get("rq_codebook_size_lists")
+        if not rq_codebook_size_lists or any(
+            not codebook_sizes for codebook_sizes in rq_codebook_size_lists
+        ):
+            raise ValueError(
+                "Checkpoint rq_codebook_size_lists must contain at least one "
+                "codebook size per U-Net scale."
+            )
+        # The nested layout is authoritative for stagewise RQ.  Recompute the
+        # compatibility fields so contradictory transitional metadata cannot
+        # instantiate a different architecture.
+        inferred["num_embeddings_list"] = [
+            codebook_sizes[0] for codebook_sizes in rq_codebook_size_lists
+        ]
+        inferred["rq_depth_list"] = [
+            len(codebook_sizes) for codebook_sizes in rq_codebook_size_lists
+        ]
+        inferred["rq_shared_codebook"] = False
     if inferred["quantizer_type"] in {"rq_ema", "residual_simvq"}:
         count = inferred["num_downsample_blocks"]
         inferred.setdefault("rq_depth_list", [1] * count)
@@ -484,6 +690,25 @@ def infer_codebook_config(state_dict, cfg=None, metadata=None):
             raise ValueError(f"Checkpoint {key} length does not match its U-Net scale count.")
     if inferred.get("rq_depth_list") is not None and len(inferred["rq_depth_list"]) != count:
         raise ValueError("Checkpoint rq_depth_list length does not match its U-Net scale count.")
+    if inferred.get("rq_codebook_size_lists") is not None:
+        codebook_size_lists = inferred["rq_codebook_size_lists"]
+        if len(codebook_size_lists) != count:
+            raise ValueError(
+                "Checkpoint rq_codebook_size_lists length does not match its "
+                "U-Net scale count."
+            )
+        if any(
+            depth <= 0
+            or len(codebook_sizes) != depth
+            or any(size <= 0 for size in codebook_sizes)
+            for codebook_sizes, depth in zip(
+                codebook_size_lists, inferred["rq_depth_list"]
+            )
+        ):
+            raise ValueError(
+                "Checkpoint rq_codebook_size_lists must match rq_depth_list "
+                "and contain positive sizes."
+            )
     inferred["checkpoint_metadata"] = metadata
     return inferred
 
@@ -610,6 +835,10 @@ def build_model_from_checkpoint(checkpoint_path, cfg, device):
         "vitvq_emb_nograd": bool(getattr(cfg, "VITVQ_EMB_NOGRAD", False)),
         "rq_depth_list": inferred.get(
             "rq_depth_list", list(getattr(cfg, "RQ_DEPTH_LIST", [1] * num_scales))
+        ),
+        "rq_codebook_size_lists": inferred.get(
+            "rq_codebook_size_lists",
+            _plain_nested_lists(getattr(cfg, "RQ_CODEBOOK_SIZE_LISTS", None)),
         ),
         "rq_ema_decay": float(
             inferred.get("rq_ema_decay", getattr(cfg, "RQ_EMA_DECAY", 0.99))

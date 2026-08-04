@@ -13,6 +13,7 @@
     2,
     2
   ],
+  "rq_codebook_size_lists": null,
   "rq_ema_decay": 0.99,
   "rq_restart_unused_codes": false,
   "rq_shared_codebook": true,

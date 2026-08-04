@@ -152,22 +152,56 @@ def _restart_counts(quantizer, diagnostics, depth):
     return values, aggregate
 
 
-def _codebook_weight(quantizer, num_embeddings):
+def _projected_codebook_weight(codebook):
+    projected_weight = getattr(codebook, "projected_weight", None)
+    if callable(projected_weight):
+        weight = projected_weight()
+        if isinstance(weight, torch.Tensor):
+            return weight
+
+    transformed_weight = getattr(codebook, "transformed_weight", None)
+    if callable(transformed_weight):
+        weight = transformed_weight()
+        if isinstance(weight, torch.Tensor):
+            return weight
+
+    embed = getattr(codebook, "embed", None)
+    weight = getattr(embed, "weight", None)
+    if isinstance(weight, torch.Tensor):
+        return weight
+    weight = getattr(codebook, "weight", None)
+    if isinstance(weight, torch.Tensor):
+        return weight
+    return None
+
+
+def _codebook_weight(quantizer, num_embeddings, depth_index=None):
+    codebooks = getattr(quantizer, "codebooks", None)
+    if depth_index is not None and codebooks is not None:
+        if 0 <= int(depth_index) < len(codebooks):
+            weight = _projected_codebook_weight(codebooks[int(depth_index)])
+            if isinstance(weight, torch.Tensor):
+                return weight[:num_embeddings]
+
     transformed = getattr(quantizer, "transformed_weight", None)
     if callable(transformed):
-        weight = transformed()
+        try:
+            weight = transformed()
+        except TypeError:
+            weight = None
         if isinstance(weight, torch.Tensor):
             if weight.ndim == 3:
-                weight = weight[0]
+                selected_depth = 0 if depth_index is None else int(depth_index)
+                weight = weight[selected_depth]
             return weight[:num_embeddings]
 
-    codebooks = getattr(quantizer, "codebooks", None)
     if codebooks is not None and len(codebooks):
-        weight = getattr(codebooks[0], "weight", None)
+        selected_depth = 0 if depth_index is None else int(depth_index)
+        weight = _projected_codebook_weight(codebooks[selected_depth])
         if isinstance(weight, torch.Tensor):
             return weight[:num_embeddings]
     codebook = getattr(quantizer, "codebook", None)
-    weight = getattr(codebook, "weight", None)
+    weight = _projected_codebook_weight(codebook)
     if isinstance(weight, torch.Tensor):
         return weight[:num_embeddings]
     weight = getattr(quantizer, "weight", None)
@@ -176,8 +210,7 @@ def _codebook_weight(quantizer, num_embeddings):
     return None
 
 
-def _distance_stats(quantizer, num_embeddings):
-    weight = _codebook_weight(quantizer, num_embeddings)
+def _distance_stats_from_weight(quantizer, weight):
     defaults = {
         "min_l2_dist": float("nan"),
         "collapse_count": 0,
@@ -209,17 +242,41 @@ def _distance_stats(quantizer, num_embeddings):
     }
 
 
+def _distance_stats(quantizer, num_embeddings, depth_index=None):
+    weight = _codebook_weight(
+        quantizer, num_embeddings, depth_index=depth_index
+    )
+    return _distance_stats_from_weight(quantizer, weight)
+
+
 def _projection_grad_norm(quantizer):
+    codebooks = list(getattr(quantizer, "codebooks", ()) or ())
     codebook = getattr(quantizer, "codebook", None)
-    projection = getattr(codebook, "proj", None)
+    if codebook is not None:
+        codebooks.append(codebook)
+
+    # A shared residual quantizer exposes the same object once per depth.
+    # Deduplicate it so its projection gradient is not counted repeatedly.
+    projections = []
+    seen = set()
+    for item in codebooks:
+        projection = getattr(item, "proj", None)
+        if projection is None:
+            nested = getattr(item, "codebook", None)
+            projection = getattr(nested, "proj", None)
+        if projection is not None and id(projection) not in seen:
+            seen.add(id(projection))
+            projections.append(projection)
+
     squared_norm = None
-    if projection is None:
+    if not projections:
         return float("nan")
-    for parameter in projection.parameters():
-        if parameter.grad is None:
-            continue
-        value = parameter.grad.detach().float().pow(2).sum()
-        squared_norm = value if squared_norm is None else squared_norm + value
+    for projection in projections:
+        for parameter in projection.parameters():
+            if parameter.grad is None:
+                continue
+            value = parameter.grad.detach().float().pow(2).sum()
+            squared_norm = value if squared_norm is None else squared_norm + value
     if squared_norm is None:
         return float("nan")
     return float(torch.sqrt(squared_norm).item())
@@ -228,10 +285,103 @@ def _projection_grad_norm(quantizer):
 def _is_rq_quantizer(model, quantizer):
     return (
         str(getattr(model, "quantizer_type", "")).lower()
-        in {"rq_ema", "residual_simvq"}
+        in {"rq_ema", "residual_simvq", "stagewise_residual_simvq"}
         or quantizer.__class__.__name__
-        in {"RQEMAQuantizer", "ResidualSimVQQuantizer"}
+        in {
+            "RQEMAQuantizer",
+            "ResidualSimVQQuantizer",
+            "StagewiseResidualSimVQQuantizer",
+        }
     )
+
+
+def _is_stagewise_quantizer(model, quantizer):
+    return (
+        str(getattr(model, "quantizer_type", "")).lower()
+        == "stagewise_residual_simvq"
+        or quantizer.__class__.__name__ == "StagewiseResidualSimVQQuantizer"
+    )
+
+
+def _codebook_size_from_module(codebook):
+    for name in ("num_embeddings", "codebook_size"):
+        value = getattr(codebook, name, None)
+        if value is not None:
+            return int(value)
+    embed = getattr(codebook, "embed", None)
+    value = getattr(embed, "num_embeddings", None)
+    if value is not None:
+        return int(value)
+    weight = _projected_codebook_weight(codebook)
+    return int(weight.shape[0]) if isinstance(weight, torch.Tensor) else None
+
+
+def _depth_codebook_sizes(model, quantizer, scale, depth):
+    value = None
+    for name in (
+        "num_embeddings_per_depth",
+        "rq_codebook_sizes",
+        "rq_codebook_size_list",
+        "codebook_size_list",
+    ):
+        candidate = getattr(quantizer, name, None)
+        if candidate is not None:
+            value = candidate
+            break
+
+    if value is None:
+        nested = getattr(model, "rq_codebook_size_lists", None)
+        if nested is not None:
+            value = nested[scale]
+
+    if value is None and _is_stagewise_quantizer(model, quantizer):
+        codebooks = getattr(quantizer, "codebooks", None)
+        if codebooks is not None:
+            inferred = [_codebook_size_from_module(item) for item in codebooks]
+            if all(size is not None for size in inferred):
+                value = inferred
+
+    if value is None:
+        flat_sizes = getattr(model, "num_embeddings_list", None)
+        if flat_sizes is None:
+            value = [int(getattr(quantizer, "num_embeddings"))] * depth
+        else:
+            value = [int(flat_sizes[scale])] * depth
+
+    sizes = [int(item) for item in value]
+    if len(sizes) != depth:
+        raise ValueError(
+            f"Residual quantizer scale {scale} has {len(sizes)} codebook "
+            f"sizes, expected {depth}."
+        )
+    if any(size <= 0 for size in sizes):
+        raise ValueError("Residual quantizer codebook sizes must be positive.")
+    return sizes
+
+
+def _aggregate_disjoint_usage_stats(per_depth):
+    usage_counts = torch.cat(
+        [stats["usage_counts"].detach().reshape(-1).cpu() for stats in per_depth]
+    ).float()
+    codebook_size = int(usage_counts.numel())
+    total = int(usage_counts.sum().item())
+    active_count = int((usage_counts > 0).sum().item())
+    if total:
+        probabilities = usage_counts / total
+        probabilities = probabilities[probabilities > 0]
+        perplexity = float(
+            torch.exp(-(probabilities * probabilities.log()).sum()).item()
+        )
+    else:
+        perplexity = 0.0
+    return {
+        "usage_counts": usage_counts,
+        "active_count": active_count,
+        "active_ratio": active_count / codebook_size if codebook_size else 0.0,
+        "dead_count": codebook_size - active_count,
+        "perplexity": perplexity,
+        "codebook_size": codebook_size,
+    }
 
 
 @torch.no_grad()
@@ -291,14 +441,17 @@ def compute_codebook_utilization(model, dataloader, max_batches=None, device=Non
         "rq_scales": [],
         "quantizer_type": getattr(model, "quantizer_type", "simvq"),
     }
+    if str(results["quantizer_type"]).lower() == "stagewise_residual_simvq":
+        results["rq_codebook_size_lists"] = []
     for scale in range(num_layers):
         src_all = torch.cat(all_indices_src[scale], dim=0)
         quantizer = model.vector_quantizers[scale]
-        num_embeddings = int(model.num_embeddings_list[scale])
 
         if not _is_rq_quantizer(model, quantizer):
+            num_embeddings = int(model.num_embeddings_list[scale])
             src_stats = quantizer.compute_codebook_stats(src_all, num_embeddings)
             src_stats.update(_distance_stats(quantizer, num_embeddings))
+            src_stats["codebook_size"] = num_embeddings
             results["src"].append(src_stats)
             continue
 
@@ -313,6 +466,14 @@ def compute_codebook_utilization(model, dataloader, max_batches=None, device=Non
             raise ValueError(
                 f"Residual quantizer scale {scale} returned depth {depth}, "
                 f"expected {configured_depth}."
+            )
+        depth_codebook_sizes = _depth_codebook_sizes(
+            model, quantizer, scale, depth
+        )
+        is_stagewise = _is_stagewise_quantizer(model, quantizer)
+        if is_stagewise:
+            results.setdefault("rq_codebook_size_lists", []).append(
+                list(depth_codebook_sizes)
             )
 
         codebook = _finalize_diagnostics(
@@ -332,10 +493,21 @@ def compute_codebook_utilization(model, dataloader, max_batches=None, device=Non
         usage_counts_per_depth = []
         perplexity_per_depth = []
         for depth_index in range(depth):
-            stats = _usage_stats(src_all[..., depth_index], num_embeddings)
+            depth_codebook_size = depth_codebook_sizes[depth_index]
+            stats = _usage_stats(
+                src_all[..., depth_index], depth_codebook_size
+            )
+            stats.update(
+                _distance_stats(
+                    quantizer,
+                    depth_codebook_size,
+                    depth_index=depth_index,
+                )
+            )
             stats.update(
                 {
                     "depth": depth_index,
+                    "codebook_size": depth_codebook_size,
                     "codebook_loss": codebook[depth_index],
                     "commitment": commitment[depth_index],
                     "commitment_loss": commitment[depth_index],
@@ -348,8 +520,33 @@ def compute_codebook_utilization(model, dataloader, max_batches=None, device=Non
             usage_counts_per_depth.append(stats["usage_counts"])
             perplexity_per_depth.append(stats["perplexity"])
 
-        aggregate = _usage_stats(src_all, num_embeddings)
-        aggregate.update(_distance_stats(quantizer, num_embeddings))
+        if is_stagewise:
+            aggregate = _aggregate_disjoint_usage_stats(per_depth)
+            weights = [
+                _codebook_weight(
+                    quantizer,
+                    codebook_size,
+                    depth_index=depth_index,
+                )
+                for depth_index, codebook_size in enumerate(
+                    depth_codebook_sizes
+                )
+            ]
+            aggregate_weight = (
+                torch.cat(weights, dim=0)
+                if weights and all(
+                    isinstance(weight, torch.Tensor) for weight in weights
+                )
+                else None
+            )
+            aggregate.update(
+                _distance_stats_from_weight(quantizer, aggregate_weight)
+            )
+        else:
+            num_embeddings = depth_codebook_sizes[0]
+            aggregate = _usage_stats(src_all, num_embeddings)
+            aggregate["codebook_size"] = num_embeddings
+            aggregate.update(_distance_stats(quantizer, num_embeddings))
         finite_codebook = [value for value in codebook if math.isfinite(value)]
         codebook_loss = (
             sum(finite_codebook) / len(finite_codebook)
@@ -400,10 +597,42 @@ def print_codebook_utilization(results, num_embeddings_list=None):
     print("=" * 80)
 
     for scale, stats in enumerate(results["src"]):
-        k_src = num_embeddings_list[scale] if num_embeddings_list else "?"
-        print(f"\n  Layer {scale} (K={k_src})")
+        configured_size = num_embeddings_list[scale] if num_embeddings_list else None
+        if isinstance(configured_size, (list, tuple)):
+            configured_depth_sizes = [int(value) for value in configured_size]
+        else:
+            configured_depth_sizes = None
+        depth_sizes = [
+            int(
+                depth_stats.get(
+                    "codebook_size",
+                    configured_depth_sizes[depth_index]
+                    if configured_depth_sizes is not None
+                    and depth_index < len(configured_depth_sizes)
+                    else configured_size or stats.get("codebook_size", 0),
+                )
+            )
+            for depth_index, depth_stats in enumerate(
+                stats.get("per_depth", [])
+            )
+        ]
+        aggregate_size = int(
+            stats.get(
+                "codebook_size",
+                sum(configured_depth_sizes)
+                if configured_depth_sizes is not None
+                else configured_size or 0,
+            )
+        )
+        k_label = depth_sizes if depth_sizes else (configured_size or "?")
+        print(f"\n  Layer {scale} (K={k_label})")
         print("  " + "-" * 60)
-        for depth_stats in stats.get("per_depth", []):
+        for depth_index, depth_stats in enumerate(stats.get("per_depth", [])):
+            depth_size = (
+                depth_sizes[depth_index]
+                if depth_index < len(depth_sizes)
+                else aggregate_size
+            )
             codebook_loss = float(
                 depth_stats.get("codebook_loss", float("nan"))
             )
@@ -417,8 +646,8 @@ def print_codebook_utilization(results, num_embeddings_list=None):
             print(
                 f"  Depth {depth_stats['depth']}: 活跃率 "
                 f"{depth_stats['active_ratio']:.2%} | "
-                f"活跃 {depth_stats['active_count']}/{k_src} | "
-                f"困惑度 {depth_stats['perplexity']:.2f}/{k_src} | "
+                f"活跃 {depth_stats['active_count']}/{depth_size} | "
+                f"困惑度 {depth_stats['perplexity']:.2f}/{depth_size} | "
                 f"{loss_desc} | ResidualNorm {residual:.6f} | "
                 f"重启 {depth_stats.get('restarted_codes', 0)}"
             )
@@ -429,11 +658,11 @@ def print_codebook_utilization(results, num_embeddings_list=None):
         quantizer_label = results.get("quantizer_type", "simvq")
         print(
             f"  [{quantizer_label}] 聚合活跃率: {stats['active_ratio']:.2%}  |  "
-            f"活跃码字: {stats['active_count']}/{k_src}  |  "
+            f"活跃码字: {stats['active_count']}/{aggregate_size or '?'}  |  "
             f"死码字: {stats['dead_count']}  |  "
-            f"困惑度: {stats['perplexity']:.1f}/{k_src}  |  "
+            f"困惑度: {stats['perplexity']:.1f}/{aggregate_size or '?'}  |  "
             f"最小L2距离({distance_mode}): {stats.get('min_l2_dist', float('nan')):.4f}  |  "
-            f"坍缩码字: {stats.get('collapse_count', 0)}/{k_src} "
+            f"坍缩码字: {stats.get('collapse_count', 0)}/{aggregate_size or '?'} "
             f"({stats.get('collapse_ratio', 0.0):.2%})  |  "
             f"重启: {stats.get('restarted_codes', 0)}"
         )
