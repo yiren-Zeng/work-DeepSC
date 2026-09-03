@@ -1,4 +1,4 @@
-"""Contracts for PSNR-bandit search over four independent RAQ-RVQ K values."""
+"""Contracts for PSNR-bandit search over independent RAQ-RVQ K values."""
 
 import csv
 import json
@@ -22,6 +22,7 @@ from bandit_independent_raq_rvq_psnr_search import (
 
 
 INDEX_COUNTS = (1024, 256)
+SINGLE_SCALE_INDEX_COUNTS = (1024,)
 SOURCE_VALUES = 3 * 256 * 256
 TARGET_RATIO = Fraction(3, 32)
 REFERENCE_ACTION = ((16, 16), (4, 4))
@@ -206,6 +207,36 @@ class FourStreamPhysicalBudgetTest(unittest.TestCase):
         self.assertEqual(len(per_stage_actions), 54)
         self.assertNotIn(action, per_stage_actions)
 
+    def test_single_scale_combined_ldpc34_qpsk_one_over_32_has_four_arms(self):
+        actions, ledger = enumerate_exact_actions(
+            SINGLE_SCALE_INDEX_COUNTS,
+            SOURCE_VALUES,
+            CHANNEL_PROFILES["ldpc34_qpsk"],
+            Fraction(1, 32),
+            min_k=2,
+            max_k=64,
+            ldpc_n=256,
+            stream_packing="combined",
+        )
+
+        expected = {
+            ((8, 64),),
+            ((16, 32),),
+            ((32, 16),),
+            ((64, 8),),
+        }
+        self.assertEqual(set(actions), expected)
+        self.assertEqual(set(ledger), expected)
+        for action in actions:
+            lengths = ledger[action]
+            self.assertEqual(len(action), 1)
+            self.assertEqual(len(lengths.streams), 1)
+            self.assertEqual(lengths.payload_bits, 9216)
+            self.assertEqual(lengths.ldpc_input_bits, 9216)
+            self.assertEqual(lengths.coded_bits, 12288)
+            self.assertEqual(lengths.channel_symbols, 6144)
+            self.assertEqual(lengths.transmission_ratio, Fraction(1, 32))
+
 
 class IndependentRaqRvqBanditRewardTest(unittest.TestCase):
     def test_psnr_not_ms_ssim_drives_q_with_nested_actions(self):
@@ -284,6 +315,40 @@ class IndependentRaqRvqBanditRewardTest(unittest.TestCase):
         self.assertEqual(model.independent_raq_rvq_k_lists, original)
         self.assertEqual(observed_packing, ["combined"])
 
+    def test_single_scale_action_is_serialized_and_model_layout_is_restored(self):
+        action = ((64, 8),)
+        model = SimpleNamespace(independent_raq_rvq_k_lists=[[16, 4]])
+
+        class RaisingQuality:
+            qam16_modulate = object()
+
+            @staticmethod
+            def _reset_eval_seed(seed):
+                del seed
+
+            @staticmethod
+            def evaluate_ldpc_channel(model_arg, *args, **kwargs):
+                del args, kwargs
+                self.assertEqual(model_arg.independent_raq_rvq_k_lists, [[64, 8]])
+                raise RuntimeError("single-scale synthetic failure")
+
+        with self.assertRaisesRegex(RuntimeError, "single-scale synthetic failure"):
+            _evaluate_model_action(
+                model=model,
+                loader=[],
+                action=action,
+                snr=6.0,
+                seed=42,
+                ldpc_code={},
+                device="cpu",
+                profile=CHANNEL_PROFILES["ldpc34_qpsk"],
+                target_ratio=Fraction(1, 32),
+                quality_module=RaisingQuality(),
+                stream_packing="combined",
+            )
+
+        self.assertEqual(model.independent_raq_rvq_k_lists, [[16, 4]])
+
 
 class IndependentRaqRvqBanditOutputTest(unittest.TestCase):
     def test_json_and_csv_preserve_nested_selected_action(self):
@@ -352,6 +417,55 @@ class IndependentRaqRvqBanditOutputTest(unittest.TestCase):
             self.assertEqual(row["k_scale0_stage1"], "16")
             self.assertEqual(row["k_scale1_stage0"], "4")
             self.assertEqual(row["k_scale1_stage1"], "4")
+
+    def test_single_scale_csv_has_only_the_two_relevant_k_columns(self):
+        action = ((64, 8),)
+        lengths = calculate_physical_lengths(
+            action,
+            SINGLE_SCALE_INDEX_COUNTS,
+            SOURCE_VALUES,
+            CHANNEL_PROFILES["ldpc34_qpsk"],
+            ldpc_n=256,
+            stream_packing="combined",
+        )
+        summary = {
+            "action": [[64, 8]],
+            "psnr_mean": 25.0,
+            "psnr_std": 0.1,
+            "psnr_ci95": 0.2,
+            "ms_ssim_mean": 0.9,
+        }
+        payload = {
+            "num_scales": 1,
+            "target_ratio": "1/32",
+            "stream_packing": "combined",
+            "profiles": {
+                "ldpc34_qpsk": {
+                    "ldpc_rate": 0.75,
+                    "modulation": "qpsk",
+                    "action_ledger": {"64,8": lengths.to_dict()},
+                    "snr_results": {
+                        "6": {
+                            "best_action": [[64, 8]],
+                            "confirmation": [summary],
+                            "report": summary,
+                        }
+                    },
+                }
+            },
+        }
+
+        with tempfile.TemporaryDirectory() as directory:
+            csv_path = Path(directory) / "single-scale.csv"
+            _write_csv(str(csv_path), payload)
+            with csv_path.open(newline="", encoding="utf-8") as handle:
+                rows = list(csv.DictReader(handle))
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["k_scale0_stage0"], "64")
+        self.assertEqual(rows[0]["k_scale0_stage1"], "8")
+        self.assertNotIn("k_scale1_stage0", rows[0])
+        self.assertEqual(rows[0]["channel_symbols_per_image"], "6144")
 
 
 if __name__ == "__main__":

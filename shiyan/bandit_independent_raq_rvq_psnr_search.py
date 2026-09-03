@@ -1,12 +1,11 @@
-"""PSNR bandit search for four trained independent RAQ-RVQ codebooks.
+"""PSNR bandit search for trained independent RAQ-RVQ codebooks.
 
 This is an additive, evaluation-only entry point.  The checkpoint is frozen and
-the ordered action is::
+an ordered action contains one two-stage allocation per encoder scale::
 
-    ((K_scale0_stage0, K_scale0_stage1),
-     (K_scale1_stage0, K_scale1_stage1))
+    ((K_scale0_stage0, K_scale0_stage1), ...)
 
-All actions are filtered by the exact physical channel-use ratio.  The four
+All actions are filtered by the exact physical channel-use ratio.  The
 scale/stage payloads can either keep separate LDPC padding boundaries or be
 concatenated into one physical payload, matching ``evaluation.quality``.
 """
@@ -37,7 +36,7 @@ from bandit_psnr_search import (
 )
 
 
-Action = tuple[tuple[int, int], tuple[int, int]]
+Action = tuple[tuple[int, int], ...]
 STREAM_PACKINGS = ("per_stage", "combined")
 
 
@@ -68,14 +67,15 @@ def _powers_of_two(minimum: int, maximum: int) -> list[int]:
 
 
 def normalize_action(action: Sequence[Sequence[int]]) -> Action:
-    """Return a strict, hashable scale-major two-scale/two-stage action."""
+    """Return a strict, hashable scale-major action with two stages per scale."""
     try:
         scales = tuple(tuple(int(value) for value in stage_ks) for stage_ks in action)
     except (TypeError, ValueError) as exc:
         raise TypeError("An independent RAQ-RVQ action must be a nested integer list.") from exc
-    if len(scales) != 2 or any(len(stage_ks) != 2 for stage_ks in scales):
+    if not scales or any(len(stage_ks) != 2 for stage_ks in scales):
         raise ValueError(
-            "An independent RAQ-RVQ action must have shape [[K00,K01],[K10,K11]]."
+            "An independent RAQ-RVQ action must contain at least one scale "
+            "and exactly two K values per scale."
         )
     if any(not _is_power_of_two(value) or value < 2 for scale in scales for value in scale):
         raise ValueError(f"Every independent RAQ-RVQ K must be a power of two >= 2: {scales}.")
@@ -84,15 +84,12 @@ def normalize_action(action: Sequence[Sequence[int]]) -> Action:
 
 def action_to_lists(action: Sequence[Sequence[int]]) -> list[list[int]]:
     normalized = normalize_action(action)
-    return [list(normalized[0]), list(normalized[1])]
+    return [list(stage_ks) for stage_ks in normalized]
 
 
 def _action_key(action: Sequence[Sequence[int]]) -> str:
     normalized = normalize_action(action)
-    return (
-        f"{normalized[0][0]},{normalized[0][1]};"
-        f"{normalized[1][0]},{normalized[1][1]}"
-    )
+    return ";".join(f"{stage_ks[0]},{stage_ks[1]}" for stage_ks in normalized)
 
 
 @dataclass(frozen=True)
@@ -118,8 +115,8 @@ class StreamPhysicalLengths:
 class PhysicalLengths:
     action: Action
     stream_packing: str
-    bits_per_index: tuple[tuple[int, int], tuple[int, int]]
-    index_counts: tuple[int, int]
+    bits_per_index: tuple[tuple[int, int], ...]
+    index_counts: tuple[int, ...]
     source_values: int
     streams: tuple[StreamPhysicalLengths, ...]
     payload_bits: int
@@ -157,8 +154,11 @@ def calculate_physical_lengths(
     normalized = normalize_action(action)
     packing = normalize_stream_packing(stream_packing)
     counts = tuple(int(value) for value in index_counts)
-    if len(counts) != 2:
-        raise ValueError("Independent RAQ-RVQ search requires exactly two scales.")
+    if len(counts) != len(normalized):
+        raise ValueError(
+            "Independent RAQ-RVQ action scale count must match index_counts: "
+            f"{len(normalized)} != {len(counts)}."
+        )
     if any(value <= 0 for value in counts) or int(source_values) <= 0:
         raise ValueError("Index counts and source_values must be positive.")
     if int(ldpc_n) <= 0:
@@ -262,18 +262,25 @@ def enumerate_exact_actions(
     ldpc_n: int = 256,
     stream_packing: str = "per_stage",
 ) -> tuple[list[Action], dict[Action, PhysicalLengths]]:
-    """Enumerate ordered four-K actions at exactly one physical rate."""
+    """Enumerate ordered two-K-per-scale actions at one exact physical rate."""
     if target_ratio <= 0:
         raise ValueError("target_ratio must be positive.")
     packing = normalize_stream_packing(stream_packing)
     valid_ks = _powers_of_two(int(min_k), int(max_k))
+    counts = tuple(int(value) for value in index_counts)
+    num_scales = len(counts)
+    if num_scales < 1:
+        raise ValueError("Independent RAQ-RVQ search requires at least one scale.")
     actions = []
     ledger = {}
-    for values in product(valid_ks, repeat=4):
-        action: Action = ((values[0], values[1]), (values[2], values[3]))
+    for values in product(valid_ks, repeat=2 * num_scales):
+        action: Action = tuple(
+            (values[2 * scale], values[2 * scale + 1])
+            for scale in range(num_scales)
+        )
         lengths = calculate_physical_lengths(
             action,
-            index_counts,
+            counts,
             source_values,
             profile,
             ldpc_n,
@@ -552,7 +559,7 @@ def _make_runtime_evaluator(
     return evaluate
 
 
-def _probe_layout(model, loader, device) -> tuple[tuple[int, int], int, list[int]]:
+def _probe_layout(model, loader, device) -> tuple[tuple[int, ...], int, list[int]]:
     import torch
 
     try:
@@ -568,8 +575,8 @@ def _probe_layout(model, loader, device) -> tuple[tuple[int, int], int, list[int
     model.eval()
     with torch.no_grad():
         features = model.semantic_encoder(sample)
-    if len(features) != 2:
-        raise RuntimeError(f"This entry point expects two encoder scales, got {len(features)}.")
+    if not features:
+        raise RuntimeError("The encoder did not return any feature scales.")
     counts = tuple(
         int(feature.shape[0] * feature.shape[-2] * feature.shape[-1])
         for feature in features
@@ -614,10 +621,25 @@ def _write_json(path: str, payload: dict) -> None:
 def _write_csv(path: str, payload: dict) -> None:
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
+    num_scales = payload.get("num_scales")
+    if num_scales is None:
+        for profile_result in payload["profiles"].values():
+            for snr_result in profile_result["snr_results"].values():
+                num_scales = len(normalize_action(snr_result["best_action"]))
+                break
+            if num_scales is not None:
+                break
+    if num_scales is None or int(num_scales) < 1:
+        raise ValueError("Cannot determine the number of action scales for CSV output.")
+    k_fieldnames = [
+        f"k_scale{scale}_stage{stage}"
+        for scale in range(int(num_scales))
+        for stage in range(2)
+    ]
     fieldnames = [
         "channel_profile", "ldpc_rate", "modulation", "stream_packing",
         "snr_db", "target_ratio",
-        "k_scale0_stage0", "k_scale0_stage1", "k_scale1_stage0", "k_scale1_stage1",
+        *k_fieldnames,
         "selected", "channel_symbols_per_image", "actual_ratio",
         "confirm_psnr_mean_db", "confirm_psnr_std_db", "confirm_psnr_ci95_db",
         "confirm_ms_ssim_mean", "report_psnr_mean_db", "report_psnr_std_db",
@@ -632,19 +654,19 @@ def _write_csv(path: str, payload: dict) -> None:
                 report = snr_result["report"]
                 for confirmation in snr_result["confirmation"]:
                     action = normalize_action(confirmation["action"])
+                    if len(action) != int(num_scales):
+                        raise ValueError(
+                            "CSV action scale count changed within one result payload."
+                        )
                     physical = profile_result["action_ledger"][_action_key(action)]
                     selected = action == best
-                    writer.writerow({
+                    row = {
                         "channel_profile": profile_key,
                         "ldpc_rate": profile_result["ldpc_rate"],
                         "modulation": profile_result["modulation"],
                         "stream_packing": payload.get("stream_packing", "per_stage"),
                         "snr_db": snr_key,
                         "target_ratio": payload["target_ratio"],
-                        "k_scale0_stage0": action[0][0],
-                        "k_scale0_stage1": action[0][1],
-                        "k_scale1_stage0": action[1][0],
-                        "k_scale1_stage1": action[1][1],
                         "selected": selected,
                         "channel_symbols_per_image": physical["channel_symbols"],
                         "actual_ratio": physical["transmission_ratio"],
@@ -656,7 +678,13 @@ def _write_csv(path: str, payload: dict) -> None:
                         "report_psnr_std_db": report["psnr_std"] if selected else "",
                         "report_psnr_ci95_db": report["psnr_ci95"] if selected else "",
                         "report_ms_ssim_mean": report["ms_ssim_mean"] if selected else "",
+                    }
+                    row.update({
+                        f"k_scale{scale}_stage{stage}": action[scale][stage]
+                        for scale in range(int(num_scales))
+                        for stage in range(2)
                     })
+                    writer.writerow(row)
     print(f"CSV results saved to {output}")
 
 
@@ -722,6 +750,15 @@ def run(args) -> dict:
         loader = base_loader
 
     index_counts, source_values, image_shape = _probe_layout(model, loader, device)
+    num_scales = len(index_counts)
+    configured_layout = [
+        list(values) for values in model.independent_raq_rvq_k_lists
+    ]
+    if len(configured_layout) != num_scales:
+        raise RuntimeError(
+            "Configured independent RAQ-RVQ scale count does not match encoder "
+            f"features: {len(configured_layout)} != {num_scales}."
+        )
     profile_keys = (
         list(CHANNEL_PROFILES)
         if args.channel_profile == "all"
@@ -754,8 +791,12 @@ def run(args) -> dict:
         "source_values_per_image": source_values,
         "transmission_ratio_definition": "channel_symbols / (C * H * W)",
         "source_codebooks": inferred["num_embeddings_list"],
+        "num_scales": num_scales,
         "independent_raq_rvq_depth": 2,
-        "action_layout": "[[scale0_stage0,scale0_stage1],[scale1_stage0,scale1_stage1]]",
+        "action_layout": "[" + ",".join(
+            f"[scale{scale}_stage0,scale{scale}_stage1]"
+            for scale in range(num_scales)
+        ) + "]",
         "k_range": [args.min_k, args.max_k],
         "target_ratio": str(args.target_ratio),
         "stream_packing": stream_packing,
@@ -775,7 +816,7 @@ def run(args) -> dict:
             "confirm_seeds": confirmation_seeds,
             "report_seeds": report_seeds,
             "confirm_top_k": args.confirm_top_k,
-            "evaluation_cache_key": "(nested four-K action, actual channel seed)",
+            "evaluation_cache_key": "(nested action, actual channel seed)",
         },
         "profiles": {},
     }
@@ -788,11 +829,14 @@ def run(args) -> dict:
         "Fixed exact transmission ratio "
         f"(channel symbols / RGB source values): {args.target_ratio}"
     )
-    print("Action: four ordered and independently selected K values")
+    print(
+        f"Action: {2 * num_scales} ordered and independently selected K values "
+        f"across {num_scales} scale(s)"
+    )
     print(f"Stream packing: {stream_packing}")
     print("=" * 76)
 
-    initial_layout = [list(values) for values in model.independent_raq_rvq_k_lists]
+    initial_layout = [list(values) for values in configured_layout]
     try:
         for profile_index, profile_key in enumerate(profile_keys):
             profile = CHANNEL_PROFILES[profile_key]
@@ -814,7 +858,7 @@ def run(args) -> dict:
             )
             if not actions:
                 raise RuntimeError(
-                    f"No exact {args.target_ratio} four-K actions for {profile.key}."
+                    f"No exact {args.target_ratio} actions for {profile.key}."
                 )
             if args.confirm_top_k > len(actions):
                 raise ValueError(
@@ -919,7 +963,7 @@ def run(args) -> dict:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Search ordered four-K independent RAQ-RVQ allocations at one exact "
+            "Search ordered independent RAQ-RVQ allocations at one exact "
             "physical rate using PSNR-driven epsilon-greedy."
         )
     )
@@ -944,7 +988,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="per_stage",
         help=(
             "Pack each scale/stage payload into its own LDPC stream (default), "
-            "or concatenate all four payloads before one LDPC padding boundary."
+            "or concatenate all payloads before one LDPC padding boundary."
         ),
     )
     parser.add_argument("--ldpc-n", type=int, default=256)

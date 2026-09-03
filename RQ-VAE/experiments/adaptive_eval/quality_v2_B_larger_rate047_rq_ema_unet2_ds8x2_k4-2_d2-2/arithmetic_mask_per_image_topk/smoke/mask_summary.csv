@@ -1,0 +1,4 @@
+target_active_rate,scale0_active_count_per_image,scale1_active_count_per_image,scale0_raw_mask_bits_per_image,scale0_arithmetic_mask_bits_mean_per_image,scale1_raw_mask_bits_per_image,scale1_arithmetic_mask_bits_mean_per_image,raw_mask_bits_per_image,arithmetic_mask_bits_mean_per_image,mask_bits_saved_mean_per_image,mask_saving_ratio,all_roundtrips_exact
+0.0,0,0,1024.0,12.0,256.0,10.0,1280.0,22.0,1258.0,0.9828125,True
+0.5,512,128,1024.0,1029.5,256.0,260.5,1280.0,1290.0,-10.0,-0.0078125,True
+1.0,1024,256,1024.0,12.0,256.0,10.0,1280.0,22.0,1258.0,0.9828125,True

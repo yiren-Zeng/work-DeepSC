@@ -26,6 +26,7 @@ TEST_MODULES = (
     "tests.test_adaptive_topk",
     "tests.test_adaptive_transport",
     "tests.test_adaptive_rle_transport",
+    "tests.test_adaptive_arithmetic_coding",
     "tests.test_rq_ema_quantizer",
     "tests.test_rq_ema_adaptive",
     "tests.test_rq_ema_depth_extension",

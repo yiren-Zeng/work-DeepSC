@@ -35,8 +35,8 @@ fi
 if [ "$#" -eq 0 ]; then
   "${PYTHON_CMD[@]}" test_real.py \
     --checkpoint checkpoints/quality_v2_B_larger_rate125_A_patch_cb2048-16_res6-6_unet2_ds8x2_k2048-16/best_vq_deepsc.pth \
-    --snrs 0 3 6 9 12 \
-    --modulation bpsk
+    --snrs 10\
+    --modulation 16qam
 else
   "${PYTHON_CMD[@]}" test_real.py "$@"
 fi

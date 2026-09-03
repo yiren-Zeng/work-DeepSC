@@ -29,7 +29,7 @@ export SIMVQ_USE_SHARED_RAQ_RVQ="0"
 export SIMVQ_USE_DYNAMIC_RAQ_RVQ="0"
 export SIMVQ_USE_INDEPENDENT_RAQ_RVQ="1"
 export SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH="2"
-export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-4,2;8,2}"
+export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-4,8;8,2}"
 export SIMVQ_DYNAMIC_RAQ_RVQ_ZERO_CODEWORD="0"
 export SIMVQ_TEST_USE_RAQ_RVQ="0"
 unset SIMVQ_TEST_RAQ_RVQ_K_LISTS
@@ -58,12 +58,12 @@ unset SIMVQ_RAQ_CURRICULUM_LATE_LISTS
 
 export SIMVQ_TEST_DATASET_PATH="${SIMVQ_TEST_DATASET_PATH:-/workspace/yi/work/Kodak-256-transform-resize}"
 export SIMVQ_TEST_NO_RESIZE="${SIMVQ_TEST_NO_RESIZE:-1}"
-export GPU_ID="${GPU_ID:-4}"
+export GPU_ID="${GPU_ID:-0}"
 export CUDA_VISIBLE_DEVICES="$GPU_ID"
 export PYTHONUNBUFFERED=1
 
 CHECKPOINT="${CHECKPOINT:-checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_unet2_ds8x2_k64/best_vq_deepsc.pth}"
-SNRS="${SNRS:-3}"
+SNRS="${SNRS:-10}"
 JSON_OUTPUT="${JSON_OUTPUT:-experiments/eval/independent_raq_rvq_src64-64_k4x64-8x2_d2_ldpc34_qpsk_combined.json}"
 NO_CHANNEL="${NO_CHANNEL:-0}"
 read -r -a SNR_ARGS <<< "$SNRS"
@@ -71,7 +71,7 @@ read -r -a SNR_ARGS <<< "$SNRS"
 ARGS=(
   --checkpoint "$CHECKPOINT"
   --snrs "${SNR_ARGS[@]}"
-  --modulation qpsk
+  --modulation 16qam
   --stream-packing combined
   --ldpc_n 256
   --ldpc_k 0.5

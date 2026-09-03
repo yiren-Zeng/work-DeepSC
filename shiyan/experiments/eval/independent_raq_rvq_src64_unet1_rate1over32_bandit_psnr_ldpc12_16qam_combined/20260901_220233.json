@@ -1,0 +1,2247 @@
+{
+  "created_at_utc": "2026-09-01T14:02:40.506350+00:00",
+  "entry_point": "bandit_independent_raq_rvq_psnr_search.py",
+  "checkpoint": "/workspace/yi/work/shiyan/checkpoints/shiyan_independent_raq_rvq_src64_trg2-64_d2_curriculum_rate063_A_patch_ch256_unet1_ds8_k64/best_vq_deepsc.pth",
+  "checkpoint_size_bytes": 96297397,
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "dataset_size": 24,
+  "evaluated_images": 24,
+  "dataset_files": [
+    "kodim01.png",
+    "kodim02.png",
+    "kodim03.png",
+    "kodim04.png",
+    "kodim05.png",
+    "kodim06.png",
+    "kodim07.png",
+    "kodim08.png",
+    "kodim09.png",
+    "kodim10.png",
+    "kodim11.png",
+    "kodim12.png",
+    "kodim13.png",
+    "kodim14.png",
+    "kodim15.png",
+    "kodim16.png",
+    "kodim17.png",
+    "kodim18.png",
+    "kodim19.png",
+    "kodim20.png",
+    "kodim21.png",
+    "kodim22.png",
+    "kodim23.png",
+    "kodim24.png"
+  ],
+  "dataset_order": "sorted filename order",
+  "selection_and_report_dataset_are_the_same": true,
+  "methodology_note": "The requested evaluation calibrates and reports on the same dataset; treat the selected action as test-set tuning.",
+  "image_shape": [
+    1,
+    3,
+    256,
+    256
+  ],
+  "index_counts_per_image": [
+    1024
+  ],
+  "source_values_per_image": 196608,
+  "transmission_ratio_definition": "channel_symbols / (C * H * W)",
+  "source_codebooks": [
+    64
+  ],
+  "num_scales": 1,
+  "independent_raq_rvq_depth": 2,
+  "action_layout": "[[scale0_stage0,scale0_stage1]]",
+  "k_range": [
+    2,
+    64
+  ],
+  "target_ratio": "1/48",
+  "stream_packing": "combined",
+  "reward": "mean_psnr_db",
+  "snrs_db": [
+    10.0
+  ],
+  "bandit": {
+    "algorithm": "stateless epsilon-greedy",
+    "episodes": 20,
+    "warmup_pulls_per_action": 1,
+    "eps_start": 0.4,
+    "eps_end": 0.05,
+    "eps_decay": 30.0,
+    "agent_seed": 42,
+    "channel_seed_mode": "partitioned_multi_seed",
+    "fixed_channel_seed": null,
+    "search_seed_base": 42000,
+    "confirm_seeds": [
+      52000,
+      52001,
+      52002
+    ],
+    "report_seeds": [
+      62000,
+      62001,
+      62002,
+      62003,
+      62004
+    ],
+    "confirm_top_k": 2,
+    "evaluation_cache_key": "(nested action, actual channel seed)"
+  },
+  "profiles": {
+    "ldpc12_16qam": {
+      "label": "LDPC 1/2 + 16QAM",
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "modulation": "16qam",
+      "bits_per_symbol": 4,
+      "stream_packing": "combined",
+      "actions": [
+        [
+          [
+            4,
+            64
+          ]
+        ],
+        [
+          [
+            8,
+            32
+          ]
+        ],
+        [
+          [
+            16,
+            16
+          ]
+        ],
+        [
+          [
+            32,
+            8
+          ]
+        ],
+        [
+          [
+            64,
+            4
+          ]
+        ]
+      ],
+      "action_ledger": {
+        "4,64": {
+          "action": [
+            [
+              4,
+              64
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              2,
+              6
+            ]
+          ],
+          "index_counts": [
+            1024
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2048,
+              "bits_per_index": null,
+              "payload_bits": 8192,
+              "ldpc_input_bits": 8192,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 16384,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 16384,
+              "channel_symbols": 4096
+            }
+          ],
+          "payload_bits": 8192,
+          "ldpc_input_bits": 8192,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 16384,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 16384,
+          "channel_symbols": 4096,
+          "transmission_ratio": "1/48",
+          "transmission_ratio_float": 0.020833333333333332
+        },
+        "8,32": {
+          "action": [
+            [
+              8,
+              32
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              3,
+              5
+            ]
+          ],
+          "index_counts": [
+            1024
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2048,
+              "bits_per_index": null,
+              "payload_bits": 8192,
+              "ldpc_input_bits": 8192,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 16384,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 16384,
+              "channel_symbols": 4096
+            }
+          ],
+          "payload_bits": 8192,
+          "ldpc_input_bits": 8192,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 16384,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 16384,
+          "channel_symbols": 4096,
+          "transmission_ratio": "1/48",
+          "transmission_ratio_float": 0.020833333333333332
+        },
+        "16,16": {
+          "action": [
+            [
+              16,
+              16
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              4,
+              4
+            ]
+          ],
+          "index_counts": [
+            1024
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2048,
+              "bits_per_index": null,
+              "payload_bits": 8192,
+              "ldpc_input_bits": 8192,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 16384,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 16384,
+              "channel_symbols": 4096
+            }
+          ],
+          "payload_bits": 8192,
+          "ldpc_input_bits": 8192,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 16384,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 16384,
+          "channel_symbols": 4096,
+          "transmission_ratio": "1/48",
+          "transmission_ratio_float": 0.020833333333333332
+        },
+        "32,8": {
+          "action": [
+            [
+              32,
+              8
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              5,
+              3
+            ]
+          ],
+          "index_counts": [
+            1024
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2048,
+              "bits_per_index": null,
+              "payload_bits": 8192,
+              "ldpc_input_bits": 8192,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 16384,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 16384,
+              "channel_symbols": 4096
+            }
+          ],
+          "payload_bits": 8192,
+          "ldpc_input_bits": 8192,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 16384,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 16384,
+          "channel_symbols": 4096,
+          "transmission_ratio": "1/48",
+          "transmission_ratio_float": 0.020833333333333332
+        },
+        "64,4": {
+          "action": [
+            [
+              64,
+              4
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              6,
+              2
+            ]
+          ],
+          "index_counts": [
+            1024
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2048,
+              "bits_per_index": null,
+              "payload_bits": 8192,
+              "ldpc_input_bits": 8192,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 16384,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 16384,
+              "channel_symbols": 4096
+            }
+          ],
+          "payload_bits": 8192,
+          "ldpc_input_bits": 8192,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 16384,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 16384,
+          "channel_symbols": 4096,
+          "transmission_ratio": "1/48",
+          "transmission_ratio_float": 0.020833333333333332
+        }
+      },
+      "snr_results": {
+        "10": {
+          "snr_db": 10.0,
+          "search_trace": [
+            {
+              "episode": 1,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  4,
+                  64
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 25.180651148160297,
+              "diagnostic_ms_ssim": 0.9213627984958969,
+              "action_n": 1,
+              "action_q": 25.180651148160297,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 2,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  8,
+                  32
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 25.226677656173706,
+              "diagnostic_ms_ssim": 0.9205615590994088,
+              "action_n": 1,
+              "action_q": 25.226677656173706,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 3,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 1,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 4,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  32,
+                  8
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 25.175903638203938,
+              "diagnostic_ms_ssim": 0.9178220522574193,
+              "action_n": 1,
+              "action_q": 25.175903638203938,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 5,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  64,
+                  4
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 25.161548952261608,
+              "diagnostic_ms_ssim": 0.9182184302137557,
+              "action_n": 1,
+              "action_q": 25.161548952261608,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 6,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.3885256351687021,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 2,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 7,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.37742744476106627,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 3,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 8,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.36669309631258584,
+              "action": [
+                [
+                  4,
+                  64
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 25.180651148160297,
+              "diagnostic_ms_ssim": 0.9213627984958969,
+              "action_n": 2,
+              "action_q": 25.180651148160297,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 9,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.3563106616650316,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42003,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 4,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 10,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.346268603711715,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42004,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 5,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 11,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.33655576357729367,
+              "action": [
+                [
+                  8,
+                  32
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 25.226677656173706,
+              "diagnostic_ms_ssim": 0.9205615590994088,
+              "action_n": 2,
+              "action_q": 25.226677656173706,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 12,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.32716134821787357,
+              "action": [
+                [
+                  64,
+                  4
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 25.161548952261608,
+              "diagnostic_ms_ssim": 0.9182184302137557,
+              "action_n": 2,
+              "action_q": 25.161548952261608,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "episode": 13,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.31807491842762703,
+              "action": [
+                [
+                  8,
+                  32
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 25.226677656173706,
+              "diagnostic_ms_ssim": 0.9205615590994088,
+              "action_n": 3,
+              "action_q": 25.226677656173706,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "episode": 14,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.30928637723860125,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42005,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 6,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "episode": 15,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.30078595870082625,
+              "action": [
+                [
+                  64,
+                  4
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 25.161548952261608,
+              "diagnostic_ms_ssim": 0.9182184302137557,
+              "action_n": 3,
+              "action_q": 25.161548952261608,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.180651148160297,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 16,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.29256421703025454,
+              "action": [
+                [
+                  4,
+                  64
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 25.178197125593822,
+              "diagnostic_ms_ssim": 0.9213072857025626,
+              "action_n": 3,
+              "action_q": 25.179833140638138,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.179833140638138,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 17,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2846120161124738,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42006,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 7,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.179833140638138,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 7
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 18,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2769205193505284,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42007,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 8,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.179833140638138,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 8
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 19,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.26948117984556963,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42008,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 9,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.179833140638138,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 9
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 20,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2622857308994217,
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 42009,
+              "reward_psnr": 25.2513325214386,
+              "diagnostic_ms_ssim": 0.919723998156949,
+              "action_n": 10,
+              "action_q": 25.2513325214386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 25.179833140638138,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 25.226677656173706,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 25.2513325214386,
+                  "n": 10
+                },
+                {
+                  "action": [
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 25.175903638203938,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 25.161548952261608,
+                  "n": 3
+                }
+              ]
+            }
+          ],
+          "search_final_q_table": [
+            {
+              "action": [
+                [
+                  4,
+                  64
+                ]
+              ],
+              "q": 25.179833140638138,
+              "n": 3
+            },
+            {
+              "action": [
+                [
+                  8,
+                  32
+                ]
+              ],
+              "q": 25.226677656173706,
+              "n": 3
+            },
+            {
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "q": 25.2513325214386,
+              "n": 10
+            },
+            {
+              "action": [
+                [
+                  32,
+                  8
+                ]
+              ],
+              "q": 25.175903638203938,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  64,
+                  4
+                ]
+              ],
+              "q": 25.161548952261608,
+              "n": 3
+            }
+          ],
+          "bandit_best_action": [
+            [
+              16,
+              16
+            ]
+          ],
+          "confirmation_candidates": [
+            [
+              [
+                16,
+                16
+              ]
+            ],
+            [
+              [
+                8,
+                32
+              ]
+            ]
+          ],
+          "confirmation": [
+            {
+              "action": [
+                [
+                  16,
+                  16
+                ]
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 25.2513325214386,
+              "psnr_std": 0.0,
+              "psnr_ci95": 0.0,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "uncertainty_estimated": true,
+              "ms_ssim_mean": 0.919723998156949,
+              "ms_ssim_std": 0.0,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.919723998156949,
+                  "psnr": 25.2513325214386,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.919723998156949,
+                  "psnr": 25.2513325214386,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.919723998156949,
+                  "psnr": 25.2513325214386,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                }
+              ]
+            },
+            {
+              "action": [
+                [
+                  8,
+                  32
+                ]
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 25.226677656173706,
+              "psnr_std": 0.0,
+              "psnr_ci95": 0.0,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "uncertainty_estimated": true,
+              "ms_ssim_mean": 0.9205615590994088,
+              "ms_ssim_std": 0.0,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.9205615590994088,
+                  "psnr": 25.226677656173706,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.9205615590994088,
+                  "psnr": 25.226677656173706,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "snr": 10.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.9205615590994088,
+                  "psnr": 25.226677656173706,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 49152,
+                    "payload_bits": 196608,
+                    "ldpc_input_bits": 196608,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 393216,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 393216,
+                    "channel_symbols": 98304,
+                    "payload_bpp": 0.125,
+                    "coded_bpp": 0.25,
+                    "transmitted_bpp": 0.25,
+                    "channel_uses_per_pixel": 0.0625,
+                    "transmission_ratio": 0.020833333333333332,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                }
+              ]
+            }
+          ],
+          "selection_metric": "top-K confirmation psnr_mean",
+          "best_action": [
+            [
+              16,
+              16
+            ]
+          ],
+          "report": {
+            "action": [
+              [
+                16,
+                16
+              ]
+            ],
+            "num_seeds": 5,
+            "seeds": [
+              62000,
+              62001,
+              62002,
+              62003,
+              62004
+            ],
+            "psnr_mean": 25.2513325214386,
+            "psnr_std": 0.0,
+            "psnr_ci95": 0.0,
+            "psnr_ci95_method": "two-sided Student-t half-width",
+            "uncertainty_estimated": true,
+            "ms_ssim_mean": 0.919723998156949,
+            "ms_ssim_std": 0.0,
+            "per_seed": [
+              {
+                "action": [
+                  [
+                    16,
+                    16
+                  ]
+                ],
+                "snr": 10.0,
+                "seed": 62000,
+                "ms_ssim": 0.919723998156949,
+                "psnr": 25.2513325214386,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 49152,
+                  "payload_bits": 196608,
+                  "ldpc_input_bits": 196608,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 393216,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 393216,
+                  "channel_symbols": 98304,
+                  "payload_bpp": 0.125,
+                  "coded_bpp": 0.25,
+                  "transmitted_bpp": 0.25,
+                  "channel_uses_per_pixel": 0.0625,
+                  "transmission_ratio": 0.020833333333333332,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              },
+              {
+                "action": [
+                  [
+                    16,
+                    16
+                  ]
+                ],
+                "snr": 10.0,
+                "seed": 62001,
+                "ms_ssim": 0.919723998156949,
+                "psnr": 25.2513325214386,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 49152,
+                  "payload_bits": 196608,
+                  "ldpc_input_bits": 196608,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 393216,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 393216,
+                  "channel_symbols": 98304,
+                  "payload_bpp": 0.125,
+                  "coded_bpp": 0.25,
+                  "transmitted_bpp": 0.25,
+                  "channel_uses_per_pixel": 0.0625,
+                  "transmission_ratio": 0.020833333333333332,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              },
+              {
+                "action": [
+                  [
+                    16,
+                    16
+                  ]
+                ],
+                "snr": 10.0,
+                "seed": 62002,
+                "ms_ssim": 0.919723998156949,
+                "psnr": 25.2513325214386,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 49152,
+                  "payload_bits": 196608,
+                  "ldpc_input_bits": 196608,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 393216,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 393216,
+                  "channel_symbols": 98304,
+                  "payload_bpp": 0.125,
+                  "coded_bpp": 0.25,
+                  "transmitted_bpp": 0.25,
+                  "channel_uses_per_pixel": 0.0625,
+                  "transmission_ratio": 0.020833333333333332,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              },
+              {
+                "action": [
+                  [
+                    16,
+                    16
+                  ]
+                ],
+                "snr": 10.0,
+                "seed": 62003,
+                "ms_ssim": 0.919723998156949,
+                "psnr": 25.2513325214386,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 49152,
+                  "payload_bits": 196608,
+                  "ldpc_input_bits": 196608,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 393216,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 393216,
+                  "channel_symbols": 98304,
+                  "payload_bpp": 0.125,
+                  "coded_bpp": 0.25,
+                  "transmitted_bpp": 0.25,
+                  "channel_uses_per_pixel": 0.0625,
+                  "transmission_ratio": 0.020833333333333332,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              },
+              {
+                "action": [
+                  [
+                    16,
+                    16
+                  ]
+                ],
+                "snr": 10.0,
+                "seed": 62004,
+                "ms_ssim": 0.919723998156949,
+                "psnr": 25.2513325214386,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 49152,
+                  "payload_bits": 196608,
+                  "ldpc_input_bits": 196608,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 393216,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 393216,
+                  "channel_symbols": 98304,
+                  "payload_bpp": 0.125,
+                  "coded_bpp": 0.25,
+                  "transmitted_bpp": 0.25,
+                  "channel_uses_per_pixel": 0.0625,
+                  "transmission_ratio": 0.020833333333333332,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

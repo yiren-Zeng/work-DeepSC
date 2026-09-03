@@ -433,6 +433,7 @@ def main():
     print(f"  - 信道课程: epoch<{cfg.CHANNEL_PROB_START_EPOCH}:0, "
           f"{cfg.CHANNEL_PROB_START_EPOCH}-{cfg.CHANNEL_PROB_END_EPOCH}:线性升至1, "
           f">={cfg.CHANNEL_PROB_END_EPOCH}:1")
+    print(f"  - 学习率StepLR: 每{cfg.LR_STEP_SIZE}个epoch乘以0.5")
     print(f"  - VQ损失层权重(初始): {cfg.LAYER_LOSS_WEIGHTS_INIT}")
     print(f"  - VQ损失层权重(最终): {cfg.LAYER_LOSS_WEIGHTS_FINAL}")
     print(f"  - 跳跃连接Dropout(初始): {cfg.SKIP_DROPOUT_P_INIT}")
@@ -568,7 +569,11 @@ def main():
     optimizer_g = optim.Adam(optimizer_groups, betas=cfg.BETAS)
     print(f"[Info] 优化器参数分组: 普通参数 {len(other_params)} 个 (lr={cfg.LEARNING_RATE_G}), "
           f"码本变换层 {len(proj_params)} 个 (lr={cfg.CODEBOOK_PROJ_LR})")
-    scheduler_g = optim.lr_scheduler.StepLR(optimizer_g, step_size=100, gamma=0.5)
+    scheduler_g = optim.lr_scheduler.StepLR(
+        optimizer_g,
+        step_size=cfg.LR_STEP_SIZE,
+        gamma=0.5,
+    )
 
     # 断点续训
     start_epoch = 0
@@ -578,7 +583,14 @@ def main():
         # Load resume tensors on CPU first. Loading the full model+optimizer
         # checkpoint directly onto CUDA keeps a second GPU copy alive during
         # training and can consume the remaining memory headroom.
-        checkpoint = torch.load(cfg.RESUME_PATH, map_location="cpu")
+        # Resume checkpoints are created locally below and include optimizer
+        # plus Python/NumPy RNG state, so PyTorch 2.6's weights-only loader is
+        # not applicable here.
+        checkpoint = torch.load(
+            cfg.RESUME_PATH,
+            map_location="cpu",
+            weights_only=False,
+        )
         load_state_dict_compatible(deepsc_model, checkpoint['model_state_dict'])
         optimizer_g.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler_g.load_state_dict(checkpoint['scheduler_state_dict'])

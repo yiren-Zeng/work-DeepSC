@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "evaluation": "adaptive_per_image_topk_arithmetic_mask_only",
+  "checkpoint": "/workspace/yi/work/RQ-VAE/checkpoints/quality_v2_B_larger_rate047_rq_ema_unet2_ds8x2_k4-2_d2-2/best_vq_deepsc.pth",
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "image_order": [
+    "kodim01.png",
+    "kodim02.png"
+  ],
+  "num_images": 2,
+  "quantizer_type": "rq_ema",
+  "num_embeddings_list": [
+    4,
+    2
+  ],
+  "rq_depth_list": [
+    2,
+    2
+  ],
+  "selection": {
+    "scope": "each image and each scale independently",
+    "active_count_rule": "floor(target_active_rate * token_count + 0.5)",
+    "ordering": "first-stage error descending; ties use ascending raster index",
+    "mask_value": "1=second depth active, 0=STOP"
+  },
+  "mask_coding": {
+    "codec": "32-bit integer binary arithmetic coder",
+    "probability_model": "adaptive Laplace counts initialized as zero=1, one=1; counts update after every decoded symbol",
+    "independent_segments": "one segment per image and scale",
+    "scan_order": "row-major raster order",
+    "lossless_roundtrip_required": true,
+    "counted_bits": "arithmetic mask payload only",
+    "excluded_bits": "first-depth indices, active second-depth indices, LDPC, BPSK, probability headers",
+    "framing_metadata": "token count and arithmetic segment payload length are assumed known out of band",
+    "framing_overhead_counted": false
+  },
+  "results": [
+    {
+      "scan_id": 0,
+      "target_active_rates": [
+        0.0,
+        0.0
+      ],
+      "mask_stats": {
+        "num_images": 2,
+        "target_active_rates": [
+          0.0,
+          0.0
+        ],
+        "raw_mask_bits": 2560,
+        "arithmetic_mask_bits": 44,
+        "raw_mask_bits_mean_per_image": 1280.0,
+        "arithmetic_mask_bits_mean_per_image": 22.0,
+        "mask_bits_saved": 2516,
+        "mask_saving_ratio": 0.9828125,
+        "all_roundtrips_exact": true,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_images": 2,
+            "token_count": 2048,
+            "active_count": 0,
+            "raw_mask_bits": 2048,
+            "arithmetic_mask_bits": 24,
+            "token_count_per_image": 1024,
+            "active_count_per_image": 0,
+            "actual_active_ratio": 0.0,
+            "raw_mask_bits_mean_per_image": 1024.0,
+            "arithmetic_mask_bits_mean_per_image": 12.0,
+            "arithmetic_mask_bits_min_per_image": 12,
+            "arithmetic_mask_bits_max_per_image": 12,
+            "mask_bits_saved": 2024,
+            "mask_saving_ratio": 0.98828125,
+            "all_roundtrips_exact": true
+          },
+          {
+            "scale": 1,
+            "num_images": 2,
+            "token_count": 512,
+            "active_count": 0,
+            "raw_mask_bits": 512,
+            "arithmetic_mask_bits": 20,
+            "token_count_per_image": 256,
+            "active_count_per_image": 0,
+            "actual_active_ratio": 0.0,
+            "raw_mask_bits_mean_per_image": 256.0,
+            "arithmetic_mask_bits_mean_per_image": 10.0,
+            "arithmetic_mask_bits_min_per_image": 10,
+            "arithmetic_mask_bits_max_per_image": 10,
+            "mask_bits_saved": 492,
+            "mask_saving_ratio": 0.9609375,
+            "all_roundtrips_exact": true
+          }
+        ]
+      },
+      "per_image": [
+        {
+          "image_index": 0,
+          "image_number": 1,
+          "image_name": "kodim01.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 1.3003190755844116,
+              "target_active_rate": 0.0,
+              "token_count": 1024,
+              "target_active_count": 0,
+              "active_count": 0,
+              "actual_active_rate": 0.0,
+              "strict_above_threshold_count": 0,
+              "threshold_equal_count": 0,
+              "threshold_equal_selected_count": 0,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 1.300318956375122,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 12,
+              "mask_bits_saved": 1012,
+              "mask_saving_ratio": 0.98828125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 1024,
+              "one_count": 0
+            },
+            {
+              "scale": 1,
+              "threshold": 0.3547384738922119,
+              "target_active_rate": 0.0,
+              "token_count": 256,
+              "target_active_count": 0,
+              "active_count": 0,
+              "actual_active_rate": 0.0,
+              "strict_above_threshold_count": 0,
+              "threshold_equal_count": 0,
+              "threshold_equal_selected_count": 0,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.3547384440898895,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 10,
+              "mask_bits_saved": 246,
+              "mask_saving_ratio": 0.9609375,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 256,
+              "one_count": 0
+            }
+          ]
+        },
+        {
+          "image_index": 1,
+          "image_number": 2,
+          "image_name": "kodim02.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.22361373901367188,
+              "target_active_rate": 0.0,
+              "token_count": 1024,
+              "target_active_count": 0,
+              "active_count": 0,
+              "actual_active_rate": 0.0,
+              "strict_above_threshold_count": 0,
+              "threshold_equal_count": 0,
+              "threshold_equal_selected_count": 0,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.22361372411251068,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 12,
+              "mask_bits_saved": 1012,
+              "mask_saving_ratio": 0.98828125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 1024,
+              "one_count": 0
+            },
+            {
+              "scale": 1,
+              "threshold": 0.14715783298015594,
+              "target_active_rate": 0.0,
+              "token_count": 256,
+              "target_active_count": 0,
+              "active_count": 0,
+              "actual_active_rate": 0.0,
+              "strict_above_threshold_count": 0,
+              "threshold_equal_count": 0,
+              "threshold_equal_selected_count": 0,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.14715781807899475,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 10,
+              "mask_bits_saved": 246,
+              "mask_saving_ratio": 0.9609375,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 256,
+              "one_count": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scan_id": 1,
+      "target_active_rates": [
+        0.5,
+        0.5
+      ],
+      "mask_stats": {
+        "num_images": 2,
+        "target_active_rates": [
+          0.5,
+          0.5
+        ],
+        "raw_mask_bits": 2560,
+        "arithmetic_mask_bits": 2580,
+        "raw_mask_bits_mean_per_image": 1280.0,
+        "arithmetic_mask_bits_mean_per_image": 1290.0,
+        "mask_bits_saved": -20,
+        "mask_saving_ratio": -0.0078125,
+        "all_roundtrips_exact": true,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_images": 2,
+            "token_count": 2048,
+            "active_count": 1024,
+            "raw_mask_bits": 2048,
+            "arithmetic_mask_bits": 2059,
+            "token_count_per_image": 1024,
+            "active_count_per_image": 512,
+            "actual_active_ratio": 0.5,
+            "raw_mask_bits_mean_per_image": 1024.0,
+            "arithmetic_mask_bits_mean_per_image": 1029.5,
+            "arithmetic_mask_bits_min_per_image": 1029,
+            "arithmetic_mask_bits_max_per_image": 1030,
+            "mask_bits_saved": -11,
+            "mask_saving_ratio": -0.00537109375,
+            "all_roundtrips_exact": true
+          },
+          {
+            "scale": 1,
+            "num_images": 2,
+            "token_count": 512,
+            "active_count": 256,
+            "raw_mask_bits": 512,
+            "arithmetic_mask_bits": 521,
+            "token_count_per_image": 256,
+            "active_count_per_image": 128,
+            "actual_active_ratio": 0.5,
+            "raw_mask_bits_mean_per_image": 256.0,
+            "arithmetic_mask_bits_mean_per_image": 260.5,
+            "arithmetic_mask_bits_min_per_image": 260,
+            "arithmetic_mask_bits_max_per_image": 261,
+            "mask_bits_saved": -9,
+            "mask_saving_ratio": -0.017578125,
+            "all_roundtrips_exact": true
+          }
+        ]
+      },
+      "per_image": [
+        {
+          "image_index": 0,
+          "image_number": 1,
+          "image_name": "kodim01.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.025096550583839417,
+              "target_active_rate": 0.5,
+              "token_count": 1024,
+              "target_active_count": 512,
+              "active_count": 512,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 511,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.02500881627202034,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 1030,
+              "mask_bits_saved": -6,
+              "mask_saving_ratio": -0.005859375,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 512,
+              "one_count": 512
+            },
+            {
+              "scale": 1,
+              "threshold": 0.002777809277176857,
+              "target_active_rate": 0.5,
+              "token_count": 256,
+              "target_active_count": 128,
+              "active_count": 128,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 127,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.0027721512597054243,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 261,
+              "mask_bits_saved": -5,
+              "mask_saving_ratio": -0.01953125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 128,
+              "one_count": 128
+            }
+          ]
+        },
+        {
+          "image_index": 1,
+          "image_number": 2,
+          "image_name": "kodim02.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.00921635888516903,
+              "target_active_rate": 0.5,
+              "token_count": 1024,
+              "target_active_count": 512,
+              "active_count": 512,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 511,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.009212689474225044,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 1029,
+              "mask_bits_saved": -5,
+              "mask_saving_ratio": -0.0048828125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 512,
+              "one_count": 512
+            },
+            {
+              "scale": 1,
+              "threshold": 0.002583778230473399,
+              "target_active_rate": 0.5,
+              "token_count": 256,
+              "target_active_count": 128,
+              "active_count": 128,
+              "actual_active_rate": 0.5,
+              "strict_above_threshold_count": 127,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": 0.0025827803183346987,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 260,
+              "mask_bits_saved": -4,
+              "mask_saving_ratio": -0.015625,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 128,
+              "one_count": 128
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scan_id": 2,
+      "target_active_rates": [
+        1.0,
+        1.0
+      ],
+      "mask_stats": {
+        "num_images": 2,
+        "target_active_rates": [
+          1.0,
+          1.0
+        ],
+        "raw_mask_bits": 2560,
+        "arithmetic_mask_bits": 44,
+        "raw_mask_bits_mean_per_image": 1280.0,
+        "arithmetic_mask_bits_mean_per_image": 22.0,
+        "mask_bits_saved": 2516,
+        "mask_saving_ratio": 0.9828125,
+        "all_roundtrips_exact": true,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_images": 2,
+            "token_count": 2048,
+            "active_count": 2048,
+            "raw_mask_bits": 2048,
+            "arithmetic_mask_bits": 24,
+            "token_count_per_image": 1024,
+            "active_count_per_image": 1024,
+            "actual_active_ratio": 1.0,
+            "raw_mask_bits_mean_per_image": 1024.0,
+            "arithmetic_mask_bits_mean_per_image": 12.0,
+            "arithmetic_mask_bits_min_per_image": 12,
+            "arithmetic_mask_bits_max_per_image": 12,
+            "mask_bits_saved": 2024,
+            "mask_saving_ratio": 0.98828125,
+            "all_roundtrips_exact": true
+          },
+          {
+            "scale": 1,
+            "num_images": 2,
+            "token_count": 512,
+            "active_count": 512,
+            "raw_mask_bits": 512,
+            "arithmetic_mask_bits": 20,
+            "token_count_per_image": 256,
+            "active_count_per_image": 256,
+            "actual_active_ratio": 1.0,
+            "raw_mask_bits_mean_per_image": 256.0,
+            "arithmetic_mask_bits_mean_per_image": 10.0,
+            "arithmetic_mask_bits_min_per_image": 10,
+            "arithmetic_mask_bits_max_per_image": 10,
+            "mask_bits_saved": 492,
+            "mask_saving_ratio": 0.9609375,
+            "all_roundtrips_exact": true
+          }
+        ]
+      },
+      "per_image": [
+        {
+          "image_index": 0,
+          "image_number": 1,
+          "image_name": "kodim01.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.0025382640305906534,
+              "target_active_rate": 1.0,
+              "token_count": 1024,
+              "target_active_count": 1024,
+              "active_count": 1024,
+              "actual_active_rate": 1.0,
+              "strict_above_threshold_count": 1023,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": null,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 12,
+              "mask_bits_saved": 1012,
+              "mask_saving_ratio": 0.98828125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 0,
+              "one_count": 1024
+            },
+            {
+              "scale": 1,
+              "threshold": 6.0277390730334446e-05,
+              "target_active_rate": 1.0,
+              "token_count": 256,
+              "target_active_count": 256,
+              "active_count": 256,
+              "actual_active_rate": 1.0,
+              "strict_above_threshold_count": 255,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": null,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 10,
+              "mask_bits_saved": 246,
+              "mask_saving_ratio": 0.9609375,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 0,
+              "one_count": 256
+            }
+          ]
+        },
+        {
+          "image_index": 1,
+          "image_number": 2,
+          "image_name": "kodim02.png",
+          "scales": [
+            {
+              "scale": 0,
+              "threshold": 0.0013400884345173836,
+              "target_active_rate": 1.0,
+              "token_count": 1024,
+              "target_active_count": 1024,
+              "active_count": 1024,
+              "actual_active_rate": 1.0,
+              "strict_above_threshold_count": 1023,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": null,
+              "raw_mask_bits": 1024,
+              "arithmetic_mask_bits": 12,
+              "mask_bits_saved": 1012,
+              "mask_saving_ratio": 0.98828125,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 0,
+              "one_count": 1024
+            },
+            {
+              "scale": 1,
+              "threshold": 0.0001308679347857833,
+              "target_active_rate": 1.0,
+              "token_count": 256,
+              "target_active_count": 256,
+              "active_count": 256,
+              "actual_active_rate": 1.0,
+              "strict_above_threshold_count": 255,
+              "threshold_equal_count": 1,
+              "threshold_equal_selected_count": 1,
+              "threshold_splits_tie": false,
+              "first_inactive_error": null,
+              "raw_mask_bits": 256,
+              "arithmetic_mask_bits": 10,
+              "mask_bits_saved": 246,
+              "mask_saving_ratio": 0.9609375,
+              "arithmetic_roundtrip_exact": true,
+              "zero_count": 0,
+              "one_count": 256
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

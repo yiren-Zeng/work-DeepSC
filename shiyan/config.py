@@ -379,6 +379,7 @@ class Config:
     PHASE2_END = _STAGE_SETTINGS["phase2_end"]
     LEARNING_RATE_G = _env_float("SIMVQ_LEARNING_RATE_G", 5e-5)
     CODEBOOK_PROJ_LR = _env_float("SIMVQ_CODEBOOK_PROJ_LR", 2e-4)
+    LR_STEP_SIZE = _env_int("SIMVQ_LR_STEP_SIZE", 100)
     BETAS = (0.5, 0.999)
     COMMITMENT_COST = 0.25
     CHANNEL_CODING_RATE_TRAIN = 0.5
@@ -711,6 +712,8 @@ class Config:
             raise ValueError(
                 "SIMVQ_CHANNEL_PROB_END_EPOCH must be >= SIMVQ_CHANNEL_PROB_START_EPOCH >= 0"
             )
+        if cls.LR_STEP_SIZE <= 0:
+            raise ValueError("SIMVQ_LR_STEP_SIZE must be a positive integer")
         if cls.USE_RAQ:
             required_raq_envs = {
                 # "SIMVQ_RAQ_TARGET_LIST": cls.RAQ_TARGET_LIST,
@@ -943,6 +946,7 @@ class Config:
             "skip_dropout_final": list(cls.SKIP_DROPOUT_P_FINAL),
             "channel_prob_start_epoch": cls.CHANNEL_PROB_START_EPOCH,
             "channel_prob_end_epoch": cls.CHANNEL_PROB_END_EPOCH,
+            "lr_step_size": cls.LR_STEP_SIZE,
             "norm_type": cls.NORM_TYPE,
             "activation": cls.ACTIVATION,
             "encoder_res_blocks": cls.ENCODER_RES_BLOCKS,
