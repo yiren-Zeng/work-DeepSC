@@ -1,0 +1,18 @@
+{
+  "original_tree_entries_before": 1078,
+  "original_tree_entries_after": 1078,
+  "original_tree_changed": [],
+  "selected_original_code_and_checkpoints_hash_changed": [],
+  "all_original_files_unchanged": true,
+  "training_gpu2_process_running": true,
+  "evaluation_worker_exit_codes": {
+    "raq": 0,
+    "independent_rvq": 0
+  },
+  "dataset_images_each_model": [
+    24,
+    24
+  ],
+  "same_dataset_image_order": true,
+  "stage_drop_probe_grad_disabled": true
+}

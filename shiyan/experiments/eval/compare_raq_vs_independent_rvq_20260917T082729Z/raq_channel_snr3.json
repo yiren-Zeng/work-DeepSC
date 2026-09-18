@@ -1,0 +1,16 @@
+{
+  "checkpoint": "checkpoints/shiyan_raq_src64-64_raq2-64_curriculum_rate044_A_patch_ch256-512_unet2_ds8x2_k64/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    8,
+    16
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "qpsk",
+  "stream_packing": "per_stage",
+  "results": {
+    "3": {
+      "ms_ssim": 0.879694894011965,
+      "psnr": 23.888898094495136
+    }
+  }
+}

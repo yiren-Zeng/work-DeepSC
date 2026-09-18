@@ -11,14 +11,14 @@ export SIMVQ_BASE_CHANNELS="128"
 export SIMVQ_ENCODER_RES_BLOCKS="6"
 export SIMVQ_DECODER_RES_BLOCKS="6"
 export SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH="2"
-export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-4,8;8,2}"
+export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-8,2;2,2}"
 
 export SIMVQ_RAQ_MIN_TRG="2"
 export SIMVQ_RAQ_MAX_TRG="64"
 
 export SIMVQ_TEST_DATASET_PATH="${SIMVQ_TEST_DATASET_PATH:-/workspace/yi/work/Kodak-256-transform-resize}"
 export SIMVQ_TEST_NO_RESIZE="${SIMVQ_TEST_NO_RESIZE:-1}"
-export GPU_ID="${GPU_ID:-0}"
+export GPU_ID="${GPU_ID:-1}"
 export CUDA_VISIBLE_DEVICES="$GPU_ID"
 export PYTHONUNBUFFERED=1
 
@@ -34,7 +34,7 @@ ARGS=(
   --modulation qpsk
   --stream-packing combined
   --ldpc_n 256
-  --ldpc_k 0.5
+  --ldpc_k 0.75
   --json-output "$JSON_OUTPUT"
 )
 if [[ "$NO_CHANNEL" == "1" ]]; then

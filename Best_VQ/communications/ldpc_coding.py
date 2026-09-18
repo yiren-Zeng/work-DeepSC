@@ -22,20 +22,26 @@ except RuntimeError as e:
 from sionna.phy.fec.ldpc import LDPC5GEncoder, LDPC5GDecoder
 
 
-def get_ldpc_code(block_length, rate=0.5):
+def get_ldpc_code(block_length, rate=0.5, coded_block_length=None):
     """
     生成LDPC编码器和解码器实例，支持动态修改码率。
+    block_length为信息位数k；coded_block_length可固定编码后码长n，实际码率为k/n。
     """
     # 5G NR LDPC 码长设置
     k_sionna = block_length
-    n_sionna = int(k_sionna / rate)  # 根据输入的码率，动态计算总码长 N
+    n_sionna = (
+        int(k_sionna / rate) if coded_block_length is None else int(coded_block_length)
+    )
 
     # Sionna 运行在 CPU 上 (因为上面已经禁用了 TF 的 GPU)
     encoder = LDPC5GEncoder(k=k_sionna, n=n_sionna)
     decoder = LDPC5GDecoder(encoder)
 
     # 返回时顺便把 n 和 rate 也带上，方便调试
-    return {"encoder": encoder, "decoder": decoder, "k": k_sionna, "n": n_sionna, "rate": rate}
+    return {
+        "encoder": encoder, "decoder": decoder, "k": k_sionna,
+        "n": n_sionna, "rate": k_sionna / n_sionna,
+    }
 
 
 def ldpc_encode(bits, code=None):

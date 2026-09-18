@@ -1,0 +1,14 @@
+{
+  "default_channel_raq_minus_rvq_psnr": 1.683761328458786,
+  "default_no_channel_raq_minus_rvq_psnr": 1.7054837445418016,
+  "matched_low_channel_raq_minus_rvq_psnr": 0.6521039704481737,
+  "matched_low_no_channel_raq_minus_rvq_psnr": 0.6690754989782945,
+  "same_rvq_weights_old_minus_current_no_channel_psnr": 2.3212801913420336,
+  "default_channel_psnr_loss_raq": 0.02659598986307543,
+  "default_channel_psnr_loss_rvq": 0.0048735737800598145,
+  "matched_high_no_channel_differences": {
+    "matched_high_8x4_no_channel": 0.65334821740786,
+    "matched_high_4x8_no_channel": 0.3863268593947069,
+    "matched_high_16x2_no_channel": 0.4003859062989541
+  }
+}

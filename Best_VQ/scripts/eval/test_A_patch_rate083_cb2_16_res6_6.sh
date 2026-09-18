@@ -32,11 +32,18 @@ elif [ "${DEBUGPY:-0}" = "1" ]; then
 fi
 
 
-if [ "$#" -eq 0 ]; then
-  "${PYTHON_CMD[@]}" test_real.py \
-    --checkpoint checkpoints/quality_v2_B_larger_rate083_A_patch_cb2-16_res6-6_unet2_ds8x2_k2-16/best_vq_deepsc.pth \
-    --snrs 0 \
-    --modulation bpsk
-else
-  "${PYTHON_CMD[@]}" test_real.py "$@"
-fi
+# 信道编码参数：可直接修改默认值，也可通过环境变量或命令行覆盖。
+# 示例：LDPC_RATE=0.75 bash test_A_patch_rate083_cb2_16_res6_6.sh
+# 示例：bash test_A_patch_rate083_cb2_16_res6_6.sh --ldpc-rate 0.75 --ldpc-n 512
+LDPC_N="${LDPC_N:-256}"
+LDPC_RATE="${LDPC_RATE:-0.5}"
+
+ARGS=(
+  --checkpoint checkpoints/quality_v2_B_larger_rate083_A_patch_cb2-16_res6-6_unet2_ds8x2_k2-16/best_vq_deepsc.pth
+  --snrs 0
+  --modulation bpsk
+  --ldpc-n "$LDPC_N"
+  --ldpc-rate "$LDPC_RATE"
+)
+# 命令行参数覆盖默认参数；输出 MS-SSIM、PSNR、rFID、LPIPS 与分数 CBR。
+"${PYTHON_CMD[@]}" test_real.py "${ARGS[@]}" "$@"

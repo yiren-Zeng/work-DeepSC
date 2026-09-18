@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+checkpoints/
+logs/
+*.pth
+*.pt
+*.ckpt
+events.out.tfevents.*
+experiments/logs/
+experiments/eval/*.json
+
+.DS_Store
+.vscode/

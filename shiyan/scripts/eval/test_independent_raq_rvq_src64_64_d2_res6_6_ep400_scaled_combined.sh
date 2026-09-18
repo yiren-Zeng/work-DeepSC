@@ -8,7 +8,7 @@ cd /workspace/yi/work/shiyan
 mkdir -p experiments/eval
 
 export SIMVQ_EXPERIMENT_STAGE="B"
-export SIMVQ_EXP_FAMILY="shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512-res6-6_ep400_scaled"
+export SIMVQ_EXP_FAMILY="shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_ep400_scaled"
 export SIMVQ_NUM_EMBEDDINGS_LIST="64,64"
 export SIMVQ_DOWNSAMPLE_STRIDES="8,2"
 export SIMVQ_UNET_DEPTH="2"
@@ -61,7 +61,7 @@ export GPU_ID="${GPU_ID:-3}"
 export CUDA_VISIBLE_DEVICES="$GPU_ID"
 export PYTHONUNBUFFERED=1
 
-CHECKPOINT="${CHECKPOINT:-checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512-res6-6_ep400_scaled_unet2_ds8x2_k64/best_vq_deepsc.pth}"
+CHECKPOINT="${CHECKPOINT:-checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_ep400_scaled_unet2_ds8x2_k64/best_vq_deepsc.pth}"
 PROFILE="${PROFILE:-all}"
 NO_CHANNEL="${NO_CHANNEL:-0}"
 

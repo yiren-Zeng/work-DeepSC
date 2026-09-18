@@ -1,0 +1,9 @@
+{
+  "/workspace/yi/work/shiyan/models/independent_raq_rvq.py": "cf3028c276b1c5e26b6dee78aa1720b97c854225eb9cc75b7184e606eb56b72d",
+  "/workspace/yi/work/shiyan/models/deepsc.py": "4afdf4390114928fecdeefe7b1971b350c60dc13a5eedb7f61174bc99426f80e",
+  "/workspace/yi/work/shiyan/evaluation/quality.py": "3cc0a2ee2b41864ad078d0942f575227d37007de6c91bf52cd65d35f45ff32ba",
+  "/workspace/yi/work/shiyan/train.py": "728dd8e2bc877cee88e6c1a8e5ff413a228473b3cba29500a5a05b808883c29d",
+  "/workspace/yi/work/shiyan/config.py": "34142538200bd0398ca47b939f941b955d54308d1b6af32833f6674ac0d8ef1f",
+  "/workspace/yi/work/shiyan/checkpoints/shiyan_raq_src64-64_raq2-64_curriculum_rate044_A_patch_ch256-512_unet2_ds8x2_k64/best_vq_deepsc.pth": "3d4fd2b84cad66496020764cea84c5f1931f1ddeaf974fc9418c49c01b66e5b3",
+  "/workspace/yi/work/shiyan/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_unet2_ds8x2_k64/best_vq_deepsc.pth": "54d573b2d9bf6e5d42b837ac8c27ee8ff04eb8d9122f5137d8c52d9555097bd3"
+}

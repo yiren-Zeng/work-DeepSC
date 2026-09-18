@@ -1,0 +1,177 @@
+import torch
+
+from models.deepsc import DeepSC
+
+
+def extract_state_dict(checkpoint):
+    if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+        return checkpoint["model_state_dict"]
+    return checkpoint
+
+
+def load_model_state_dict(checkpoint_path, device):
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    return extract_state_dict(checkpoint)
+
+
+def make_state_dict_compatible(model, state_dict):
+    model_state = model.state_dict()
+    compatible_state = dict(state_dict)
+    adjusted = []
+    for key, value in state_dict.items():
+        if not key.endswith("pos_encoder.pe"):
+            continue
+        if key not in model_state:
+            continue
+        current_value = model_state[key]
+        if tuple(current_value.shape) != tuple(value.shape):
+            compatible_state[key] = current_value
+            adjusted.append((key, tuple(value.shape), tuple(current_value.shape)))
+    return compatible_state, adjusted
+
+
+def load_state_dict_compatible(model, state_dict, strict=True):
+    compatible_state, adjusted = make_state_dict_compatible(model, state_dict)
+    for key, ckpt_shape, model_shape in adjusted:
+        print(
+            "[Info] Compatible checkpoint load: regenerate "
+            f"{key} ({ckpt_shape} -> {model_shape})"
+        )
+    return model.load_state_dict(compatible_state, strict=strict)
+
+
+def infer_codebook_config(state_dict, cfg=None):
+    if any(".qbridge." in key for key in state_dict):
+        quantizer_type = "vitvq_nocompress"
+        weight_suffix = "embedding.weight"
+    elif any(
+        key.startswith("vector_quantizers.") and key.endswith("embedding.weight")
+        for key in state_dict
+    ):
+        quantizer_type = "vq"
+        weight_suffix = "embedding.weight"
+    else:
+        quantizer_type = "simvq"
+        weight_suffix = "codebook.embed.weight"
+    codebook_weights = [
+        state_dict[key] for key in sorted(state_dict)
+        if key.startswith("vector_quantizers.") and key.endswith(weight_suffix)
+    ]
+    if not codebook_weights and cfg is not None and cfg.QUANTIZER_TYPE == "none":
+        return {
+            "num_downsample_blocks": cfg.NUM_DOWNSAMPLE_BLOCKS,
+            "num_embeddings_list": list(cfg.NUM_EMBEDDINGS_LIST),
+            "embedding_dim_list": list(cfg.EMBEDDING_DIM_LIST),
+            "quantizer_type": "none",
+        }
+    if not codebook_weights:
+        raise ValueError("No vector quantizer codebook weights found in checkpoint.")
+    embedding_dim_list = [weight.shape[1] for weight in codebook_weights]
+    if cfg is not None and hasattr(cfg, "QUANTIZER_AXIS_LIST"):
+        embedding_dim_list = [
+            cfg.EMBEDDING_DIM_LIST[idx] if cfg.QUANTIZER_AXIS_LIST[idx] == "channel" else weight.shape[1]
+            for idx, weight in enumerate(codebook_weights)
+        ]
+
+    return {
+        "num_downsample_blocks": len(codebook_weights),
+        "num_embeddings_list": [weight.shape[0] for weight in codebook_weights],
+        "embedding_dim_list": embedding_dim_list,
+        "quantizer_type": quantizer_type,
+    }
+
+
+def build_model_from_checkpoint(checkpoint_path, cfg, device):
+    cfg.validate()
+    state_dict = load_model_state_dict(checkpoint_path, device)
+    inferred = infer_codebook_config(state_dict, cfg)
+    if inferred["num_downsample_blocks"] != cfg.NUM_DOWNSAMPLE_BLOCKS:
+        raise ValueError(
+            "Checkpoint layer count differs from Config; provide compatible "
+            "NUM_DOWNSAMPLE_BLOCKS and DOWNSAMPLE_STRIDES before evaluation."
+        )
+
+    model = DeepSC(
+        in_channels=cfg.IN_CHANNELS,
+        out_channels=cfg.OUT_CHANNELS,
+        num_downsample_blocks=inferred["num_downsample_blocks"],
+        base_channels=cfg.BASE_CHANNELS,
+        num_embeddings_list=inferred["num_embeddings_list"],
+        embedding_dim_list=inferred["embedding_dim_list"],
+        commitment_cost=cfg.COMMITMENT_COST,
+        device=device,
+        strides=cfg.DOWNSAMPLE_STRIDES,
+        skip_dropout_p=cfg.SKIP_DROPOUT_P_INIT,
+        channel_coding_rate_train=cfg.CHANNEL_CODING_RATE_TRAIN,
+        channel_coding_rate_val=cfg.CHANNEL_CODING_RATE_VAL,
+        block_length=cfg.BLOCK_LENGTH,
+        snr_range_db=cfg.SNR_RANGE_DB,
+        norm_type=cfg.NORM_TYPE,
+        norm_groups=cfg.GROUP_NORM_GROUPS,
+        activation=cfg.ACTIVATION,
+        encoder_res_blocks=cfg.ENCODER_RES_BLOCKS,
+        decoder_res_blocks=cfg.DECODER_RES_BLOCKS,
+        upsample_mode=cfg.UPSAMPLE_MODE,
+        use_cascade_downsample=cfg.USE_CASCADE_DOWNSAMPLE,
+        use_bottleneck_attention=cfg.USE_BOTTLENECK_ATTENTION,
+        bottleneck_attention_blocks=cfg.BOTTLENECK_ATTENTION_BLOCKS,
+        use_swinir_enhance=cfg.USE_SWINIR_ENHANCE,
+        swinir_enhance_blocks=cfg.SWINIR_ENHANCE_BLOCKS,
+        quantizer_type=inferred["quantizer_type"],
+        quantizer_axis_list=cfg.QUANTIZER_AXIS_LIST,
+        cvq_codeword_shapes=cfg.CVQ_CODEWORD_SHAPES,
+        nested_channel_dropout_alpha=cfg.NESTED_CHANNEL_DROPOUT_ALPHA,
+        vitvq_qbridge_type=cfg.VITVQ_QBRIDGE_TYPE,
+        vitvq_emb_nograd=cfg.VITVQ_EMB_NOGRAD,
+        use_raq=getattr(cfg, "USE_RAQ", False),
+        raq_target_list=getattr(cfg, "RAQ_TARGET_LIST", None),
+        raq_min_trg=getattr(cfg, "RAQ_MIN_TRG", None),
+        raq_max_trg=getattr(cfg, "RAQ_MAX_TRG", None),
+        raq_min_trg_list=getattr(cfg, "RAQ_MIN_TRG_LIST", None),
+        raq_max_trg_list=getattr(cfg, "RAQ_MAX_TRG_LIST", None),
+        raq_recon_grad_mode=getattr(cfg, "RAQ_RECON_GRAD_MODE", "ste"),
+        raq_generator_type=getattr(cfg, "RAQ_GENERATOR_TYPE", "encoder_decoder"),
+        raq_routed_src_enabled=getattr(cfg, "RAQ_ROUTED_SRC_ENABLED", False),
+        raq_routed_src_small_list=getattr(cfg, "RAQ_ROUTED_SRC_SMALL_LIST", None),
+        raq_routed_src_large_list=getattr(cfg, "RAQ_ROUTED_SRC_LARGE_LIST", None),
+        raq_routed_src_threshold=getattr(cfg, "RAQ_ROUTED_SRC_THRESHOLD", 16),
+        use_dynamic_raq_rvq=getattr(cfg, "USE_DYNAMIC_RAQ_RVQ", False),
+        dynamic_raq_rvq_zero_codeword=getattr(
+            cfg, "DYNAMIC_RAQ_RVQ_ZERO_CODEWORD", True
+        ),
+        use_shared_raq_rvq=getattr(cfg, "USE_SHARED_RAQ_RVQ", False),
+        shared_raq_rvq_depth=getattr(cfg, "SHARED_RAQ_RVQ_DEPTH", 2),
+        use_independent_raq_rvq=getattr(
+            cfg, "USE_INDEPENDENT_RAQ_RVQ", False
+        ),
+        independent_raq_rvq_depth=getattr(
+            cfg, "INDEPENDENT_RAQ_RVQ_DEPTH", 2
+        ),
+        independent_raq_rvq_k_lists=getattr(
+            cfg, "INDEPENDENT_RAQ_RVQ_K_LISTS", None
+        ),
+        test_use_raq_rvq=getattr(cfg, "TEST_USE_RAQ_RVQ", False),
+        test_raq_rvq_depth=getattr(cfg, "TEST_RAQ_RVQ_DEPTH", 2),
+        test_raq_rvq_k_lists=getattr(cfg, "TEST_RAQ_RVQ_K_LISTS", None),
+    ).to(device)
+    if not model.use_raq:
+        raq_keys = [
+            key for key in state_dict
+            if key.startswith(("raqs.", "raqs_rvq_stage2."))
+        ]
+        if raq_keys:
+            state_dict = {
+                key: value for key, value in state_dict.items()
+                if not key.startswith(("raqs.", "raqs_rvq_stage2."))
+            }
+            print(
+                f"[Info] RAQ disabled: skipping {len(raq_keys)} RAQ parameter "
+                "entries; evaluating the checkpoint's source-codebook branch."
+            )
+    load_state_dict_compatible(model, state_dict)
+    if getattr(cfg, "MODEL_PARALLEL", False):
+        if not torch.cuda.is_available() or torch.cuda.device_count() < 2:
+            raise RuntimeError("SIMVQ_MODEL_PARALLEL=1 requires at least two visible CUDA devices.")
+        model.enable_model_parallel(cfg.ENCODER_DEVICE, cfg.DECODER_DEVICE)
+    model.eval()
+    return model, inferred

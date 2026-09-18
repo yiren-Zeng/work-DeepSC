@@ -1,0 +1,7 @@
+{
+  "meaning": "Remove only scale-1 second residual stage in RAM; not a retrained ablation",
+  "psnr": 23.200477957725525,
+  "ms_ssim": 0.8740441725933817,
+  "num_images": 24,
+  "grad_disabled": true
+}

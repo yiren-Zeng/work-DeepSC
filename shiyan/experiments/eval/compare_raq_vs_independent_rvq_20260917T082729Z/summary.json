@@ -1,0 +1,57 @@
+{
+  "metrics": {
+    "raq": {
+      "channel": {
+        "psnr": 23.888898094495136,
+        "ms_ssim": 0.879694894011965
+      },
+      "no_channel": {
+        "psnr": 23.910743196805317,
+        "ms_ssim": 0.8805315893866643
+      }
+    },
+    "independent_rvq": {
+      "channel": {
+        "psnr": 23.236794124046963,
+        "ms_ssim": 0.8728666241339513
+      },
+      "no_channel": {
+        "psnr": 23.241667697827022,
+        "ms_ssim": 0.8733601855533601
+      }
+    }
+  },
+  "quality_difference_raq_minus_rvq": {
+    "channel": {
+      "psnr": 0.6521039704481737,
+      "ms_ssim": 0.00682826987801366
+    },
+    "no_channel": {
+      "psnr": 0.6690754989782945,
+      "ms_ssim": 0.0071714038333041685
+    }
+  },
+  "channel_psnr_loss_db": {
+    "raq": 0.021845102310180664,
+    "independent_rvq": 0.0048735737800598145
+  },
+  "no_channel_raq_psnr_wins": 24,
+  "no_channel_raq_ms_ssim_wins": 20,
+  "rvq_parameter_increase_percent": 26.700281893308485,
+  "rvq_mean_latency_increase_percent": 50.225324452065045,
+  "rvq_median_latency_increase_percent": 50.54747322575168,
+  "rvq_residual_mse_by_scale": [
+    {
+      "scale": 0,
+      "after_stage1": 0.19454458511124054,
+      "after_stage2": 0.15180117543786764,
+      "stage2_change_percent": -21.97100970398751
+    },
+    {
+      "scale": 1,
+      "after_stage1": 0.02912754542194307,
+      "after_stage2": 0.039946314257880054,
+      "stage2_change_percent": 37.14274127536585
+    }
+  ]
+}
