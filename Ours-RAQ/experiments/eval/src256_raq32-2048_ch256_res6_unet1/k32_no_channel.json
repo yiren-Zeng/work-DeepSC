@@ -1,0 +1,80 @@
+{
+  "checkpoint": "/workspace/yi/work/Ours-RAQ/checkpoints/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds2_k256/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    32
+  ],
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "stream_packing": "per_stage",
+  "results": {
+    "no_channel": {
+      "ms_ssim": 0.983057158006102,
+      "psnr": 32.01849500338236,
+      "diagnostics": {
+        "mode": "no_channel",
+        "rvq_enabled": false,
+        "per_stage": [
+          {
+            "scale": 0,
+            "stage": null,
+            "num_embeddings": 32,
+            "bits_per_index": 5,
+            "num_images": 24,
+            "source_pixels": 1572864,
+            "source_values": 4718592,
+            "num_indices": 393216,
+            "payload_bits": 1966080,
+            "ldpc_input_bits": 0,
+            "ldpc_padding_bits": 0,
+            "coded_bits": 0,
+            "modulation_padding_bits": 0,
+            "transmitted_bits": 0,
+            "channel_symbols": 0,
+            "bit_errors": 0,
+            "index_errors": 0,
+            "sent_index_min": 0,
+            "sent_index_max": 31,
+            "recovered_index_min": null,
+            "recovered_index_max": null,
+            "payload_bpp": 1.25,
+            "coded_bpp": 0.0,
+            "transmitted_bpp": 0.0,
+            "channel_uses_per_pixel": 0.0,
+            "transmission_ratio": 0.0,
+            "ber": null,
+            "index_error_rate": null
+          }
+        ],
+        "total": {
+          "num_images": 24,
+          "source_pixels": 1572864,
+          "source_values": 4718592,
+          "num_indices": 393216,
+          "payload_bits": 1966080,
+          "ldpc_input_bits": 0,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 0,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 0,
+          "channel_symbols": 0,
+          "bit_errors": 0,
+          "index_errors": 0,
+          "payload_bpp": 1.25,
+          "coded_bpp": 0.0,
+          "transmitted_bpp": 0.0,
+          "channel_uses_per_pixel": 0.0,
+          "transmission_ratio": 0.0,
+          "ber": null,
+          "index_error_rate": null
+        }
+      },
+      "compression": {
+        "raw_image_bits": 37748736,
+        "payload_bits": 1966080,
+        "payload_bpp": 1.25,
+        "source_bit_ratio": 0.052083333333333336,
+        "source_compression_factor": 19.2
+      }
+    }
+  }
+}

@@ -1,0 +1,7372 @@
+{
+  "created_at_utc": "2026-09-24T07:57:16.968555+00:00",
+  "entry_point": "bandit_independent_raq_rvq_psnr_search.py",
+  "checkpoint": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src256-256_trg2-256_d2_curriculum_rate094_A_patch_ch256-512_res6-6_mixture_per_k_unet2_ds8x2_k256/best_vq_deepsc.pth",
+  "checkpoint_size_bytes": 669229579,
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "dataset_size": 24,
+  "evaluated_images": 24,
+  "dataset_files": [
+    "kodim01.png",
+    "kodim02.png",
+    "kodim03.png",
+    "kodim04.png",
+    "kodim05.png",
+    "kodim06.png",
+    "kodim07.png",
+    "kodim08.png",
+    "kodim09.png",
+    "kodim10.png",
+    "kodim11.png",
+    "kodim12.png",
+    "kodim13.png",
+    "kodim14.png",
+    "kodim15.png",
+    "kodim16.png",
+    "kodim17.png",
+    "kodim18.png",
+    "kodim19.png",
+    "kodim20.png",
+    "kodim21.png",
+    "kodim22.png",
+    "kodim23.png",
+    "kodim24.png"
+  ],
+  "dataset_order": "sorted filename order",
+  "selection_and_report_dataset_are_the_same": true,
+  "methodology_note": "The requested evaluation calibrates and reports on the same dataset; treat the selected action as test-set tuning.",
+  "image_shape": [
+    1,
+    3,
+    256,
+    256
+  ],
+  "index_counts_per_image": [
+    1024,
+    256
+  ],
+  "source_values_per_image": 196608,
+  "transmission_ratio_definition": "channel_symbols / (C * H * W)",
+  "source_codebooks": [
+    256,
+    256
+  ],
+  "num_scales": 2,
+  "independent_raq_rvq_depth": 2,
+  "action_layout": "[[scale0_stage0,scale0_stage1],[scale1_stage0,scale1_stage1]]",
+  "k_range": [
+    2,
+    256
+  ],
+  "target_ratio": "1/64",
+  "stream_packing": "combined",
+  "reward": "mean_psnr_db",
+  "snrs_db": [
+    3.0
+  ],
+  "bandit": {
+    "algorithm": "stateless epsilon-greedy",
+    "episodes": 100,
+    "warmup_pulls_per_action": 1,
+    "eps_start": 0.4,
+    "eps_end": 0.05,
+    "eps_decay": 30.0,
+    "agent_seed": 42,
+    "channel_seed_mode": "partitioned_multi_seed",
+    "fixed_channel_seed": null,
+    "search_seed_base": 42000,
+    "confirm_seeds": [
+      52000,
+      52001,
+      52002
+    ],
+    "report_seeds": [
+      62000,
+      62001,
+      62002,
+      62003,
+      62004
+    ],
+    "confirm_top_k": 2,
+    "evaluation_cache_key": "(nested action, actual channel seed)"
+  },
+  "profiles": {
+    "ldpc12_qpsk": {
+      "label": "LDPC 1/2 + QPSK",
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "modulation": "qpsk",
+      "bits_per_symbol": 2,
+      "stream_packing": "combined",
+      "actions": [
+        [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            8
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            8,
+            2
+          ]
+        ]
+      ],
+      "action_ledger": {
+        "2,2;2,8": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 3072,
+              "ldpc_input_bits": 3072,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 6144,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 6144,
+              "channel_symbols": 3072
+            }
+          ],
+          "payload_bits": 3072,
+          "ldpc_input_bits": 3072,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 6144,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 6144,
+          "channel_symbols": 3072,
+          "transmission_ratio": "1/64",
+          "transmission_ratio_float": 0.015625
+        },
+        "2,2;4,4": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 3072,
+              "ldpc_input_bits": 3072,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 6144,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 6144,
+              "channel_symbols": 3072
+            }
+          ],
+          "payload_bits": 3072,
+          "ldpc_input_bits": 3072,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 6144,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 6144,
+          "channel_symbols": 3072,
+          "transmission_ratio": "1/64",
+          "transmission_ratio_float": 0.015625
+        },
+        "2,2;8,2": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 3072,
+              "ldpc_input_bits": 3072,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 6144,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 6144,
+              "channel_symbols": 3072
+            }
+          ],
+          "payload_bits": 3072,
+          "ldpc_input_bits": 3072,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 6144,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 6144,
+          "channel_symbols": 3072,
+          "transmission_ratio": "1/64",
+          "transmission_ratio_float": 0.015625
+        }
+      },
+      "snr_results": {
+        "3": {
+          "snr_db": 3.0,
+          "search_trace": [
+            {
+              "episode": 1,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 21.904532611370087,
+              "diagnostic_ms_ssim": 0.8225833881291957,
+              "action_n": 1,
+              "action_q": 21.904532611370087,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 2,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 22.537184705336887,
+              "diagnostic_ms_ssim": 0.8363436001411081,
+              "action_n": 1,
+              "action_q": 22.537184705336887,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.537184705336887,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 3,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 42000,
+              "reward_psnr": 22.30383574962616,
+              "diagnostic_ms_ssim": 0.8330596914669766,
+              "action_n": 1,
+              "action_q": 22.30383574962616,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.537184705336887,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.30383574962616,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 4,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.3885256351687021,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 22.58429343501727,
+              "diagnostic_ms_ssim": 0.8380885298615205,
+              "action_n": 2,
+              "action_q": 22.56073907017708,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56073907017708,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.30383574962616,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 5,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.37742744476106627,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 22.58669177691142,
+              "diagnostic_ms_ssim": 0.8383150877481983,
+              "action_n": 3,
+              "action_q": 22.56938997242186,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56938997242186,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.30383574962616,
+                  "n": 1
+                }
+              ]
+            },
+            {
+              "episode": 6,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.36669309631258584,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 22.36009081204732,
+              "diagnostic_ms_ssim": 0.8360571705667276,
+              "action_n": 2,
+              "action_q": 22.33196328083674,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56938997242186,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.33196328083674,
+                  "n": 2
+                }
+              ]
+            },
+            {
+              "episode": 7,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.3563106616650316,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 22.35338568687439,
+              "diagnostic_ms_ssim": 0.8358927610916694,
+              "action_n": 3,
+              "action_q": 22.33910408284929,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56938997242186,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.33910408284929,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 8,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.346268603711715,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42003,
+              "reward_psnr": 22.576424926519394,
+              "diagnostic_ms_ssim": 0.8366925181029804,
+              "action_n": 4,
+              "action_q": 22.571148710946243,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571148710946243,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.33910408284929,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 9,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.33655576357729367,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42004,
+              "reward_psnr": 22.577360570430756,
+              "diagnostic_ms_ssim": 0.8373521269966332,
+              "action_n": 5,
+              "action_q": 22.572391082843147,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.904532611370087,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572391082843147,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.33910408284929,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 10,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.32716134821787357,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42001,
+              "reward_psnr": 21.963720967372257,
+              "diagnostic_ms_ssim": 0.8247369464549887,
+              "action_n": 2,
+              "action_q": 21.93412678937117,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.93412678937117,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572391082843147,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.33910408284929,
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "episode": 11,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.31807491842762703,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 42003,
+              "reward_psnr": 22.345758577187855,
+              "diagnostic_ms_ssim": 0.8343867391227908,
+              "action_n": 4,
+              "action_q": 22.34076770643393,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.93412678937117,
+                  "n": 2
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572391082843147,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.34076770643393,
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "episode": 12,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.30928637723860125,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42002,
+              "reward_psnr": 21.961525330940884,
+              "diagnostic_ms_ssim": 0.8248214907323712,
+              "action_n": 3,
+              "action_q": 21.943259636561073,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.943259636561073,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572391082843147,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.34076770643393,
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "episode": 13,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.30078595870082625,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42005,
+              "reward_psnr": 22.585325290759403,
+              "diagnostic_ms_ssim": 0.8379487065154354,
+              "action_n": 6,
+              "action_q": 22.57454678416252,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.943259636561073,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57454678416252,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.34076770643393,
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "episode": 14,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.29256421703025454,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 42004,
+              "reward_psnr": 22.34737644592921,
+              "diagnostic_ms_ssim": 0.8352381960146126,
+              "action_n": 5,
+              "action_q": 22.342089454332985,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.943259636561073,
+                  "n": 3
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57454678416252,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 15,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.2846120161124738,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42003,
+              "reward_psnr": 21.951651126146317,
+              "diagnostic_ms_ssim": 0.8231458088135358,
+              "action_n": 4,
+              "action_q": 21.945357508957386,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57454678416252,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 16,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2769205193505284,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42006,
+              "reward_psnr": 22.57030501961708,
+              "diagnostic_ms_ssim": 0.8378272714786487,
+              "action_n": 7,
+              "action_q": 22.57394081779889,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57394081779889,
+                  "n": 7
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 17,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.26948117984556963,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42007,
+              "reward_psnr": 22.57974882920583,
+              "diagnostic_ms_ssim": 0.8376870765188805,
+              "action_n": 8,
+              "action_q": 22.574666819224756,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.574666819224756,
+                  "n": 8
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 18,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2622857308994217,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42008,
+              "reward_psnr": 22.537692735592525,
+              "diagnostic_ms_ssim": 0.8364519263974443,
+              "action_n": 9,
+              "action_q": 22.570558587710064,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570558587710064,
+                  "n": 9
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 19,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.25532617682851116,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42009,
+              "reward_psnr": 22.573504000902176,
+              "diagnostic_ms_ssim": 0.8378752278438251,
+              "action_n": 10,
+              "action_q": 22.570853129029274,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570853129029274,
+                  "n": 10
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 20,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.24859478407895136,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42010,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 11,
+              "action_q": 22.572534373312287,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572534373312287,
+                  "n": 11
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 21,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.24208407263290926,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42011,
+              "reward_psnr": 22.585918058951695,
+              "diagnostic_ms_ssim": 0.8383393548436003,
+              "action_n": 12,
+              "action_q": 22.573649680448906,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573649680448906,
+                  "n": 12
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 22,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2357868076967049,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42012,
+              "reward_psnr": 22.586818486452103,
+              "diagnostic_ms_ssim": 0.8383577974262343,
+              "action_n": 13,
+              "action_q": 22.574662665526073,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.574662665526073,
+                  "n": 13
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 23,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.22969599166140725,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42013,
+              "reward_psnr": 22.556466907262802,
+              "diagnostic_ms_ssim": 0.8374923452741022,
+              "action_n": 14,
+              "action_q": 22.57336296850727,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57336296850727,
+                  "n": 14
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 24,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.22380485632699337,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42014,
+              "reward_psnr": 22.584737688302994,
+              "diagnostic_ms_ssim": 0.8382972790368625,
+              "action_n": 15,
+              "action_q": 22.574121283160316,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.574121283160316,
+                  "n": 15
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 25,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.21810685538142982,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42015,
+              "reward_psnr": 22.57773493727048,
+              "diagnostic_ms_ssim": 0.8375742800595255,
+              "action_n": 16,
+              "action_q": 22.5743471365422,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.5743471365422,
+                  "n": 16
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 26,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.212595657126319,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42016,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 17,
+              "action_q": 22.57522947063633,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57522947063633,
+                  "n": 17
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 27,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.2072651374410276,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42017,
+              "reward_psnr": 22.556275874376297,
+              "diagnostic_ms_ssim": 0.8374332046705218,
+              "action_n": 18,
+              "action_q": 22.57417649306633,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.945357508957386,
+                  "n": 4
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57417649306633,
+                  "n": 18
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 28,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.2021093729774774,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42004,
+              "reward_psnr": 21.950894395510357,
+              "diagnostic_ms_ssim": 0.8239019596949108,
+              "action_n": 5,
+              "action_q": 21.94646488626798,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57417649306633,
+                  "n": 18
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 29,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1971226345780387,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42018,
+              "reward_psnr": 22.557301968336105,
+              "diagnostic_ms_ssim": 0.8369093052155337,
+              "action_n": 19,
+              "action_q": 22.573288360185792,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573288360185792,
+                  "n": 19
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 30,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.19229938090920973,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42019,
+              "reward_psnr": 22.58094732960065,
+              "diagnostic_ms_ssim": 0.8381202590697114,
+              "action_n": 20,
+              "action_q": 22.573671308656536,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573671308656536,
+                  "n": 20
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 31,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.18763425230400937,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42020,
+              "reward_psnr": 22.582641790310543,
+              "diagnostic_ms_ssim": 0.8382751611529132,
+              "action_n": 21,
+              "action_q": 22.574098474449585,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.574098474449585,
+                  "n": 21
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 32,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1831220648062405,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42021,
+              "reward_psnr": 22.541825026273727,
+              "diagnostic_ms_ssim": 0.8374239345945108,
+              "action_n": 22,
+              "action_q": 22.572631499532502,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572631499532502,
+                  "n": 22
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 33,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.17875780441000483,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42022,
+              "reward_psnr": 22.584523409605026,
+              "diagnostic_ms_ssim": 0.838425985516546,
+              "action_n": 23,
+              "action_q": 22.573148539100874,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573148539100874,
+                  "n": 23
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 34,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.17453662148806967,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42023,
+              "reward_psnr": 22.54973406593005,
+              "diagnostic_ms_ssim": 0.8378668712492113,
+              "action_n": 24,
+              "action_q": 22.57217293605209,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57217293605209,
+                  "n": 24
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 35,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.17045382540289433,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42024,
+              "reward_psnr": 22.57774030168851,
+              "diagnostic_ms_ssim": 0.8379793099218426,
+              "action_n": 25,
+              "action_q": 22.572395630677548,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572395630677548,
+                  "n": 25
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 36,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.16650487929432786,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42025,
+              "reward_psnr": 22.58488620320956,
+              "diagnostic_ms_ssim": 0.8381413078711649,
+              "action_n": 26,
+              "action_q": 22.572876037313396,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572876037313396,
+                  "n": 26
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 37,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.16268539503818658,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42026,
+              "reward_psnr": 22.52718523144722,
+              "diagnostic_ms_ssim": 0.834584221371847,
+              "action_n": 27,
+              "action_q": 22.57118378524428,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57118378524428,
+                  "n": 27
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 38,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1589911283701092,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42027,
+              "reward_psnr": 22.533085296551388,
+              "diagnostic_ms_ssim": 0.836308569337039,
+              "action_n": 28,
+              "action_q": 22.56982312493382,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56982312493382,
+                  "n": 28
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 39,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.15541797416927078,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42028,
+              "reward_psnr": 22.56728748480479,
+              "diagnostic_ms_ssim": 0.837493396614164,
+              "action_n": 29,
+              "action_q": 22.5697356890673,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.5697356890673,
+                  "n": 29
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 40,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.15196196189671485,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42029,
+              "reward_psnr": 22.554904172817867,
+              "diagnostic_ms_ssim": 0.8371982997665887,
+              "action_n": 30,
+              "action_q": 22.56924130519232,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.56924130519232,
+                  "n": 30
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 41,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.14861925118323543,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42030,
+              "reward_psnr": 22.55985493461291,
+              "diagnostic_ms_ssim": 0.8381159802823772,
+              "action_n": 31,
+              "action_q": 22.568938519044597,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.568938519044597,
+                  "n": 31
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 42,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.14538612756190442,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42031,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 32,
+              "action_q": 22.569576278328903,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.569576278328903,
+                  "n": 32
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 43,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.14225899834050437,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42032,
+              "reward_psnr": 22.586174855629604,
+              "diagnostic_ms_ssim": 0.8383722075161563,
+              "action_n": 33,
+              "action_q": 22.570079265519833,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570079265519833,
+                  "n": 33
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 44,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1392343886092785,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42033,
+              "reward_psnr": 22.58811225493749,
+              "diagnostic_ms_ssim": 0.8383499342276091,
+              "action_n": 34,
+              "action_q": 22.57060964756153,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57060964756153,
+                  "n": 34
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 45,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1363089373795623,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42034,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 35,
+              "action_q": 22.57114499523527,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57114499523527,
+                  "n": 35
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 46,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.13347939384900587,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42035,
+              "reward_psnr": 22.537339478731155,
+              "diagnostic_ms_ssim": 0.8365775064186919,
+              "action_n": 36,
+              "action_q": 22.570205953110154,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570205953110154,
+                  "n": 36
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 47,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.13074261378923702,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42036,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 37,
+              "action_q": 22.570723273732646,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570723273732646,
+                  "n": 37
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 48,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.12809555605195044,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42037,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 38,
+              "action_q": 22.571213366953955,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571213366953955,
+                  "n": 38
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 49,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.12553527918954144,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42038,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 39,
+              "action_q": 22.571678327189556,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571678327189556,
+                  "n": 39
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 50,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.12305893818652788,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42039,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 40,
+              "action_q": 22.572120039413377,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572120039413377,
+                  "n": 40
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 51,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1206637812981294,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42040,
+              "reward_psnr": 22.588383903106052,
+              "diagnostic_ms_ssim": 0.8383485581675548,
+              "action_n": 41,
+              "action_q": 22.57251671901564,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57251671901564,
+                  "n": 41
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 52,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.11834714699249002,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42041,
+              "reward_psnr": 22.586635897556942,
+              "diagnostic_ms_ssim": 0.8382234559481226,
+              "action_n": 42,
+              "action_q": 22.572852889933287,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572852889933287,
+                  "n": 42
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 53,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.11610646099314664,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42042,
+              "reward_psnr": 22.56604994336764,
+              "diagnostic_ms_ssim": 0.8369262557165893,
+              "action_n": 43,
+              "action_q": 22.57269468187362,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57269468187362,
+                  "n": 43
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 54,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.11393923341845714,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42043,
+              "reward_psnr": 22.58766606450081,
+              "diagnostic_ms_ssim": 0.8383530821959223,
+              "action_n": 44,
+              "action_q": 22.573034940569695,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573034940569695,
+                  "n": 44
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 55,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.11184305601480887,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42044,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 45,
+              "action_q": 22.573397426693532,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573397426693532,
+                  "n": 45
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 56,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1098155994805337,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42045,
+              "reward_psnr": 22.580568939447403,
+              "diagnostic_ms_ssim": 0.8378816409478128,
+              "action_n": 46,
+              "action_q": 22.573553329144705,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573553329144705,
+                  "n": 46
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 57,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.1078546108775553,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42046,
+              "reward_psnr": 22.582117567459743,
+              "diagnostic_ms_ssim": 0.8382391317645356,
+              "action_n": 47,
+              "action_q": 22.573735546981194,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.573735546981194,
+                  "n": 47
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 58,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.10595791112789288,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42047,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 48,
+              "action_q": 22.574060781755385,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.574060781755385,
+                  "n": 48
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 59,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.10412339259223918,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42048,
+              "reward_psnr": 22.485491186380386,
+              "diagnostic_ms_ssim": 0.8344449406068687,
+              "action_n": 49,
+              "action_q": 22.57225323899263,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57225323899263,
+                  "n": 49
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 60,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.10234901672792228,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42049,
+              "reward_psnr": 22.557833443085354,
+              "diagnostic_ms_ssim": 0.8378785585909202,
+              "action_n": 50,
+              "action_q": 22.571964843074486,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571964843074486,
+                  "n": 50
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 61,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.10063281182364828,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42050,
+              "reward_psnr": 22.57596159974734,
+              "diagnostic_ms_ssim": 0.8377913273712746,
+              "action_n": 51,
+              "action_q": 22.572043210852385,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572043210852385,
+                  "n": 51
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 62,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0989728708085083,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42051,
+              "reward_psnr": 22.58685643474261,
+              "diagnostic_ms_ssim": 0.8381900411686557,
+              "action_n": 52,
+              "action_q": 22.572328080542583,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572328080542583,
+                  "n": 52
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 63,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.09736734913281445,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42052,
+              "reward_psnr": 22.585683514674503,
+              "diagnostic_ms_ssim": 0.8382996851735008,
+              "action_n": 53,
+              "action_q": 22.572580069865825,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572580069865825,
+                  "n": 53
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 64,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.09581446271841051,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42053,
+              "reward_psnr": 22.51082296172778,
+              "diagnostic_ms_ssim": 0.8358234115936352,
+              "action_n": 54,
+              "action_q": 22.57143641971512,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57143641971512,
+                  "n": 54
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 65,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.09431248597617925,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42054,
+              "reward_psnr": 22.536374280850094,
+              "diagnostic_ms_ssim": 0.8371920354617594,
+              "action_n": 55,
+              "action_q": 22.57079892628121,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57079892628121,
+                  "n": 55
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 66,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.09285974988854367,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42055,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 56,
+              "action_q": 22.57113013860016,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57113013860016,
+                  "n": 56
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 67,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0914546401548313,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42056,
+              "reward_psnr": 22.558776289224625,
+              "diagnostic_ms_ssim": 0.8374553526824075,
+              "action_n": 57,
+              "action_q": 22.57091340440059,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57091340440059,
+                  "n": 57
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 68,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.09009559539744072,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42057,
+              "reward_psnr": 22.579255054394405,
+              "diagnostic_ms_ssim": 0.8380629921826482,
+              "action_n": 58,
+              "action_q": 22.571057225952206,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571057225952206,
+                  "n": 58
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 69,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08878110542681686,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42058,
+              "reward_psnr": 22.553033878405888,
+              "diagnostic_ms_ssim": 0.8369499483792264,
+              "action_n": 59,
+              "action_q": 22.570751745485317,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570751745485317,
+                  "n": 59
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 70,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08750970956330736,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42059,
+              "reward_psnr": 22.585449169079464,
+              "diagnostic_ms_ssim": 0.8381196237713399,
+              "action_n": 60,
+              "action_q": 22.57099670254522,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57099670254522,
+                  "n": 60
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 71,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08627999501403476,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42060,
+              "reward_psnr": 22.56698762377103,
+              "diagnostic_ms_ssim": 0.8377538265863405,
+              "action_n": 61,
+              "action_q": 22.570930979942364,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570930979942364,
+                  "n": 61
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 72,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.08509059530298133,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42061,
+              "reward_psnr": 22.578814029693604,
+              "diagnostic_ms_ssim": 0.8379175656179522,
+              "action_n": 62,
+              "action_q": 22.571058125906095,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571058125906095,
+                  "n": 62
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 73,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08394018875254178,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42062,
+              "reward_psnr": 22.588493674993515,
+              "diagnostic_ms_ssim": 0.8383166960510747,
+              "action_n": 63,
+              "action_q": 22.571334880653513,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571334880653513,
+                  "n": 63
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 74,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0828274970148567,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42063,
+              "reward_psnr": 22.5855719546477,
+              "diagnostic_ms_ssim": 0.8383645549327591,
+              "action_n": 64,
+              "action_q": 22.57155733493467,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57155733493467,
+                  "n": 64
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 75,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08175128365129439,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42064,
+              "reward_psnr": 22.543543428182602,
+              "diagnostic_ms_ssim": 0.8366854569500877,
+              "action_n": 65,
+              "action_q": 22.57112635175387,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57112635175387,
+                  "n": 65
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 76,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.08071035275850302,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42065,
+              "reward_psnr": 22.590584009885788,
+              "diagnostic_ms_ssim": 0.8383495025136739,
+              "action_n": 66,
+              "action_q": 22.57142116475587,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57142116475587,
+                  "n": 66
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 77,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0797035476395061,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42066,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 67,
+              "action_q": 22.571688711791488,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571688711791488,
+                  "n": 67
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 78,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07872974951836459,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42067,
+              "reward_psnr": 22.569893648227055,
+              "diagnostic_ms_ssim": 0.8371624801722645,
+              "action_n": 68,
+              "action_q": 22.571662313797894,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571662313797894,
+                  "n": 68
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 79,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07778787629697738,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42068,
+              "reward_psnr": 22.57299169898033,
+              "diagnostic_ms_ssim": 0.8382826918642513,
+              "action_n": 69,
+              "action_q": 22.571681580249813,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571681580249813,
+                  "n": 69
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 80,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07687688135263882,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42069,
+              "reward_psnr": 22.588285108407337,
+              "diagnostic_ms_ssim": 0.8383486905956373,
+              "action_n": 70,
+              "action_q": 22.571918773509207,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571918773509207,
+                  "n": 70
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 81,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07599575237501686,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42070,
+              "reward_psnr": 22.584643810987473,
+              "diagnostic_ms_ssim": 0.8380177868813349,
+              "action_n": 71,
+              "action_q": 22.572097999389182,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572097999389182,
+                  "n": 71
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 82,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07514351024125965,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42071,
+              "reward_psnr": 22.57961963613828,
+              "diagnostic_ms_ssim": 0.838046774185162,
+              "action_n": 72,
+              "action_q": 22.572202466566253,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572202466566253,
+                  "n": 72
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 83,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07431920792798055,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42072,
+              "reward_psnr": 22.56681963801384,
+              "diagnostic_ms_ssim": 0.8373832828726185,
+              "action_n": 73,
+              "action_q": 22.572128729188822,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572128729188822,
+                  "n": 73
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 84,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07352192945891242,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42073,
+              "reward_psnr": 22.418686201175053,
+              "diagnostic_ms_ssim": 0.8359050340786488,
+              "action_n": 74,
+              "action_q": 22.57005518151296,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57005518151296,
+                  "n": 74
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 85,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0727507888870621,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42074,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 75,
+              "action_q": 22.57031240330802,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.94646488626798,
+                  "n": 5
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57031240330802,
+                  "n": 75
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 86,
+              "phase": "bandit",
+              "decision": "explore",
+              "epsilon": 0.07200492931023356,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 42005,
+              "reward_psnr": 21.961295555035274,
+              "diagnostic_ms_ssim": 0.8244600537646632,
+              "action_n": 6,
+              "action_q": 21.948936664395863,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57031240330802,
+                  "n": 75
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 87,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0712835219188263,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42075,
+              "reward_psnr": 22.557311753431957,
+              "diagnostic_ms_ssim": 0.8366770756862215,
+              "action_n": 76,
+              "action_q": 22.57014134212544,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57014134212544,
+                  "n": 76
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 88,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.07058576507485047,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42076,
+              "reward_psnr": 22.578665167093277,
+              "diagnostic_ms_ssim": 0.8376611545874616,
+              "action_n": 77,
+              "action_q": 22.570252041150994,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570252041150994,
+                  "n": 77
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 89,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06991088342113554,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42077,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 78,
+              "action_q": 22.570496845958576,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570496845958576,
+                  "n": 78
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 90,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06925812701974254,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42078,
+              "reward_psnr": 22.593707889318466,
+              "diagnostic_ms_ssim": 0.8381159151250644,
+              "action_n": 79,
+              "action_q": 22.570790656634017,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.570790656634017,
+                  "n": 79
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 91,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06862677051862254,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42079,
+              "reward_psnr": 22.589024553696316,
+              "diagnostic_ms_ssim": 0.8384054804747126,
+              "action_n": 80,
+              "action_q": 22.571018580347296,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571018580347296,
+                  "n": 80
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 92,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06801611234559526,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42080,
+              "reward_psnr": 22.575599203507107,
+              "diagnostic_ms_ssim": 0.8380579462752822,
+              "action_n": 81,
+              "action_q": 22.571075131250502,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571075131250502,
+                  "n": 81
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 93,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06742547392875238,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42081,
+              "reward_psnr": 22.58840764562289,
+              "diagnostic_ms_ssim": 0.8382930974181102,
+              "action_n": 82,
+              "action_q": 22.571286503376996,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571286503376996,
+                  "n": 82
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 94,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06685419894241874,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42082,
+              "reward_psnr": 22.591688881317776,
+              "diagnostic_ms_ssim": 0.8383706372614523,
+              "action_n": 83,
+              "action_q": 22.571532315159416,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571532315159416,
+                  "n": 83
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 95,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.0663016525778342,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42083,
+              "reward_psnr": 22.5893468161424,
+              "diagnostic_ms_ssim": 0.8384059834730566,
+              "action_n": 84,
+              "action_q": 22.57174439255207,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.57174439255207,
+                  "n": 84
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 96,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06576722083774524,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42084,
+              "reward_psnr": 22.58839468161265,
+              "diagnostic_ms_ssim": 0.8383562585683101,
+              "action_n": 85,
+              "action_q": 22.571940278305725,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.571940278305725,
+                  "n": 85
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 97,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06525030985412257,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42085,
+              "reward_psnr": 22.586460759242375,
+              "diagnostic_ms_ssim": 0.8383171845330469,
+              "action_n": 86,
+              "action_q": 22.572109121107314,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572109121107314,
+                  "n": 86
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 98,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06475034522824674,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42086,
+              "reward_psnr": 22.5865937769413,
+              "diagnostic_ms_ssim": 0.8383799863452525,
+              "action_n": 87,
+              "action_q": 22.572275611404255,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572275611404255,
+                  "n": 87
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 99,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06426677139242817,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42087,
+              "reward_psnr": 22.584738979736965,
+              "diagnostic_ms_ssim": 0.8381772241645616,
+              "action_n": 88,
+              "action_q": 22.572417240589854,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572417240589854,
+                  "n": 88
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            },
+            {
+              "episode": 100,
+              "phase": "bandit",
+              "decision": "exploit",
+              "epsilon": 0.06379905099265262,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 42088,
+              "reward_psnr": 22.588982433080673,
+              "diagnostic_ms_ssim": 0.8382993289350048,
+              "action_n": 89,
+              "action_q": 22.572603366348176,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.948936664395863,
+                  "n": 6
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.572603366348176,
+                  "n": 89
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.342089454332985,
+                  "n": 5
+                }
+              ]
+            }
+          ],
+          "search_final_q_table": [
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "q": 21.948936664395863,
+              "n": 6
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "q": 22.572603366348176,
+              "n": 89
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "q": 22.342089454332985,
+              "n": 5
+            }
+          ],
+          "bandit_best_action": [
+            [
+              2,
+              2
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "confirmation_candidates": [
+            [
+              [
+                2,
+                2
+              ],
+              [
+                4,
+                4
+              ]
+            ],
+            [
+              [
+                2,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ]
+          ],
+          "confirmation": [
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 22.567519264088734,
+              "psnr_std": 0.036042913961580436,
+              "psnr_ci95": 0.08954278829405132,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "uncertainty_estimated": true,
+              "ms_ssim_mean": 0.8376940255777381,
+              "ms_ssim_std": 0.0010631820397451973,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.8364664458986425,
+                  "psnr": 22.5259027381738,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.00042046440972222225,
+                    "index_error_rate": 0.0005045572916666667
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.8383197380109871,
+                  "psnr": 22.587953060865402,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.00017632378472222222,
+                    "index_error_rate": 0.00021158854166666667
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.8382958928235844,
+                  "psnr": 22.588701993227005,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.00014919704861111112,
+                    "index_error_rate": 0.00017903645833333332
+                  }
+                }
+              ]
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "num_seeds": 3,
+              "seeds": [
+                52000,
+                52001,
+                52002
+              ],
+              "psnr_mean": 22.342600491311817,
+              "psnr_std": 0.03547959212318523,
+              "psnr_ci95": 0.0881433063273434,
+              "psnr_ci95_method": "two-sided Student-t half-width",
+              "uncertainty_estimated": true,
+              "ms_ssim_mean": 0.8355674769433121,
+              "ms_ssim_std": 0.0011714145019801456,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52000,
+                  "ms_ssim": 0.8342148923207824,
+                  "psnr": 22.30164448420207,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.00042046440972222225,
+                    "index_error_rate": 0.0005045572916666667
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52001,
+                  "ms_ssim": 0.8362536720128557,
+                  "psnr": 22.363947729269665,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.00013563368055555556,
+                    "index_error_rate": 0.00016276041666666666
+                  }
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "snr": 3.0,
+                  "seed": 52002,
+                  "ms_ssim": 0.8362338664962982,
+                  "psnr": 22.362209260463715,
+                  "total_diagnostics": {
+                    "num_images": 24,
+                    "source_pixels": 1572864,
+                    "source_values": 4718592,
+                    "num_indices": 61440,
+                    "payload_bits": 73728,
+                    "ldpc_input_bits": 73728,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 147456,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 147456,
+                    "channel_symbols": 73728,
+                    "payload_bpp": 0.046875,
+                    "coded_bpp": 0.09375,
+                    "transmitted_bpp": 0.09375,
+                    "channel_uses_per_pixel": 0.046875,
+                    "transmission_ratio": 0.015625,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                }
+              ]
+            }
+          ],
+          "selection_metric": "top-K confirmation psnr_mean",
+          "best_action": [
+            [
+              2,
+              2
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "report": {
+            "action": [
+              [
+                2,
+                2
+              ],
+              [
+                4,
+                4
+              ]
+            ],
+            "num_seeds": 5,
+            "seeds": [
+              62000,
+              62001,
+              62002,
+              62003,
+              62004
+            ],
+            "psnr_mean": 22.5407485862573,
+            "psnr_std": 0.05522521351398629,
+            "psnr_ci95": 0.06856016644281125,
+            "psnr_ci95_method": "two-sided Student-t half-width",
+            "uncertainty_estimated": true,
+            "ms_ssim_mean": 0.8375742188190213,
+            "ms_ssim_std": 0.000908816546868408,
+            "per_seed": [
+              {
+                "action": [
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    4
+                  ]
+                ],
+                "snr": 3.0,
+                "seed": 62000,
+                "ms_ssim": 0.8376092578524421,
+                "psnr": 22.48701070745786,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 61440,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 73728,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.046875,
+                  "transmission_ratio": 0.015625,
+                  "ber": 0.0003933376736111111,
+                  "index_error_rate": 0.00042317708333333335
+                }
+              },
+              {
+                "action": [
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    4
+                  ]
+                ],
+                "snr": 3.0,
+                "seed": 62001,
+                "ms_ssim": 0.8383953236354736,
+                "psnr": 22.589152107636135,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 61440,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 73728,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.046875,
+                  "transmission_ratio": 0.015625,
+                  "ber": 4.0690104166666664e-05,
+                  "index_error_rate": 4.8828125e-05
+                }
+              },
+              {
+                "action": [
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    4
+                  ]
+                ],
+                "snr": 3.0,
+                "seed": 62002,
+                "ms_ssim": 0.8372575913650927,
+                "psnr": 22.563036034504574,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 61440,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 73728,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.046875,
+                  "transmission_ratio": 0.015625,
+                  "ber": 0.00042046440972222225,
+                  "index_error_rate": 0.0005045572916666667
+                }
+              },
+              {
+                "action": [
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    4
+                  ]
+                ],
+                "snr": 3.0,
+                "seed": 62003,
+                "ms_ssim": 0.8362130034998904,
+                "psnr": 22.476021697123844,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 61440,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 73728,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.046875,
+                  "transmission_ratio": 0.015625,
+                  "ber": 0.0008544921875,
+                  "index_error_rate": 0.001025390625
+                }
+              },
+              {
+                "action": [
+                  [
+                    2,
+                    2
+                  ],
+                  [
+                    4,
+                    4
+                  ]
+                ],
+                "snr": 3.0,
+                "seed": 62004,
+                "ms_ssim": 0.8383959177422072,
+                "psnr": 22.588522384564083,
+                "total_diagnostics": {
+                  "num_images": 24,
+                  "source_pixels": 1572864,
+                  "source_values": 4718592,
+                  "num_indices": 61440,
+                  "payload_bits": 73728,
+                  "ldpc_input_bits": 73728,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 147456,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 147456,
+                  "channel_symbols": 73728,
+                  "payload_bpp": 0.046875,
+                  "coded_bpp": 0.09375,
+                  "transmitted_bpp": 0.09375,
+                  "channel_uses_per_pixel": 0.046875,
+                  "transmission_ratio": 0.015625,
+                  "ber": 5.425347222222222e-05,
+                  "index_error_rate": 6.510416666666667e-05
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

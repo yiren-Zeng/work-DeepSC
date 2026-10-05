@@ -1,0 +1,52 @@
+{
+  "finished_images": 24,
+  "total_images": 24,
+  "last_image": {
+    "image": "kodim24.png",
+    "no_channel_psnr": 21.740615367889404,
+    "no_channel_ms_ssim": 0.8189654989384115,
+    "no_channel_ms_ssim_db": 7.422386505849139,
+    "psnr": 21.740615367889404,
+    "ms_ssim": 0.8189654989384115,
+    "ms_ssim_db": 7.422386505849139,
+    "source_payload_bits": 3072,
+    "budget_padding_bits": 0,
+    "ldpc_input_bits": 3072,
+    "ldpc_padding_bits": 0,
+    "coded_bits": 6144,
+    "transmitted_bits": 6144,
+    "channel_symbols": 3072,
+    "transmission_ratio": 0.015625,
+    "source_payload_bpp": 0.046875,
+    "padded_payload_bpp": 0.046875,
+    "source_bit_errors": 0,
+    "source_ber": 0.0,
+    "combined_bit_errors": 0,
+    "forward_vs_index_decode_max_abs": 0.00013208389282226562,
+    "forward_vs_index_decode_mse": 4.042915741769848e-12,
+    "bottom_code_counts": [
+      316,
+      332,
+      283,
+      93
+    ],
+    "top_code_counts": [
+      102,
+      6,
+      2,
+      8,
+      0,
+      0,
+      0,
+      0,
+      34,
+      6,
+      1,
+      2,
+      19,
+      7,
+      0,
+      69
+    ]
+  }
+}

@@ -25,16 +25,14 @@ class DeepSCLast2Cascade(nn.Module):
         super().__init__()
         if num_downsample_blocks != 4:
             raise ValueError("Last-two cascade model requires four encoder stages")
-        if len(full_num_embeddings_list) != 4:
-            raise ValueError("Full codebook label must contain four values")
+        if len(full_num_embeddings_list) not in (2, 4):
+            raise ValueError("Last-two cascade requires two active codebooks or a legacy four-value label")
         if len(full_embedding_dim_list) != 4:
             raise ValueError("Full embedding dimension list must contain four values")
 
         self.full_num_embeddings_list = list(full_num_embeddings_list)
         self.full_embedding_dim_list = list(full_embedding_dim_list)
-        self.num_embeddings_list = [
-            self.full_num_embeddings_list[scale] for scale in self.ACTIVE_SCALES
-        ]
+        self.num_embeddings_list = self.full_num_embeddings_list[-2:]
         self.embedding_dim_list = [
             self.full_embedding_dim_list[scale] for scale in self.ACTIVE_SCALES
         ]

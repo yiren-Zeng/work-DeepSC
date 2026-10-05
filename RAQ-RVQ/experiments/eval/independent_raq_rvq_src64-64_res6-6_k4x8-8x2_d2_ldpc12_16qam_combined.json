@@ -1,5 +1,5 @@
 {
-  "checkpoint": "checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64/best_vq_deepsc.pth",
+  "checkpoint": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64/last_checkpoint.pth",
   "num_embeddings_list": [
     64,
     64
@@ -9,8 +9,8 @@
   "stream_packing": "combined",
   "results": {
     "6": {
-      "ms_ssim": 0.8803765337927004,
-      "psnr": 23.381671210130055,
+      "ms_ssim": 0.9132502146421283,
+      "psnr": 24.875074923038483,
       "diagnostics": {
         "mode": "ldpc",
         "rvq_enabled": true,
@@ -18,32 +18,32 @@
           {
             "scale": 0,
             "stage": 0,
-            "num_embeddings": 8,
-            "bits_per_index": 3,
+            "num_embeddings": 16,
+            "bits_per_index": 4,
             "num_images": 24,
             "source_pixels": 1572864,
             "source_values": 4718592,
             "num_indices": 24576,
-            "payload_bits": 73728,
+            "payload_bits": 98304,
             "ldpc_input_bits": 0,
             "ldpc_padding_bits": 0,
             "coded_bits": 0,
             "modulation_padding_bits": 0,
             "transmitted_bits": 0,
             "channel_symbols": 0,
-            "bit_errors": 13,
-            "index_errors": 13,
+            "bit_errors": 4,
+            "index_errors": 4,
             "sent_index_min": 0,
-            "sent_index_max": 7,
+            "sent_index_max": 15,
             "recovered_index_min": 0,
-            "recovered_index_max": 7,
-            "payload_bpp": 0.046875,
+            "recovered_index_max": 15,
+            "payload_bpp": 0.0625,
             "coded_bpp": 0.0,
             "transmitted_bpp": 0.0,
             "channel_uses_per_pixel": 0.0,
             "transmission_ratio": 0.0,
-            "ber": 0.00017632378472222222,
-            "index_error_rate": 0.0005289713541666666
+            "ber": 4.0690104166666664e-05,
+            "index_error_rate": 0.00016276041666666666
           },
           {
             "scale": 0,
@@ -108,32 +108,32 @@
           {
             "scale": 1,
             "stage": 1,
-            "num_embeddings": 2,
-            "bits_per_index": 1,
+            "num_embeddings": 8,
+            "bits_per_index": 3,
             "num_images": 24,
             "source_pixels": 1572864,
             "source_values": 4718592,
             "num_indices": 6144,
-            "payload_bits": 6144,
+            "payload_bits": 18432,
             "ldpc_input_bits": 0,
             "ldpc_padding_bits": 0,
             "coded_bits": 0,
             "modulation_padding_bits": 0,
             "transmitted_bits": 0,
             "channel_symbols": 0,
-            "bit_errors": 10,
-            "index_errors": 10,
+            "bit_errors": 0,
+            "index_errors": 0,
             "sent_index_min": 0,
-            "sent_index_max": 1,
+            "sent_index_max": 7,
             "recovered_index_min": 0,
-            "recovered_index_max": 1,
-            "payload_bpp": 0.00390625,
+            "recovered_index_max": 7,
+            "payload_bpp": 0.01171875,
             "coded_bpp": 0.0,
             "transmitted_bpp": 0.0,
             "channel_uses_per_pixel": 0.0,
             "transmission_ratio": 0.0,
-            "ber": 0.0016276041666666667,
-            "index_error_rate": 0.0016276041666666667
+            "ber": 0.0,
+            "index_error_rate": 0.0
           }
         ],
         "total": {
@@ -141,79 +141,79 @@
           "source_pixels": 1572864,
           "source_values": 4718592,
           "num_indices": 61440,
-          "payload_bits": 110592,
-          "ldpc_input_bits": 110592,
+          "payload_bits": 147456,
+          "ldpc_input_bits": 147456,
           "ldpc_padding_bits": 0,
-          "coded_bits": 147456,
+          "coded_bits": 196608,
           "modulation_padding_bits": 0,
-          "transmitted_bits": 147456,
-          "channel_symbols": 73728,
-          "bit_errors": 23,
-          "index_errors": 23,
-          "payload_bpp": 0.0703125,
-          "coded_bpp": 0.09375,
-          "transmitted_bpp": 0.09375,
-          "channel_uses_per_pixel": 0.046875,
-          "transmission_ratio": 0.015625,
-          "ber": 0.00020797164351851852,
-          "index_error_rate": 0.00037434895833333336,
-          "single_stream_coded_bits": 147456,
-          "single_stream_transmitted_bits": 147456,
-          "single_stream_channel_symbols": 73728,
+          "transmitted_bits": 196608,
+          "channel_symbols": 98304,
+          "bit_errors": 4,
+          "index_errors": 4,
+          "payload_bpp": 0.09375,
+          "coded_bpp": 0.125,
+          "transmitted_bpp": 0.125,
+          "channel_uses_per_pixel": 0.0625,
+          "transmission_ratio": 0.020833333333333332,
+          "ber": 2.712673611111111e-05,
+          "index_error_rate": 6.510416666666667e-05,
+          "single_stream_coded_bits": 196608,
+          "single_stream_transmitted_bits": 196608,
+          "single_stream_channel_symbols": 98304,
           "coded_bits_delta_vs_single_stream": 0,
           "transmitted_bits_delta_vs_single_stream": 0,
           "coded_bits_match_single_stream": true,
           "transmitted_bits_match_single_stream": true,
-          "baseline_single_stage_payload_bits": 110592,
+          "baseline_single_stage_payload_bits": 147456,
           "payload_bits_match_single_stage_budget": true
         },
         "stream_packing": "combined",
         "combined_stream": {
-          "payload_bits": 110592,
-          "ldpc_input_bits": 110592,
+          "payload_bits": 147456,
+          "ldpc_input_bits": 147456,
           "ldpc_padding_bits": 0,
-          "coded_bits": 147456,
+          "coded_bits": 196608,
           "modulation_padding_bits": 0,
-          "transmitted_bits": 147456,
-          "channel_symbols": 73728,
-          "bit_errors": 23,
+          "transmitted_bits": 196608,
+          "channel_symbols": 98304,
+          "bit_errors": 4,
           "source_pixels": 1572864,
           "source_values": 4718592,
-          "payload_bpp": 0.0703125,
-          "coded_bpp": 0.09375,
-          "transmitted_bpp": 0.09375,
-          "channel_uses_per_pixel": 0.046875,
-          "transmission_ratio": 0.015625,
-          "ber": 0.00020797164351851852
+          "payload_bpp": 0.09375,
+          "coded_bpp": 0.125,
+          "transmitted_bpp": 0.125,
+          "channel_uses_per_pixel": 0.0625,
+          "transmission_ratio": 0.020833333333333332,
+          "ber": 2.712673611111111e-05
         },
         "rvq_quantization": {
           "per_scale": [
             {
               "scale": 0,
               "source_route": "src",
-              "k_total": 16,
+              "k_total": 32,
               "stage_k_list": [
-                8,
+                16,
                 2
               ],
               "num_images": 24,
-              "mean_input_mse_energy": 0.42252683887879056,
+              "mean_input_mse_energy": 0.412784010792772,
               "mean_residual_mse_energies": [
-                0.13312657022227845,
-                0.11322073638439178
+                0.10286133488019307,
+                0.092315172466139
               ],
-              "mean_final_residual_mse_energy": 0.11322073638439178,
-              "mean_quantized_sum_mse_energy": 0.30983331861595315,
+              "mean_final_residual_mse_energy": 0.092315172466139,
+              "mean_quantized_sum_mse_energy": 0.3330750645448764,
               "stage_diagnostics": [
                 {
                   "stage": 0,
-                  "num_embeddings": 8,
-                  "bits_per_index": 3,
-                  "codebook_size": 8,
+                  "num_embeddings": 16,
+                  "bits_per_index": 4,
+                  "codebook_size": 16,
                   "sent_index_min": 0,
-                  "sent_index_max": 7,
-                  "payload_bits": 73728,
-                  "mean_residual_mse_energy": 0.13312657022227845
+                  "sent_index_max": 15,
+                  "payload_bits": 98304,
+                  "mean_residual_mse_energy": 0.10286133488019307
                 },
                 {
                   "stage": 1,
@@ -223,29 +223,29 @@
                   "sent_index_min": 0,
                   "sent_index_max": 1,
                   "payload_bits": 24576,
-                  "mean_residual_mse_energy": 0.11322073638439178
+                  "mean_residual_mse_energy": 0.092315172466139
                 }
               ],
-              "payload_bits": 98304,
-              "baseline_payload_bits": 98304,
+              "payload_bits": 122880,
+              "baseline_payload_bits": 122880,
               "bit_budget_matches": true
             },
             {
               "scale": 1,
               "source_route": "src",
-              "k_total": 4,
+              "k_total": 16,
               "stage_k_list": [
                 2,
-                2
+                8
               ],
               "num_images": 24,
-              "mean_input_mse_energy": 0.1552061519275109,
+              "mean_input_mse_energy": 0.15984796453267336,
               "mean_residual_mse_energies": [
-                0.05289212583253781,
-                0.04228245342771212
+                0.06017538687835137,
+                0.022698300192132592
               ],
-              "mean_final_residual_mse_energy": 0.04228245342771212,
-              "mean_quantized_sum_mse_energy": 0.10117494811614354,
+              "mean_final_residual_mse_energy": 0.022698300192132592,
+              "mean_quantized_sum_mse_energy": 0.1312259022767345,
               "stage_diagnostics": [
                 {
                   "stage": 0,
@@ -255,21 +255,21 @@
                   "sent_index_min": 0,
                   "sent_index_max": 1,
                   "payload_bits": 6144,
-                  "mean_residual_mse_energy": 0.05289212583253781
+                  "mean_residual_mse_energy": 0.06017538687835137
                 },
                 {
                   "stage": 1,
-                  "num_embeddings": 2,
-                  "bits_per_index": 1,
-                  "codebook_size": 2,
+                  "num_embeddings": 8,
+                  "bits_per_index": 3,
+                  "codebook_size": 8,
                   "sent_index_min": 0,
-                  "sent_index_max": 1,
-                  "payload_bits": 6144,
-                  "mean_residual_mse_energy": 0.04228245342771212
+                  "sent_index_max": 7,
+                  "payload_bits": 18432,
+                  "mean_residual_mse_energy": 0.022698300192132592
                 }
               ],
-              "payload_bits": 12288,
-              "baseline_payload_bits": 12288,
+              "payload_bits": 24576,
+              "baseline_payload_bits": 24576,
               "bit_budget_matches": true
             }
           ],
@@ -288,18 +288,18 @@
           "transmitted_bits": "coded_bits + modulation_padding_bits"
         },
         "single_stream_reference": {
-          "payload_bits": 110592,
-          "ldpc_input_bits": 110592,
+          "payload_bits": 147456,
+          "ldpc_input_bits": 147456,
           "ldpc_padding_bits": 0,
-          "coded_bits": 147456,
+          "coded_bits": 196608,
           "modulation_padding_bits": 0,
-          "transmitted_bits": 147456,
-          "channel_symbols": 73728,
-          "payload_bpp": 0.0703125,
-          "coded_bpp": 0.09375,
-          "transmitted_bpp": 0.09375,
-          "channel_uses_per_pixel": 0.046875,
-          "transmission_ratio": 0.015625
+          "transmitted_bits": 196608,
+          "channel_symbols": 98304,
+          "payload_bpp": 0.09375,
+          "coded_bpp": 0.125,
+          "transmitted_bpp": 0.125,
+          "channel_uses_per_pixel": 0.0625,
+          "transmission_ratio": 0.020833333333333332
         }
       }
     }
@@ -307,12 +307,12 @@
   "rvq_depth": 2,
   "rvq_k_lists": [
     [
-      8,
+      16,
       2
     ],
     [
       2,
-      2
+      8
     ]
   ],
   "rvq_training_mode": "trained_independent_codebook_residual",

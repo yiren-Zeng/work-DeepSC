@@ -1,0 +1,5 @@
+scan_id,image_index,image_number,image_name,scale,threshold,target_active_rate,token_count,target_active_count,active_count,actual_active_rate,strict_above_threshold_count,threshold_equal_count,threshold_equal_selected_count,threshold_splits_tie,first_inactive_error
+0,0,1,kodim01.png,0,2.0524137020111084,0.0,1024,0,0,0.0,0,0,0,False,2.0524134635925293
+0,0,1,kodim01.png,1,0.1704557240009308,0.0,256,0,0,0.0,0,0,0,False,0.1704557090997696
+1,0,1,kodim01.png,0,0.02050878293812275,1.0,1024,1024,1024,1.0,1023,1,1,False,
+1,0,1,kodim01.png,1,0.00030176539439707994,1.0,256,256,256,1.0,255,1,1,False,

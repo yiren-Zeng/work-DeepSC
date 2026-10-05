@@ -44,6 +44,267 @@ BOTTOM_INDEX_COUNT = 4096
 TOP_INDEX_COUNT = 1024
 
 
+def ms_ssim_to_db(ms_ssim):
+    """Convert MS-SSIM to the commonly reported -10*log10(1-MS-SSIM)."""
+    value = float(ms_ssim)
+    if math.isnan(value):
+        return float("nan")
+    if value >= 1.0:
+        return float("inf")
+    return -10.0 * math.log10(1.0 - value)
+
+
+def format_ms_ssim(ms_ssim):
+    return f"{float(ms_ssim):.6f} ({ms_ssim_to_db(ms_ssim):.4f} dB)"
+
+
+def awgn_channel(symbols, snr_db, return_noise_power=False):
+    """Apply complex AWGN and optionally expose its generated variance."""
+    snr_linear = 10 ** (snr_db / 10.0)
+    signal_power = torch.mean(torch.abs(symbols) ** 2)
+    noise_power = signal_power / snr_linear
+    real_dtype = symbols.real.dtype if symbols.is_complex() else symbols.dtype
+    noise = torch.sqrt(noise_power / 2.0) * (
+        torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+        + 1j
+        * torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+    )
+    received = symbols + noise
+    if return_noise_power:
+        return received, noise_power
+    return received
+
+
+def rician_channel(symbols, snr_db, k_factor, return_csi=False):
+    """Apply unit-power fast Rician fading and complex AWGN.
+
+    When ``return_csi`` is true, return the exact per-symbol channel gain and
+    generated noise variance for coherent likelihood calculation.
+    """
+    if k_factor < 0:
+        raise ValueError("Rician K-factor must be non-negative")
+
+    real_dtype = symbols.real.dtype if symbols.is_complex() else symbols.dtype
+    complex_dtype = (
+        torch.complex64 if real_dtype == torch.float32 else torch.complex128
+    )
+    k = torch.as_tensor(k_factor, dtype=real_dtype, device=symbols.device)
+    los = torch.sqrt(k / (k + 1.0)).to(complex_dtype)
+    scatter_scale = torch.sqrt(1.0 / (2.0 * (k + 1.0)))
+    scatter = scatter_scale * (
+        torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+        + 1j
+        * torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+    )
+    channel_gain = los + scatter
+    faded = channel_gain * symbols
+
+    snr_linear = 10 ** (snr_db / 10.0)
+    noise_power = torch.mean(torch.abs(symbols) ** 2) / snr_linear
+    noise = torch.sqrt(noise_power / 2.0) * (
+        torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+        + 1j
+        * torch.randn(symbols.shape, dtype=real_dtype, device=symbols.device)
+    )
+    received = faded + noise
+    if return_csi:
+        return received, channel_gain, noise_power
+    return received
+
+
+def _noise_variance(reference, snr_db, noise_variance):
+    real_dtype = reference.real.dtype if reference.is_complex() else reference.dtype
+    if noise_variance is None:
+        noise_variance = 1.0 / (10 ** (snr_db / 10.0))
+    variance = torch.as_tensor(
+        noise_variance, dtype=real_dtype, device=reference.device
+    )
+    if variance.numel() != 1 or float(variance.item()) <= 0:
+        raise ValueError("noise_variance must be a positive scalar")
+    return variance
+
+
+def _matched_observation(received_symbols, channel_gain):
+    if channel_gain is None:
+        return received_symbols
+    gain = torch.as_tensor(
+        channel_gain,
+        dtype=received_symbols.dtype,
+        device=received_symbols.device,
+    )
+    if gain.shape != received_symbols.shape:
+        raise ValueError(
+            "channel_gain shape must match received symbols: "
+            f"{tuple(gain.shape)} != {tuple(received_symbols.shape)}"
+        )
+    return gain.conj() * received_symbols
+
+
+def exact_bpsk_llr(
+    received_symbols,
+    snr_db,
+    device,
+    channel_gain=None,
+    noise_variance=None,
+):
+    """Return log P(bit=1)/P(bit=0) for coherent BPSK."""
+    matched = _matched_observation(received_symbols, channel_gain)
+    variance = _noise_variance(matched, snr_db, noise_variance)
+    return ((4.0 / variance) * matched.real).to(device)
+
+
+def exact_qpsk_llr(
+    received_symbols,
+    snr_db,
+    device,
+    channel_gain=None,
+    noise_variance=None,
+):
+    """Return coherent QPSK bit LLRs."""
+    matched = _matched_observation(received_symbols, channel_gain)
+    variance = _noise_variance(matched, snr_db, noise_variance)
+    factor = 4.0 / (
+        variance * torch.sqrt(torch.tensor(2.0, device=matched.device))
+    )
+    llr = torch.zeros(
+        2 * len(matched), dtype=matched.real.dtype, device=matched.device
+    )
+    llr[0::2] = matched.real * factor
+    llr[1::2] = matched.imag * factor
+    return llr.to(device)
+
+
+def exact_qam16_llr(
+    symbols,
+    snr_db,
+    device,
+    channel_gain=None,
+    noise_variance=None,
+):
+    """Return exact Log-MAP Gray-coded 16QAM LLRs with optional perfect CSI."""
+    constellation = torch.tensor([
+        -3 - 3j, -3 - 1j, -3 + 1j, -3 + 3j,
+        -1 - 3j, -1 - 1j, -1 + 1j, -1 + 3j,
+         1 - 3j,  1 - 1j,  1 + 1j,  1 + 3j,
+         3 - 3j,  3 - 1j,  3 + 1j,  3 + 3j,
+    ], dtype=torch.complex64, device=device) / torch.sqrt(
+        torch.tensor(10.0, device=device)
+    )
+    bit_mapping = torch.tensor([
+        [0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 1, 1], [0, 0, 1, 0],
+        [0, 1, 0, 0], [0, 1, 0, 1], [0, 1, 1, 1], [0, 1, 1, 0],
+        [1, 1, 0, 0], [1, 1, 0, 1], [1, 1, 1, 1], [1, 1, 1, 0],
+        [1, 0, 0, 0], [1, 0, 0, 1], [1, 0, 1, 1], [1, 0, 1, 0],
+    ], dtype=torch.float32, device=device)
+
+    symbols = symbols.to(device)
+    variance = _noise_variance(symbols, snr_db, noise_variance)
+    if channel_gain is None:
+        hypotheses = constellation.unsqueeze(0)
+    else:
+        gain = torch.as_tensor(channel_gain, dtype=symbols.dtype, device=device)
+        if gain.shape != symbols.shape:
+            raise ValueError(
+                "channel_gain shape must match received symbols: "
+                f"{tuple(gain.shape)} != {tuple(symbols.shape)}"
+            )
+        hypotheses = gain.unsqueeze(1) * constellation.unsqueeze(0)
+    log_likelihoods = -torch.abs(symbols.unsqueeze(1) - hypotheses) ** 2 / variance
+    llr = torch.zeros(4 * len(symbols), device=device)
+    for bit_position in range(4):
+        zero = log_likelihoods[:, bit_mapping[:, bit_position].eq(0)]
+        one = log_likelihoods[:, bit_mapping[:, bit_position].eq(1)]
+        llr[bit_position::4] = (
+            torch.logsumexp(one, dim=1) - torch.logsumexp(zero, dim=1)
+        )
+    return llr
+
+
+def qam16_modulate_vectorized(bits):
+    """Match shiyan's Gray-coded 16QAM mapping without per-bit CUDA syncs."""
+    bits_reshaped = bits.detach().to(device="cpu").view(-1, 4)
+    gray_levels = torch.tensor([-3.0, -1.0, 3.0, 1.0])
+    real_indices = (2 * bits_reshaped[:, 0] + bits_reshaped[:, 1]).long()
+    imag_indices = (2 * bits_reshaped[:, 2] + bits_reshaped[:, 3]).long()
+    real_part = gray_levels[real_indices]
+    imag_part = gray_levels[imag_indices]
+    return (real_part + 1j * imag_part) / math.sqrt(10.0)
+
+
+def channel_label(channel, rician_k_factor):
+    return (
+        f"Rician(K={rician_k_factor:g},perfect-CSI)"
+        if channel == "rician"
+        else "AWGN"
+    )
+
+
+def transmit_ldpc_stream_exact(
+    flat_bits,
+    target_snr,
+    ldpc_code,
+    device,
+    modulate,
+    calculate_llr,
+    modulation_bits,
+    ldpc_encode,
+    ldpc_decode,
+    channel,
+    rician_k_factor,
+):
+    """Transmit one combined stream using the same receiver as RAQ-RVQ."""
+    flat_bits = np.asarray(flat_bits, dtype=np.uint8).reshape(-1)
+    payload_bits = len(flat_bits)
+    k = int(ldpc_code["k"])
+    ldpc_input_bits = ((payload_bits + k - 1) // k) * k
+    ldpc_padding_bits = ldpc_input_bits - payload_bits
+
+    coded = np.asarray(ldpc_encode(flat_bits, code=ldpc_code)).reshape(-1)
+    coded_bits = len(coded)
+    modulation_padding_bits = (-coded_bits) % modulation_bits
+    transmitted = np.pad(coded, (0, modulation_padding_bits), "constant")
+    transmitted_tensor = torch.from_numpy(transmitted).float().to(device)
+    symbols = modulate(transmitted_tensor)
+
+    channel_gain = None
+    if channel == "awgn":
+        received, noise_variance = awgn_channel(
+            symbols, target_snr, return_noise_power=True
+        )
+    elif channel == "rician":
+        received, channel_gain, noise_variance = rician_channel(
+            symbols,
+            target_snr,
+            rician_k_factor,
+            return_csi=True,
+        )
+    else:
+        raise ValueError(f"Unsupported channel: {channel!r}")
+
+    llrs = calculate_llr(
+        received,
+        target_snr,
+        device,
+        channel_gain=channel_gain,
+        noise_variance=noise_variance,
+    ).reshape(-1)
+    decoded = np.asarray(
+        ldpc_decode(llrs[:coded_bits].detach().cpu().numpy(), ldpc_code)
+    ).reshape(-1)[:payload_bits]
+    if len(decoded) < payload_bits:
+        decoded = np.pad(decoded, (0, payload_bits - len(decoded)), "constant")
+    decoded = decoded.astype(np.uint8, copy=False)
+    return decoded, {
+        "ldpc_input_bits": int(ldpc_input_bits),
+        "ldpc_padding_bits": int(ldpc_padding_bits),
+        "coded_bits": int(coded_bits),
+        "modulation_padding_bits": int(modulation_padding_bits),
+        "transmitted_bits": int(len(transmitted)),
+        "channel_symbols": int(symbols.numel()),
+        "bit_errors": int(np.count_nonzero(decoded != flat_bits)),
+    }
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -92,8 +353,11 @@ def transmission_plan(source_indices, source_values, ldpc_k, ldpc_n, modulation_
         if not feasible:
             raise ValueError("No supported K fits this exact padded channel budget")
         selected = max(feasible, key=lambda item: item["K"])
-        desired_symbols = source_values // denominator
-        if desired_symbols * denominator != source_values or desired_symbols * modulation_bits % ldpc_n:
+        desired_symbols_value = source_values / denominator
+        if not desired_symbols_value.is_integer():
+            raise ValueError("Requested exact budget is not an integer number of symbols")
+        desired_symbols = int(desired_symbols_value)
+        if desired_symbols * modulation_bits % ldpc_n:
             raise ValueError("Requested exact budget is not an integer number of LDPC blocks")
         input_capacity = desired_symbols * modulation_bits // ldpc_n * ldpc_k
         budget_padding = input_capacity - selected["source_payload_bits"]
@@ -141,9 +405,13 @@ def parse_ldpc_rate(value):
     try:
         rate = float(Fraction(value))
     except (ValueError, ZeroDivisionError, OverflowError):
-        raise argparse.ArgumentTypeError("Use 1/2 (0.5) or 3/4 (0.75)") from None
-    if rate not in (0.5, 0.75):
-        raise argparse.ArgumentTypeError("Supported LDPC rates: 1/2 (0.5), 3/4 (0.75)")
+        raise argparse.ArgumentTypeError(
+            "Use 7/16 (0.4375), 1/2 (0.5), 5/8 (0.625), or 3/4 (0.75)"
+        ) from None
+    if rate not in (0.4375, 0.5, 0.625, 0.75):
+        raise argparse.ArgumentTypeError(
+            "Supported LDPC rates: 7/16, 1/2, 5/8, and 3/4"
+        )
     return rate
 
 
@@ -154,12 +422,14 @@ def format_console_result(report, results_path):
     ratio = report["transmission_ratio"]
     codebook_text = (f"K_bottom={meta['target_K_bottom']} | K_top={meta['target_K_top']}"
                      if meta.get("dual_k") else f"K={meta['target_K_shared']}")
+    selected_channel = channel_label(meta["channel"], meta["rician_k_factor"])
     return (
         f"\n测试完成：{report['num_images']} 张图片\n"
         f"配置：{codebook_text} | LDPC {rate} | "
-        f"{meta['modulation'].upper()} | SNR={meta['snr_db']:g} dB\n"
+        f"{meta['modulation'].upper()} | {selected_channel} | "
+        f"SNR={meta['snr_db']:g} dB\n"
         f"PSNR：{metrics['psnr']:.4f} dB\n"
-        f"MS-SSIM：{metrics['ms_ssim']:.6f}\n"
+        f"MS-SSIM：{format_ms_ssim(metrics['ms_ssim'])}\n"
         f"实际传输比：{ratio:.8f}（约 1/{1 / ratio:.4f}）\n"
         f"结果文件：{results_path}"
     )
@@ -175,12 +445,31 @@ def main():
     parser.add_argument("--dataset", default="/workspace/yi/work/Kodak-256-transform-resize")
     parser.add_argument("--snr", type=float, default=6.0)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--model-seed",
+        type=int,
+        default=42,
+        help="Fixed model/data seed; --seed is reserved for channel noise.",
+    )
+    parser.add_argument(
+        "--channel", choices=["awgn", "rician"], default="awgn",
+        help="Physical channel model; defaults to AWGN for compatibility",
+    )
+    parser.add_argument(
+        "--rician-k-factor", type=float, default=10.0,
+        help="Linear Rician K-factor used when --channel=rician",
+    )
     parser.add_argument("--ldpc-rate", type=parse_ldpc_rate, default=0.75)
-    parser.add_argument("--modulation", type=str.lower, choices=["qpsk", "16qam"], default="qpsk")
+    parser.add_argument(
+        "--modulation",
+        type=str.lower,
+        choices=["bpsk", "qpsk", "16qam"],
+        default="qpsk",
+    )
     parser.add_argument("--target-k", type=int, help="Target codebook size shared by top/bottom; trained powers of two only")
     parser.add_argument("--bottom-k", type=int, help="Dual-K mode: fixed bottom codebook size")
     parser.add_argument("--top-k", type=int, help="Dual-K mode: fixed top codebook size")
-    parser.add_argument("--ratio-denominator", type=int, default=48)
+    parser.add_argument("--ratio-denominator", type=float, default=48.0)
     parser.add_argument("--rate-policy", choices=["fixed", "padded", "nearest"],
                         help="Default: fixed when --target-k is given, otherwise legacy padded mode")
     parser.add_argument("--dry-run", action="store_true", help="Validate arguments and print rate plan without evaluating or creating output")
@@ -201,6 +490,8 @@ def main():
         args.rate_policy = args.rate_policy or ("fixed" if args.target_k is not None else "padded")
     if not math.isfinite(args.snr):
         parser.error("--snr must be finite")
+    if not math.isfinite(args.rician_k_factor) or args.rician_k_factor < 0:
+        parser.error("--rician-k-factor must be finite and non-negative")
     started = time.time()
     run_dir = local_path(args.run_dir)
     config = json.loads((run_dir / "config.json").read_text())
@@ -209,7 +500,7 @@ def main():
     if not source_checkpoint.is_file():
         parser.error(f"Checkpoint not found: {source_checkpoint}")
     model_args = SimpleNamespace(**config["model_args"])
-    modulation_bits = {"qpsk": 2, "16qam": 4}[args.modulation]
+    modulation_bits = {"bpsk": 1, "qpsk": 2, "16qam": 4}[args.modulation]
     ldpc_k, ldpc_n = int(256 * args.ldpc_rate), 256
     try:
         if DUAL_K:
@@ -235,12 +526,15 @@ def main():
     output = local_path(args.output or ROOT / "runs" / (
         (f"eval_{OUTPUT_TAG}_kb{target_bottom_k}_kt{target_top_k}_"
          if DUAL_K else f"eval_{OUTPUT_TAG}_k{target_k}_") +
-        f"ldpc{ldpc_k}of{ldpc_n}_{args.modulation}_snr{args.snr:g}_{stamp}"))
+        f"ldpc{ldpc_k}of{ldpc_n}_{args.modulation}_{args.channel}_"
+        f"snr{args.snr:g}_{stamp}"))
     if not args.concise or args.dry_run:
         k_text = (f"K_bottom={target_bottom_k} | K_top={target_top_k}"
                   if DUAL_K else f"K={target_k}")
         print(f"测试配置：{k_text} | LDPC {Fraction(args.ldpc_rate).limit_denominator()} | "
-              f"{args.modulation.upper()} | SNR={args.snr:g} dB | 模式={args.rate_policy}", flush=True)
+              f"{args.modulation.upper()} | "
+              f"{channel_label(args.channel, args.rician_k_factor)} | "
+              f"SNR={args.snr:g} dB | 模式={args.rate_policy}", flush=True)
     if args.dry_run:
         selected = plan["selected"]
         symbols = math.ceil((selected["source_payload_bits"] + plan["budget_padding_bits"]) / ldpc_k) * ldpc_n // modulation_bits
@@ -269,9 +563,12 @@ def main():
         quality = load_file_module("raq_reference_quality", reference / "evaluation/quality.py")
         from utils.bit_utils import index_tensor_to_bits, bits_to_index_tensor
         from utils.reproducibility import _reset_eval_seed
-        from communications.modulation import qpsk_modulate, qpsk_llr, qam16_modulate, qam16_llr
+        from communications.modulation import (
+            bpsk_modulate,
+            qpsk_modulate,
+        )
         from communications.ldpc_coding import get_ldpc_code, ldpc_encode, ldpc_decode
-        setup_seed(args.seed)
+        setup_seed(args.model_seed)
     torch.set_num_threads(4)
     device = torch.device("cuda:0")
     model_args.device = device
@@ -279,8 +576,9 @@ def main():
     model.load_state_dict(checkpoint["state_dict"], strict=True)
     model.requires_grad_(False)
     modulate, demodulate, modulation_bits = {
-        "qpsk": (qpsk_modulate, qpsk_llr, 2),
-        "16qam": (qam16_modulate, qam16_llr, 4),
+        "bpsk": (bpsk_modulate, exact_bpsk_llr, 1),
+        "qpsk": (qpsk_modulate, exact_qpsk_llr, 2),
+        "16qam": (qam16_modulate_vectorized, exact_qam16_llr, 4),
     }[args.modulation]
     target_bottom = torch.arange(target_bottom_k, device=device).unsqueeze(1)
     target_top = torch.arange(target_top_k, device=device).unsqueeze(1)
@@ -329,7 +627,21 @@ def main():
         "test_no_resize": True, "normalization": "(RGB tensor - 0.5) / 0.5",
         "quality": "shiyan.evaluation.quality._image_quality, arithmetic mean over images",
         "no_channel_reconstruction": "original RAQVAE_TWO.decode_latent on sent indices",
-        "seed": args.seed, "snr_db": args.snr, "channel": "AWGN",
+        "seed": args.seed,
+        "channel_seed": args.seed,
+        "model_seed": args.model_seed,
+        "snr_db": args.snr, "channel": args.channel,
+        "channel_label": channel_label(args.channel, args.rician_k_factor),
+        "rician_k_factor": args.rician_k_factor,
+        "channel_implementation": (
+            "local unit-power fast Rician fading plus complex AWGN"
+            if args.channel == "rician"
+            else "local complex AWGN"
+        ),
+        "receiver_csi": (
+            "perfect_per_symbol" if args.channel == "rician" else "h=1"
+        ),
+        "llr": "exact Log-MAP; actual generated noise variance",
         "modulation": args.modulation, "ldpc": {"k": ldpc_k, "n": ldpc_n, "rate": args.ldpc_rate},
         "stream_packing": "combined, bottom indices followed by top indices; optional explicit budget padding",
         "transmission_ratio_definition": "complex channel symbols / (3*height*width)",
@@ -352,7 +664,12 @@ def main():
         },
     }
     write_json(output / "metadata.json", metadata)
-    channel_folder = f"channel_{args.snr:g}db"
+    channel_suffix = (
+        f"rician_k{args.rician_k_factor:g}"
+        if args.channel == "rician"
+        else "awgn"
+    )
+    channel_folder = f"channel_{channel_suffix}_{args.snr:g}db"
     for name in ("reference", "no_channel", channel_folder):
         (output / name).mkdir()
     _reset_eval_seed(args.seed)
@@ -381,9 +698,18 @@ def main():
         assert payload.size == plan["selected"]["source_payload_bits"]
         padding_bits = plan["budget_padding_bits"]
         combined = np.pad(payload, (0, padding_bits), constant_values=0)
-        decoded, stats = quality._transmit_ldpc_stream(
-            combined, args.snr, ldpc, device, modulate, demodulate, modulation_bits,
-            ldpc_encode, ldpc_decode,
+        decoded, stats = transmit_ldpc_stream_exact(
+            combined,
+            args.snr,
+            ldpc,
+            device,
+            modulate,
+            demodulate,
+            modulation_bits,
+            ldpc_encode,
+            ldpc_decode,
+            args.channel,
+            args.rician_k_factor,
         )
         expected_blocks = math.ceil(combined.size / ldpc_k)
         assert stats["coded_bits"] == expected_blocks * ldpc_n
@@ -415,7 +741,10 @@ def main():
         source_errors = int(np.count_nonzero(decoded[:payload.size] != payload))
         row = {
             "image": filenames[image_index], "no_channel_psnr": clean_psnr,
-            "no_channel_ms_ssim": clean_ssim, "psnr": channel_psnr, "ms_ssim": channel_ssim,
+            "no_channel_ms_ssim": clean_ssim,
+            "no_channel_ms_ssim_db": ms_ssim_to_db(clean_ssim),
+            "psnr": channel_psnr, "ms_ssim": channel_ssim,
+            "ms_ssim_db": ms_ssim_to_db(channel_ssim),
             "source_payload_bits": int(payload.size), "budget_padding_bits": int(padding_bits),
             "ldpc_input_bits": stats["ldpc_input_bits"],
             "ldpc_padding_bits": stats["ldpc_padding_bits"],
@@ -443,7 +772,8 @@ def main():
                                                "last_image": row})
         if not args.concise:
             print(f"IMAGE {image_index + 1}/24 {filenames[image_index]} "
-                  f"PSNR={channel_psnr:.4f} MS-SSIM={channel_ssim:.6f}", flush=True)
+                  f"PSNR={channel_psnr:.4f} "
+                  f"MS-SSIM={format_ms_ssim(channel_ssim)}", flush=True)
     assert len(rows) == 24
     totals = {key: sum(row[key] for row in rows) for key in (
         "source_payload_bits", "budget_padding_bits", "ldpc_input_bits", "ldpc_padding_bits",
@@ -452,6 +782,10 @@ def main():
     metrics = {key: float(np.mean([row[key] for row in rows])) for key in (
         "no_channel_psnr", "no_channel_ms_ssim", "psnr", "ms_ssim",
     )}
+    metrics["no_channel_ms_ssim_db"] = ms_ssim_to_db(
+        metrics["no_channel_ms_ssim"]
+    )
+    metrics["ms_ssim_db"] = ms_ssim_to_db(metrics["ms_ssim"])
     report = {
         "metadata": metadata, "num_images": 24, "metrics": metrics, "totals": totals,
         "source_payload_bpp": totals["source_payload_bits"] / (24 * 256 * 256),

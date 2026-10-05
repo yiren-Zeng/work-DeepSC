@@ -1,0 +1,4006 @@
+{
+  "created_at_utc": "2026-10-05T02:57:05.589440+00:00",
+  "entry_point": "bandit_independent_raq_rvq_psnr_search.py",
+  "checkpoint": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src256-256_trg2-256_d2_curriculum_rate094_A_patch_ch256-512_res6-6_mixture_per_k_unet2_ds8x2_k256/best_vq_deepsc.pth",
+  "checkpoint_size_bytes": 669229579,
+  "dataset": "/workspace/yi/work/Kodak-256-transform-resize",
+  "dataset_size": 24,
+  "evaluated_images": 1,
+  "dataset_files": [
+    "kodim01.png",
+    "kodim02.png",
+    "kodim03.png",
+    "kodim04.png",
+    "kodim05.png",
+    "kodim06.png",
+    "kodim07.png",
+    "kodim08.png",
+    "kodim09.png",
+    "kodim10.png",
+    "kodim11.png",
+    "kodim12.png",
+    "kodim13.png",
+    "kodim14.png",
+    "kodim15.png",
+    "kodim16.png",
+    "kodim17.png",
+    "kodim18.png",
+    "kodim19.png",
+    "kodim20.png",
+    "kodim21.png",
+    "kodim22.png",
+    "kodim23.png",
+    "kodim24.png"
+  ],
+  "dataset_order": "sorted filename order",
+  "selection_and_report_dataset_are_the_same": true,
+  "methodology_note": "The requested evaluation calibrates and reports on the same dataset; treat the selected action as test-set tuning.",
+  "image_shape": [
+    1,
+    3,
+    256,
+    256
+  ],
+  "index_counts_per_image": [
+    1024,
+    256
+  ],
+  "source_values_per_image": 196608,
+  "transmission_ratio_definition": "channel_symbols / (C * H * W)",
+  "source_codebooks": [
+    256,
+    256
+  ],
+  "num_scales": 2,
+  "independent_raq_rvq_depth": 2,
+  "action_layout": "[[scale0_stage0,scale0_stage1],[scale1_stage0,scale1_stage1]]",
+  "k_range": [
+    2,
+    256
+  ],
+  "target_ratio": "1/24",
+  "stream_packing": "combined",
+  "reward": "mean_psnr_db",
+  "snrs_db": [
+    0.0
+  ],
+  "bandit": {
+    "algorithm": "stateless epsilon-greedy",
+    "episodes": 13,
+    "warmup_pulls_per_action": 1,
+    "eps_start": 0.4,
+    "eps_end": 0.05,
+    "eps_decay": 30.0,
+    "agent_seed": 42,
+    "channel_seed_mode": "fixed",
+    "fixed_channel_seed": 62000,
+    "search_seed_base": null,
+    "confirm_seeds": [
+      62000
+    ],
+    "report_seeds": [
+      62000
+    ],
+    "confirm_top_k": 2,
+    "evaluation_cache_key": "(nested action, actual channel seed)"
+  },
+  "profiles": {
+    "ldpc1over2_bpsk": {
+      "label": "LDPC 1/2 + BPSK",
+      "ldpc_n": 256,
+      "ldpc_k": 128,
+      "ldpc_rate": 0.5,
+      "ldpc_rate_fraction": "1/2",
+      "modulation": "bpsk",
+      "bits_per_symbol": 1,
+      "stream_packing": "combined",
+      "actions": [
+        [
+          [
+            2,
+            2
+          ],
+          [
+            2,
+            128
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            64
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            8,
+            32
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            16,
+            16
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            32,
+            8
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            64,
+            4
+          ]
+        ],
+        [
+          [
+            2,
+            2
+          ],
+          [
+            128,
+            2
+          ]
+        ],
+        [
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            8
+          ]
+        ],
+        [
+          [
+            2,
+            4
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        [
+          [
+            2,
+            4
+          ],
+          [
+            8,
+            2
+          ]
+        ],
+        [
+          [
+            4,
+            2
+          ],
+          [
+            2,
+            8
+          ]
+        ],
+        [
+          [
+            4,
+            2
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        [
+          [
+            4,
+            2
+          ],
+          [
+            8,
+            2
+          ]
+        ]
+      ],
+      "action_ledger": {
+        "2,2;2,128": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              128
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              7
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;4,64": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              4,
+              64
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              6
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;8,32": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              8,
+              32
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              3,
+              5
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;16,16": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              16,
+              16
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;32,8": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              32,
+              8
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              5,
+              3
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;64,4": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              64,
+              4
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              6,
+              2
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,2;128,2": {
+          "action": [
+            [
+              2,
+              2
+            ],
+            [
+              128,
+              2
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              1
+            ],
+            [
+              7,
+              1
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,4;2,8": {
+          "action": [
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,4;4,4": {
+          "action": [
+            [
+              2,
+              4
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "2,4;8,2": {
+          "action": [
+            [
+              2,
+              4
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "4,2;2,8": {
+          "action": [
+            [
+              4,
+              2
+            ],
+            [
+              2,
+              8
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              2,
+              1
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "4,2;4,4": {
+          "action": [
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        },
+        "4,2;8,2": {
+          "action": [
+            [
+              4,
+              2
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "stream_packing": "combined",
+          "bits_per_index": [
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "index_counts": [
+            1024,
+            256
+          ],
+          "source_values": 196608,
+          "streams": [
+            {
+              "scale": null,
+              "stage": null,
+              "num_embeddings": null,
+              "index_count": 2560,
+              "bits_per_index": null,
+              "payload_bits": 4096,
+              "ldpc_input_bits": 4096,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 8192,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 8192,
+              "channel_symbols": 8192
+            }
+          ],
+          "payload_bits": 4096,
+          "ldpc_input_bits": 4096,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 8192,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 8192,
+          "channel_symbols": 8192,
+          "transmission_ratio": "1/24",
+          "transmission_ratio_float": 0.041666666666666664
+        }
+      },
+      "snr_results": {
+        "0": {
+          "snr_db": 0.0,
+          "search_trace": [
+            {
+              "episode": 1,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  128
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.649434566497803,
+              "diagnostic_ms_ssim": 0.8037106738866144,
+              "action_n": 1,
+              "action_q": 21.649434566497803,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 2,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  64
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.630799770355225,
+              "diagnostic_ms_ssim": 0.8046284397999616,
+              "action_n": 1,
+              "action_q": 21.630799770355225,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 3,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  32
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.628122329711914,
+              "diagnostic_ms_ssim": 0.807026737319,
+              "action_n": 1,
+              "action_q": 21.628122329711914,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 4,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  16,
+                  16
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.53083086013794,
+              "diagnostic_ms_ssim": 0.8032687114014304,
+              "action_n": 1,
+              "action_q": 21.53083086013794,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 5,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  32,
+                  8
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.564838886260986,
+              "diagnostic_ms_ssim": 0.8003481633558088,
+              "action_n": 1,
+              "action_q": 21.564838886260986,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 6,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  64,
+                  4
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.58111810684204,
+              "diagnostic_ms_ssim": 0.8024110981070858,
+              "action_n": 1,
+              "action_q": 21.58111810684204,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 7,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  128,
+                  2
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.56027317047119,
+              "diagnostic_ms_ssim": 0.8032740157241061,
+              "action_n": 1,
+              "action_q": 21.56027317047119,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 8,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.98676109313965,
+              "diagnostic_ms_ssim": 0.823896906161886,
+              "action_n": 1,
+              "action_q": 21.98676109313965,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 9,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 22.027432918548584,
+              "diagnostic_ms_ssim": 0.8315441190732368,
+              "action_n": 1,
+              "action_q": 22.027432918548584,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.027432918548584,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 10,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 21.9107723236084,
+              "diagnostic_ms_ssim": 0.8256733965703092,
+              "action_n": 1,
+              "action_q": 21.9107723236084,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.027432918548584,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 21.9107723236084,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 11,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 22.03808069229126,
+              "diagnostic_ms_ssim": 0.8218608699753721,
+              "action_n": 1,
+              "action_q": 22.03808069229126,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.027432918548584,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 21.9107723236084,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 22.03808069229126,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 12,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 22.138454914093018,
+              "diagnostic_ms_ssim": 0.8307294051423838,
+              "action_n": 1,
+              "action_q": 22.138454914093018,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.027432918548584,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 21.9107723236084,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 22.03808069229126,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.138454914093018,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 0.0,
+                  "n": 0
+                }
+              ]
+            },
+            {
+              "episode": 13,
+              "phase": "warmup",
+              "decision": "forced",
+              "epsilon": null,
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "seed": 62000,
+              "reward_psnr": 22.13937282562256,
+              "diagnostic_ms_ssim": 0.8273884654438326,
+              "action_n": 1,
+              "action_q": 22.13937282562256,
+              "q_table": [
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      128
+                    ]
+                  ],
+                  "q": 21.649434566497803,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      64
+                    ]
+                  ],
+                  "q": 21.630799770355225,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      32
+                    ]
+                  ],
+                  "q": 21.628122329711914,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      16,
+                      16
+                    ]
+                  ],
+                  "q": 21.53083086013794,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      32,
+                      8
+                    ]
+                  ],
+                  "q": 21.564838886260986,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      64,
+                      4
+                    ]
+                  ],
+                  "q": 21.58111810684204,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      128,
+                      2
+                    ]
+                  ],
+                  "q": 21.56027317047119,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 21.98676109313965,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.027432918548584,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 21.9107723236084,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ],
+                  "q": 22.03808069229126,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "q": 22.138454914093018,
+                  "n": 1
+                },
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "q": 22.13937282562256,
+                  "n": 1
+                }
+              ]
+            }
+          ],
+          "search_final_q_table": [
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  2,
+                  128
+                ]
+              ],
+              "q": 21.649434566497803,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  4,
+                  64
+                ]
+              ],
+              "q": 21.630799770355225,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  8,
+                  32
+                ]
+              ],
+              "q": 21.628122329711914,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  16,
+                  16
+                ]
+              ],
+              "q": 21.53083086013794,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  32,
+                  8
+                ]
+              ],
+              "q": 21.564838886260986,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  64,
+                  4
+                ]
+              ],
+              "q": 21.58111810684204,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  2
+                ],
+                [
+                  128,
+                  2
+                ]
+              ],
+              "q": 21.56027317047119,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "q": 21.98676109313965,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "q": 22.027432918548584,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  2,
+                  4
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "q": 21.9107723236084,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  2,
+                  8
+                ]
+              ],
+              "q": 22.03808069229126,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "q": 22.138454914093018,
+              "n": 1
+            },
+            {
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "q": 22.13937282562256,
+              "n": 1
+            }
+          ],
+          "bandit_best_action": [
+            [
+              4,
+              2
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "confirmation_candidates": [
+            [
+              [
+                4,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ],
+            [
+              [
+                4,
+                2
+              ],
+              [
+                4,
+                4
+              ]
+            ]
+          ],
+          "confirmation": [
+            {
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  8,
+                  2
+                ]
+              ],
+              "num_seeds": 1,
+              "seeds": [
+                62000
+              ],
+              "psnr_mean": 22.13937282562256,
+              "psnr_std": 0.0,
+              "psnr_ci95": 0.0,
+              "psnr_ci95_method": "not estimable from one fixed channel seed",
+              "uncertainty_estimated": false,
+              "ms_ssim_mean": 0.8273884654438326,
+              "ms_ssim_std": 0.0,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ]
+                  ],
+                  "snr": 0.0,
+                  "seed": 62000,
+                  "ms_ssim": 0.8273884654438326,
+                  "psnr": 22.13937282562256,
+                  "total_diagnostics": {
+                    "num_images": 1,
+                    "source_pixels": 65536,
+                    "source_values": 196608,
+                    "num_indices": 2560,
+                    "payload_bits": 4096,
+                    "ldpc_input_bits": 4096,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 8192,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 8192,
+                    "channel_symbols": 8192,
+                    "payload_bpp": 0.0625,
+                    "coded_bpp": 0.125,
+                    "transmitted_bpp": 0.125,
+                    "channel_uses_per_pixel": 0.125,
+                    "transmission_ratio": 0.041666666666666664,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                }
+              ]
+            },
+            {
+              "action": [
+                [
+                  4,
+                  2
+                ],
+                [
+                  4,
+                  4
+                ]
+              ],
+              "num_seeds": 1,
+              "seeds": [
+                62000
+              ],
+              "psnr_mean": 22.138454914093018,
+              "psnr_std": 0.0,
+              "psnr_ci95": 0.0,
+              "psnr_ci95_method": "not estimable from one fixed channel seed",
+              "uncertainty_estimated": false,
+              "ms_ssim_mean": 0.8307294051423838,
+              "ms_ssim_std": 0.0,
+              "per_seed": [
+                {
+                  "action": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "snr": 0.0,
+                  "seed": 62000,
+                  "ms_ssim": 0.8307294051423838,
+                  "psnr": 22.138454914093018,
+                  "total_diagnostics": {
+                    "num_images": 1,
+                    "source_pixels": 65536,
+                    "source_values": 196608,
+                    "num_indices": 2560,
+                    "payload_bits": 4096,
+                    "ldpc_input_bits": 4096,
+                    "ldpc_padding_bits": 0,
+                    "coded_bits": 8192,
+                    "modulation_padding_bits": 0,
+                    "transmitted_bits": 8192,
+                    "channel_symbols": 8192,
+                    "payload_bpp": 0.0625,
+                    "coded_bpp": 0.125,
+                    "transmitted_bpp": 0.125,
+                    "channel_uses_per_pixel": 0.125,
+                    "transmission_ratio": 0.041666666666666664,
+                    "ber": 0.0,
+                    "index_error_rate": 0.0
+                  }
+                }
+              ]
+            }
+          ],
+          "selection_metric": "top-K confirmation psnr_mean",
+          "best_action": [
+            [
+              4,
+              2
+            ],
+            [
+              8,
+              2
+            ]
+          ],
+          "report": {
+            "action": [
+              [
+                4,
+                2
+              ],
+              [
+                8,
+                2
+              ]
+            ],
+            "num_seeds": 1,
+            "seeds": [
+              62000
+            ],
+            "psnr_mean": 22.13937282562256,
+            "psnr_std": 0.0,
+            "psnr_ci95": 0.0,
+            "psnr_ci95_method": "not estimable from one fixed channel seed",
+            "uncertainty_estimated": false,
+            "ms_ssim_mean": 0.8273884654438326,
+            "ms_ssim_std": 0.0,
+            "per_seed": [
+              {
+                "action": [
+                  [
+                    4,
+                    2
+                  ],
+                  [
+                    8,
+                    2
+                  ]
+                ],
+                "snr": 0.0,
+                "seed": 62000,
+                "ms_ssim": 0.8273884654438326,
+                "psnr": 22.13937282562256,
+                "total_diagnostics": {
+                  "num_images": 1,
+                  "source_pixels": 65536,
+                  "source_values": 196608,
+                  "num_indices": 2560,
+                  "payload_bits": 4096,
+                  "ldpc_input_bits": 4096,
+                  "ldpc_padding_bits": 0,
+                  "coded_bits": 8192,
+                  "modulation_padding_bits": 0,
+                  "transmitted_bits": 8192,
+                  "channel_symbols": 8192,
+                  "payload_bpp": 0.0625,
+                  "coded_bpp": 0.125,
+                  "transmitted_bpp": 0.125,
+                  "channel_uses_per_pixel": 0.125,
+                  "transmission_ratio": 0.041666666666666664,
+                  "ber": 0.0,
+                  "index_error_rate": 0.0
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

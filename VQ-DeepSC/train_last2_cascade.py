@@ -1,5 +1,6 @@
 import os
 import random
+import tempfile
 from datetime import datetime
 
 import numpy as np
@@ -11,6 +12,22 @@ from config import Config
 from data.datasets import get_dataloader
 from losses.deepsc_loss import DeepSCLoss
 from models.deepsc_last2_cascade import DeepSCLast2Cascade
+
+
+class Last2CascadeTrainConfig(Config):
+    """Accept two active codebooks without changing the legacy four-stage config."""
+
+    @classmethod
+    def validate(cls):
+        if len(cls.NUM_EMBEDDINGS_LIST) != 2:
+            return super().validate()
+        if cls.NUM_EPOCHS < 1:
+            raise ValueError("NUM_EPOCHS must be positive")
+        if cls.NUM_DOWNSAMPLE_BLOCKS != 4 or len(cls.EMBEDDING_DIM_LIST) != 4:
+            raise ValueError("Last-two cascade still requires four encoder/decoder stages")
+        for value in cls.NUM_EMBEDDINGS_LIST:
+            if value < 2 or value & (value - 1):
+                raise ValueError("Every codebook size must be a power of two >= 2")
 
 
 def setup_seed(seed=42):
@@ -38,13 +55,17 @@ def build_model(cfg):
 
 
 def _checkpoint_metadata(model):
-    return {
+    metadata = {
         "model_type": model.MODEL_TYPE,
         "active_scales": list(model.ACTIVE_SCALES),
-        "full_num_embeddings_list": list(model.full_num_embeddings_list),
         "active_num_embeddings_list": list(model.num_embeddings_list),
         "active_embedding_dim_list": list(model.embedding_dim_list),
     }
+    if len(model.full_num_embeddings_list) == 4:
+        metadata["full_num_embeddings_list"] = list(model.full_num_embeddings_list)
+    else:
+        metadata["num_embeddings_list"] = list(model.num_embeddings_list)
+    return metadata
 
 
 def _validate_resume_checkpoint(checkpoint, model):
@@ -58,8 +79,26 @@ def _validate_resume_checkpoint(checkpoint, model):
             )
 
 
+def _atomic_torch_save(payload, path):
+    """Keep the previous checkpoint intact if a new save runs out of space."""
+    directory = os.path.dirname(os.path.abspath(path))
+    os.makedirs(directory, exist_ok=True)
+    fd, temporary_path = tempfile.mkstemp(
+        prefix=f".{os.path.basename(path)}.", suffix=".tmp", dir=directory
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            torch.save(payload, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, path)
+    finally:
+        if os.path.exists(temporary_path):
+            os.unlink(temporary_path)
+
+
 def save_best_checkpoint(path, epoch, model, best_val_loss):
-    torch.save(
+    _atomic_torch_save(
         {
             **_checkpoint_metadata(model),
             "epoch": epoch,
@@ -78,7 +117,7 @@ def save_training_checkpoint(
     scheduler,
     best_val_loss,
 ):
-    torch.save(
+    _atomic_torch_save(
         {
             **_checkpoint_metadata(model),
             "epoch": epoch,
@@ -98,7 +137,7 @@ def save_training_checkpoint(
 
 
 def main():
-    cfg = Config()
+    cfg = Last2CascadeTrainConfig()
     cfg.validate()
     setup_seed(42)
     device = torch.device(cfg.DEVICE)
@@ -112,7 +151,8 @@ def main():
     print(f"Micro batch size: {cfg.MICRO_BATCH_SIZE}")
     print(f"Gradient accumulation steps: {accumulation_steps}")
     print(f"Experiment: {cfg.EXPERIMENT_NAME}")
-    print(f"Full historical codebook label: {cfg.NUM_EMBEDDINGS_LIST}")
+    if len(cfg.NUM_EMBEDDINGS_LIST) == 4:
+        print(f"Full historical codebook label: {cfg.NUM_EMBEDDINGS_LIST}")
     print(f"Active scales: {list(DeepSCLast2Cascade.ACTIVE_SCALES)}")
     print(f"Active codebooks: {cfg.NUM_EMBEDDINGS_LIST[-2:]}")
     print(f"Checkpoint directory: {cfg.CHECKPOINT_DIR}")

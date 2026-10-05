@@ -2,6 +2,7 @@ import numpy as np
 import torch
 
 from evaluation.quality import (
+    _CHANNEL_TYPES,
     _MODULATIONS,
     _empty_scale_record,
     _finalize_scale_records,
@@ -150,14 +151,28 @@ def evaluate_ldpc_channel_last2_cascade(
     modulation="qpsk",
     return_diagnostics=False,
     stream_packing="combined",
+    channel_type="awgn",
+    rician_k_factor=10.0,
+    channel_seed=42,
 ):
     _validate_last2_model(model, num_embeddings_list)
     if modulation not in _MODULATIONS:
         raise ValueError(f"Unsupported modulation: {modulation}")
     if stream_packing != "combined":
         raise ValueError("Last-two cascade evaluation requires combined stream packing")
+    channel_type = str(channel_type).strip().lower()
+    if channel_type not in _CHANNEL_TYPES:
+        raise ValueError(
+            f"Unsupported channel type: {channel_type!r}; "
+            f"expected one of {sorted(_CHANNEL_TYPES)}"
+        )
+    if rician_k_factor < 0:
+        raise ValueError("Rician K-factor must be non-negative")
+    channel_seed = int(channel_seed)
+    if channel_seed < 0:
+        raise ValueError("Channel seed must be non-negative")
 
-    _reset_eval_seed()
+    _reset_eval_seed(channel_seed)
     model.eval()
     codebook_sizes = dict(zip(ACTIVE_SCALES, num_embeddings_list))
     records = {
@@ -198,6 +213,8 @@ def evaluate_ldpc_channel_last2_cascade(
             ldpc_code,
             device,
             modulation,
+            channel_type=channel_type,
+            rician_k_factor=rician_k_factor,
         )
         stream_totals["payload_bits"] += int(len(combined_bits))
         for key, value in channel_stats.items():
@@ -274,8 +291,10 @@ def evaluate_ldpc_channel_last2_cascade(
         "active_scales": list(ACTIVE_SCALES),
         "inactive_scales": list(INACTIVE_SCALES),
         "modulation": modulation,
+        "channel_type": channel_type,
         "modulation_bits_per_symbol": _MODULATIONS[modulation][0],
         "snr_db": float(target_snr),
+        "channel_seed": channel_seed,
         "ldpc": {
             "k": int(ldpc_code["k"]),
             "n": int(ldpc_code["n"]),
@@ -291,5 +310,8 @@ def evaluate_ldpc_channel_last2_cascade(
             "modulation_padding_bits": "zero coded bits added to fill a modulation symbol",
         },
     }
+    if channel_type == "rician":
+        diagnostics["rician_k_factor"] = float(rician_k_factor)
+        diagnostics["receiver_csi"] = "perfect_per_symbol"
     result = (float(np.mean(ms_ssim_scores)), float(np.mean(psnr_scores)))
     return (*result, diagnostics) if return_diagnostics else result

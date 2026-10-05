@@ -13,7 +13,7 @@ from utils.raq_rvq import validate_independent_rvq_k_lists
 
 class DeepSC(nn.Module):
     """
-    Dedicated two-scale, two-stage independent RAQ-RVQ model.
+    Dedicated two-scale independent RAQ-RVQ model with up to two stages.
     """
     def __init__(self,
                  in_channels,
@@ -238,7 +238,7 @@ class DeepSC(nn.Module):
         current_mod_bits,
         ste_channel,
     ):
-        """Train four independently generated scale/stage RAQ codebooks."""
+        """Train independently generated per-scale RAQ-RVQ prefixes."""
         rvq_k_lists = validate_independent_rvq_k_lists(
             rvq_k_lists,
             num_scales=len(encoder_features),
@@ -413,7 +413,7 @@ class DeepSC(nn.Module):
 
 
     def _forward_test_independent_raq_rvq(self, encoder_features):
-        """Encode with four trained, independently generated RAQ codebooks."""
+        """Encode with a non-empty prefix of the trained stages per scale."""
         rvq_k_lists = validate_independent_rvq_k_lists(
             self.independent_raq_rvq_k_lists,
             num_scales=len(encoder_features),
@@ -510,7 +510,8 @@ class DeepSC(nn.Module):
                     payload_bits == expected_payload_bits
                 ),
                 "independent_codebook_identity_verified": (
-                    stage_codebooks[0] is not stage_codebooks[1]
+                    len({id(codebook) for codebook in stage_codebooks})
+                    == len(stage_codebooks)
                 ),
             })
             indices_by_scale.append(rvq["indices"])

@@ -1,0 +1,1478 @@
+{
+  "evaluation_mode": "last2_cascade",
+  "active_scales": [
+    2,
+    3
+  ],
+  "inactive_scales": [
+    0,
+    1
+  ],
+  "checkpoint": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k16_16_last2_copy_200ep/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    16,
+    16
+  ],
+  "ldpc_n": 256,
+  "ldpc_rate": 0.625,
+  "modulation": "qpsk",
+  "stream_packing": "combined",
+  "channel_types": [
+    "rician"
+  ],
+  "rician_k_factor": 10.0,
+  "rician_receiver_csi": "perfect_per_symbol",
+  "channel_seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51
+  ],
+  "results": {
+    "7.5": {
+      "ms_ssim": 0.892852807656044,
+      "ms_ssim_db": 9.700192046081778,
+      "ms_ssim_std": 2.340555645717801e-16,
+      "psnr": 24.494403402010597,
+      "psnr_std": 3.744889033148481e-15,
+      "ber": 0.0,
+      "compression_rate": "1/48",
+      "monte_carlo": {
+        "num_trials": 10,
+        "channel_seeds": [
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51
+        ],
+        "psnr_mean": 24.494403402010597,
+        "psnr_std": 3.744889033148481e-15,
+        "ms_ssim_mean": 0.892852807656044,
+        "ms_ssim_std": 2.340555645717801e-16,
+        "ms_ssim_db_from_mean": 9.700192046081778,
+        "total_bit_errors": 0,
+        "total_payload_bits": 1228800,
+        "ber": 0.0,
+        "total_channel_symbols": 983040,
+        "total_source_values": 47185920,
+        "transmission_ratio": 0.020833333333333332
+      },
+      "trials": [
+        {
+          "channel_seed": 42,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 42,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 43,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 43,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 44,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 44,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 45,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 45,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 46,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 46,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 47,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 47,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 48,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 48,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 49,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 49,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 50,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 50,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        },
+        {
+          "channel_seed": 51,
+          "ms_ssim": 0.8928528076560438,
+          "ms_ssim_db": 9.700192046081769,
+          "psnr": 24.4944034020106,
+          "diagnostics": {
+            "mode": "ldpc_last2_cascade",
+            "decoder_mode": "full_decoder_with_copied_deep_features",
+            "stream_packing": "combined",
+            "active_scales": [
+              2,
+              3
+            ],
+            "inactive_scales": [
+              0,
+              1
+            ],
+            "modulation": "qpsk",
+            "channel_type": "rician",
+            "modulation_bits_per_symbol": 2,
+            "snr_db": 7.5,
+            "channel_seed": 51,
+            "ldpc": {
+              "k": 160,
+              "n": 256,
+              "rate": 0.625
+            },
+            "num_images": 24,
+            "per_scale": [
+              {
+                "scale": 2,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 24576,
+                "payload_bits": 98304,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.0625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              },
+              {
+                "scale": 3,
+                "num_embeddings": 16,
+                "bits_per_index": 4,
+                "num_indices": 6144,
+                "payload_bits": 24576,
+                "bit_errors": 0,
+                "index_errors": 0,
+                "sent_index_min": 0,
+                "sent_index_max": 15,
+                "recovered_index_min": 0,
+                "recovered_index_max": 15,
+                "payload_bpp": 0.015625,
+                "ber": 0.0,
+                "index_error_rate": 0.0
+              }
+            ],
+            "combined_stream": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "total": {
+              "payload_bits": 122880,
+              "ldpc_input_bits": 122880,
+              "ldpc_padding_bits": 0,
+              "coded_bits": 196608,
+              "modulation_padding_bits": 0,
+              "transmitted_bits": 196608,
+              "channel_symbols": 98304,
+              "bit_errors": 0,
+              "index_errors": 0,
+              "source_pixels": 1572864,
+              "source_values": 4718592,
+              "payload_bpp": 0.078125,
+              "coded_bpp": 0.125,
+              "transmitted_bpp": 0.125,
+              "channel_uses_per_pixel": 0.0625,
+              "transmission_ratio": 0.020833333333333332,
+              "ber": 0.0,
+              "index_error_rate": 0.0
+            },
+            "compression": {
+              "reference": "uncompressed 8-bit RGB",
+              "source_bits": 37748736,
+              "payload": {
+                "bits": 122880,
+                "fraction_of_source": 0.0032552083333333335,
+                "percent_of_source": 0.32552083333333337,
+                "saving_percent": 99.67447916666666,
+                "compression_ratio": 307.2
+              },
+              "end_to_end": {
+                "bits": 196608,
+                "fraction_of_source": 0.005208333333333333,
+                "percent_of_source": 0.5208333333333333,
+                "saving_percent": 99.47916666666666,
+                "compression_ratio": 192.0
+              }
+            },
+            "padding_notes": {
+              "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+              "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+            },
+            "rician_k_factor": 10.0,
+            "receiver_csi": "perfect_per_symbol"
+          }
+        }
+      ],
+      "diagnostics": {
+        "mode": "ldpc_last2_cascade",
+        "decoder_mode": "full_decoder_with_copied_deep_features",
+        "stream_packing": "combined",
+        "active_scales": [
+          2,
+          3
+        ],
+        "inactive_scales": [
+          0,
+          1
+        ],
+        "modulation": "qpsk",
+        "channel_type": "rician",
+        "modulation_bits_per_symbol": 2,
+        "snr_db": 7.5,
+        "channel_seed": 42,
+        "ldpc": {
+          "k": 160,
+          "n": 256,
+          "rate": 0.625
+        },
+        "num_images": 24,
+        "per_scale": [
+          {
+            "scale": 2,
+            "num_embeddings": 16,
+            "bits_per_index": 4,
+            "num_indices": 24576,
+            "payload_bits": 98304,
+            "bit_errors": 0,
+            "index_errors": 0,
+            "sent_index_min": 0,
+            "sent_index_max": 15,
+            "recovered_index_min": 0,
+            "recovered_index_max": 15,
+            "payload_bpp": 0.0625,
+            "ber": 0.0,
+            "index_error_rate": 0.0
+          },
+          {
+            "scale": 3,
+            "num_embeddings": 16,
+            "bits_per_index": 4,
+            "num_indices": 6144,
+            "payload_bits": 24576,
+            "bit_errors": 0,
+            "index_errors": 0,
+            "sent_index_min": 0,
+            "sent_index_max": 15,
+            "recovered_index_min": 0,
+            "recovered_index_max": 15,
+            "payload_bpp": 0.015625,
+            "ber": 0.0,
+            "index_error_rate": 0.0
+          }
+        ],
+        "combined_stream": {
+          "payload_bits": 122880,
+          "ldpc_input_bits": 122880,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 196608,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 196608,
+          "channel_symbols": 98304,
+          "bit_errors": 0,
+          "index_errors": 0,
+          "source_pixels": 1572864,
+          "source_values": 4718592,
+          "payload_bpp": 0.078125,
+          "coded_bpp": 0.125,
+          "transmitted_bpp": 0.125,
+          "channel_uses_per_pixel": 0.0625,
+          "transmission_ratio": 0.020833333333333332,
+          "ber": 0.0,
+          "index_error_rate": 0.0
+        },
+        "total": {
+          "payload_bits": 122880,
+          "ldpc_input_bits": 122880,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 196608,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 196608,
+          "channel_symbols": 98304,
+          "bit_errors": 0,
+          "index_errors": 0,
+          "source_pixels": 1572864,
+          "source_values": 4718592,
+          "payload_bpp": 0.078125,
+          "coded_bpp": 0.125,
+          "transmitted_bpp": 0.125,
+          "channel_uses_per_pixel": 0.0625,
+          "transmission_ratio": 0.020833333333333332,
+          "ber": 0.0,
+          "index_error_rate": 0.0
+        },
+        "compression": {
+          "reference": "uncompressed 8-bit RGB",
+          "source_bits": 37748736,
+          "payload": {
+            "bits": 122880,
+            "fraction_of_source": 0.0032552083333333335,
+            "percent_of_source": 0.32552083333333337,
+            "saving_percent": 99.67447916666666,
+            "compression_ratio": 307.2
+          },
+          "end_to_end": {
+            "bits": 196608,
+            "fraction_of_source": 0.005208333333333333,
+            "percent_of_source": 0.5208333333333333,
+            "saving_percent": 99.47916666666666,
+            "compression_ratio": 192.0
+          }
+        },
+        "padding_notes": {
+          "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+          "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+        },
+        "rician_k_factor": 10.0,
+        "receiver_csi": "perfect_per_symbol"
+      }
+    }
+  }
+}

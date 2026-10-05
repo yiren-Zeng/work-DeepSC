@@ -3,7 +3,7 @@ import random
 import numpy as np
 import torch
 
-from communications.channel import awgn_channel
+from communications.channel import awgn_channel, rician_channel
 from communications.modulation import (
     bpsk_llr,
     bpsk_modulate,
@@ -21,6 +21,7 @@ _MODULATIONS = {
     "qpsk": (2, qpsk_modulate, qpsk_llr),
     "16qam": (4, qam16_modulate, qam16_llr),
 }
+_CHANNEL_TYPES = {"awgn", "rician"}
 
 
 def _reset_eval_seed(seed=42):
@@ -98,6 +99,8 @@ def _transmit_ldpc_stream(
     ldpc_code,
     device,
     modulation,
+    channel_type="awgn",
+    rician_k_factor=10.0,
 ):
     from communications.ldpc_coding import ldpc_decode, ldpc_encode
 
@@ -116,8 +119,31 @@ def _transmit_ldpc_stream(
     transmitted = np.pad(coded, (0, modulation_padding_bits), "constant")
     transmitted_tensor = torch.from_numpy(transmitted).float().to(device)
     symbols = modulate(transmitted_tensor)
-    noisy_symbols = awgn_channel(symbols, target_snr)
-    llrs = calculate_llr(noisy_symbols, target_snr, device).reshape(-1)
+    channel_gain = None
+    noise_variance = None
+    if channel_type == "awgn":
+        noisy_symbols, noise_variance = awgn_channel(
+            symbols, target_snr, return_noise_power=True
+        )
+    elif channel_type == "rician":
+        noisy_symbols, channel_gain, noise_variance = rician_channel(
+            symbols,
+            target_snr,
+            k_factor=rician_k_factor,
+            return_csi=True,
+        )
+    else:
+        raise ValueError(
+            f"Unsupported channel type: {channel_type!r}; "
+            f"expected one of {sorted(_CHANNEL_TYPES)}"
+        )
+    llrs = calculate_llr(
+        noisy_symbols,
+        target_snr,
+        device,
+        channel_gain=channel_gain,
+        noise_variance=noise_variance,
+    ).reshape(-1)
     decoded = np.asarray(
         ldpc_decode(llrs[:coded_bits].detach().cpu().numpy(), ldpc_code)
     ).reshape(-1)[:payload_bits]
@@ -200,11 +226,21 @@ def evaluate_ldpc_channel(
     modulation="qpsk",
     return_diagnostics=False,
     stream_packing="combined",
+    channel_type="awgn",
+    rician_k_factor=10.0,
 ):
     if modulation not in _MODULATIONS:
         raise ValueError(f"Unsupported modulation: {modulation}")
     if stream_packing != "combined":
         raise ValueError("VQ-DeepSC baseline evaluation requires combined stream packing")
+    channel_type = str(channel_type).strip().lower()
+    if channel_type not in _CHANNEL_TYPES:
+        raise ValueError(
+            f"Unsupported channel type: {channel_type!r}; "
+            f"expected one of {sorted(_CHANNEL_TYPES)}"
+        )
+    if rician_k_factor < 0:
+        raise ValueError("Rician K-factor must be non-negative")
 
     _reset_eval_seed()
     model.eval()
@@ -246,6 +282,8 @@ def evaluate_ldpc_channel(
             ldpc_code,
             device,
             modulation,
+            channel_type=channel_type,
+            rician_k_factor=rician_k_factor,
         )
         stream_totals["payload_bits"] += int(len(combined_bits))
         for key, value in channel_stats.items():
@@ -310,6 +348,7 @@ def evaluate_ldpc_channel(
         "mode": "ldpc",
         "stream_packing": "combined",
         "modulation": modulation,
+        "channel_type": channel_type,
         "modulation_bits_per_symbol": _MODULATIONS[modulation][0],
         "snr_db": float(target_snr),
         "ldpc": {
@@ -326,5 +365,8 @@ def evaluate_ldpc_channel(
             "modulation_padding_bits": "zero coded bits added to fill a modulation symbol",
         },
     }
+    if channel_type == "rician":
+        diagnostics["rician_k_factor"] = float(rician_k_factor)
+        diagnostics["receiver_csi"] = "perfect_per_symbol"
     result = (float(np.mean(ms_ssim_scores)), float(np.mean(psnr_scores)))
     return (*result, diagnostics) if return_diagnostics else result

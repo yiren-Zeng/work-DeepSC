@@ -1,0 +1,65 @@
+#!/bin/bash
+set -euo pipefail
+PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../../.." && pwd)"
+eval "$(/usr/local/miniconda3/bin/conda shell.bash hook)"
+conda activate work
+cd "$PROJECT_ROOT"
+mkdir -p checkpoints experiments/logs
+
+export SIMVQ_EXPERIMENT_STAGE="B"
+export SIMVQ_EXP_FAMILY="shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6"
+export SIMVQ_NUM_EMBEDDINGS_LIST="256"
+export SIMVQ_DOWNSAMPLE_STRIDES="8"
+export SIMVQ_UNET_DEPTH="1"
+export SIMVQ_BASE_CHANNELS="128"
+export SIMVQ_ENCODER_RES_BLOCKS="6"
+export SIMVQ_DECODER_RES_BLOCKS="6"
+export SIMVQ_QUANTIZER_TYPE="simvq"
+export SIMVQ_QUANTIZER_AXIS_LIST="patch"
+export SIMVQ_CVQ_CODEWORD_SHAPES="patch"
+
+export SIMVQ_USE_RAQ="1"
+export SIMVQ_USE_DYNAMIC_RAQ_RVQ="0"
+export SIMVQ_USE_SHARED_RAQ_RVQ="0"
+export SIMVQ_USE_INDEPENDENT_RAQ_RVQ="0"
+export SIMVQ_TEST_USE_RAQ_RVQ="0"
+unset SIMVQ_RAQ_TARGET_LIST
+export SIMVQ_RAQ_MIN_TRG="32"
+export SIMVQ_RAQ_MAX_TRG="2048"
+unset SIMVQ_RAQ_MIN_TRG_LIST SIMVQ_RAQ_MAX_TRG_LIST
+export SIMVQ_RAQ_USE_CURRICULUM="1"
+export SIMVQ_RAQ_CURRICULUM_EARLY_LIST="512,1024,2048"
+export SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST="64,128,256,512,1024,2048"
+export SIMVQ_RAQ_CURRICULUM_LATE_LIST="32,64,128,256,512,1024,2048"
+unset SIMVQ_RAQ_CURRICULUM_EARLY_LISTS
+unset SIMVQ_RAQ_CURRICULUM_MIDDLE_LISTS
+unset SIMVQ_RAQ_CURRICULUM_LATE_LISTS
+export SIMVQ_RESUME="${SIMVQ_RESUME:-0}"
+unset SIMVQ_PRETRAINED_CHECKPOINT
+
+export SIMVQ_TOTAL_BATCH_SIZE="${SIMVQ_TOTAL_BATCH_SIZE:-24}"
+export SIMVQ_MICRO_BATCH_SIZE="${SIMVQ_MICRO_BATCH_SIZE:-12}"
+export SIMVQ_SAVE_INTERVAL="${SIMVQ_SAVE_INTERVAL:-20}"
+export GPU_ID="${GPU_ID:-0}"
+export CUDA_VISIBLE_DEVICES="$GPU_ID"
+export NUM_EPOCHS="${NUM_EPOCHS:-200}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+
+RUN_ID="${EXPERIMENT_RUN_ID:-src256_raq32-2048_curriculum_ch256_res6_unet1_gpu${GPU_ID}-$(date +%Y%m%d-%H%M%S)}"
+export EXPERIMENT_RUN_ID="$RUN_ID"
+export PYTHONUNBUFFERED=1
+
+echo "Experiment: $SIMVQ_EXP_FAMILY"
+echo "Run ID: $RUN_ID"
+echo "Physical GPU: $GPU_ID"
+echo "U-Net depth/stride: $SIMVQ_UNET_DEPTH / [$SIMVQ_DOWNSAMPLE_STRIDES]"
+echo "Source codebook: [$SIMVQ_NUM_EMBEDDINGS_LIST]"
+echo "Embedding dim: 256"
+echo "Encoder/decoder residual blocks: $SIMVQ_ENCODER_RES_BLOCKS/$SIMVQ_DECODER_RES_BLOCKS"
+echo "RAQ range: [$SIMVQ_RAQ_MIN_TRG,$SIMVQ_RAQ_MAX_TRG]"
+echo "RAQ curriculum: early=[$SIMVQ_RAQ_CURRICULUM_EARLY_LIST] middle=[$SIMVQ_RAQ_CURRICULUM_MIDDLE_LIST] late=[$SIMVQ_RAQ_CURRICULUM_LATE_LIST]"
+echo "Batch: total=$SIMVQ_TOTAL_BATCH_SIZE micro=$SIMVQ_MICRO_BATCH_SIZE"
+echo "NUM_EPOCHS: $NUM_EPOCHS"
+echo "Periodic weight save interval: $SIMVQ_SAVE_INTERVAL epochs"
+
+python -u train.py 2>&1 | tee "experiments/logs/train_${RUN_ID}.log"

@@ -624,6 +624,19 @@ def main():
         }
         torch.save(checkpoint, cfg.RESUME_PATH)
 
+        completed_epoch = epoch + 1
+        if (
+            cfg.SAVE_INTERVAL > 0
+            and completed_epoch > cfg.SAVE_AFTER_EPOCH
+            and completed_epoch % cfg.SAVE_INTERVAL == 0
+        ):
+            periodic_path = os.path.join(
+                cfg.CHECKPOINT_DIR,
+                f"vq_deepsc_epoch_{completed_epoch}.pth",
+            )
+            torch.save(deepsc_model.state_dict(), periodic_path)
+            print(f"Saved periodic model weights: {periodic_path}")
+
     writer.close()
     print("Training complete.")
 

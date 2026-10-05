@@ -14,7 +14,8 @@ def validate_independent_rvq_k_lists(
 
     Independent RAQ-RVQ samples every residual stage directly from the current
     RAQ curriculum. No product/bit-budget relationship is imposed between
-    independently trained stages.
+    independently trained stages. ``rvq_depth`` is the maximum available
+    residual depth; each scale may select a non-empty prefix of those stages.
     """
     try:
         num_scales = operator.index(num_scales)
@@ -50,10 +51,11 @@ def validate_independent_rvq_k_lists(
     min_bounds = expand_bound(min_k, "RAQ minimum")
     max_bounds = expand_bound(max_k, "RAQ maximum")
     for scale_index, stage_sizes in enumerate(resolved):
-        if len(stage_sizes) != rvq_depth:
+        if not 1 <= len(stage_sizes) <= rvq_depth:
             raise ValueError(
                 f"independent RAQ-RVQ scale {scale_index} requires "
-                f"{rvq_depth} stages, got {len(stage_sizes)}"
+                f"between 1 and {rvq_depth} prefix stages, "
+                f"got {len(stage_sizes)}"
             )
         for stage_index, stage_k in enumerate(stage_sizes):
             try:

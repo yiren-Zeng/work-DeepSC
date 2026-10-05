@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from communications.channel import awgn_channel
+from communications.channel import awgn_channel, rician_channel
 from communications.modulation import (
     bpsk_llr,
     bpsk_modulate,
@@ -18,6 +18,7 @@ from utils.reproducibility import _reset_eval_seed
 
 
 _MODULATION_BITS = {"bpsk": 1, "qpsk": 2, "16qam": 4}
+_CHANNEL_TYPES = {"awgn", "rician"}
 
 
 def _image_quality(real_image, reconstructed_images):
@@ -506,6 +507,8 @@ def _transmit_ldpc_stream(
     modulation_bits,
     ldpc_encode,
     ldpc_decode,
+    channel_type="awgn",
+    rician_k_factor=10.0,
 ):
     """Transmit exactly one payload stream and expose both padding layers."""
     flat_bits = np.asarray(flat_bits, dtype=np.uint8).reshape(-1)
@@ -528,8 +531,31 @@ def _transmit_ldpc_stream(
 
     transmitted_tensor = torch.from_numpy(transmitted).float().to(device)
     symbols = modulate(transmitted_tensor)
-    noisy_symbols = awgn_channel(symbols, target_snr)
-    llrs = calculate_llr(noisy_symbols, target_snr, device).reshape(-1)
+    channel_gain = None
+    noise_variance = None
+    if channel_type == "awgn":
+        noisy_symbols, noise_variance = awgn_channel(
+            symbols, target_snr, return_noise_power=True
+        )
+    elif channel_type == "rician":
+        noisy_symbols, channel_gain, noise_variance = rician_channel(
+            symbols,
+            target_snr,
+            K_factor=rician_k_factor,
+            return_csi=True,
+        )
+    else:
+        raise ValueError(
+            f"Unsupported channel type: {channel_type!r}; "
+            f"expected one of {sorted(_CHANNEL_TYPES)}"
+        )
+    llrs = calculate_llr(
+        noisy_symbols,
+        target_snr,
+        device,
+        channel_gain=channel_gain,
+        noise_variance=noise_variance,
+    ).reshape(-1)
     # Modulation-only padding is never presented to the LDPC decoder.
     decoded = np.asarray(
         ldpc_decode(llrs[:coded_bits].detach().cpu().numpy(), ldpc_code)
@@ -610,6 +636,9 @@ def evaluate_ldpc_channel(
     modulation="bpsk",
     return_diagnostics=False,
     stream_packing="per_stage",
+    channel_type="awgn",
+    rician_k_factor=10.0,
+    channel_seed=42,
 ):
     from communications.ldpc_coding import ldpc_decode, ldpc_encode
 
@@ -625,10 +654,21 @@ def evaluate_ldpc_channel(
             "stream_packing must be 'per_stage' or 'combined', got "
             f"{stream_packing!r}."
         )
+    channel_type = str(channel_type).strip().lower()
+    if channel_type not in _CHANNEL_TYPES:
+        raise ValueError(
+            f"Unsupported channel type: {channel_type!r}; "
+            f"expected one of {sorted(_CHANNEL_TYPES)}"
+        )
+    if rician_k_factor < 0:
+        raise ValueError("Rician K-factor must be non-negative")
+    if int(channel_seed) < 0:
+        raise ValueError("channel_seed must be non-negative")
     modulate, calculate_llr = modulators[modulation]
     modulation_bits = _MODULATION_BITS[modulation]
 
-    _reset_eval_seed()
+    channel_seed = int(channel_seed)
+    _reset_eval_seed(channel_seed)
     model.eval()
     ms_ssim_scores = []
     psnr_scores = []
@@ -700,6 +740,8 @@ def evaluate_ldpc_channel(
                 modulation_bits,
                 ldpc_encode,
                 ldpc_decode,
+                channel_type=channel_type,
+                rician_k_factor=rician_k_factor,
             )
             _add_stream_lengths(
                 packed_stream_totals,
@@ -763,6 +805,8 @@ def evaluate_ldpc_channel(
                         modulation_bits,
                         ldpc_encode,
                         ldpc_decode,
+                        channel_type=channel_type,
+                        rician_k_factor=rician_k_factor,
                     )
                     recovered = bits_to_index_tensor(
                         decoded_bits, original_shape, num_embeddings
@@ -812,5 +856,10 @@ def evaluate_ldpc_channel(
             else None
         ),
     )
+    diagnostics["channel_type"] = channel_type
+    diagnostics["channel_seed"] = channel_seed
+    if channel_type == "rician":
+        diagnostics["rician_k_factor"] = float(rician_k_factor)
+        diagnostics["receiver_csi"] = "perfect_per_symbol"
     result = (np.mean(ms_ssim_scores), np.mean(psnr_scores))
     return (*result, diagnostics) if return_diagnostics else result

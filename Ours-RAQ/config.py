@@ -445,6 +445,12 @@ class Config:
     SCREENING_PATH = os.path.join(PROJECT_ROOT, "experiments", f"{EXPERIMENT_NAME}_screening.csv")
     SNAPSHOT_DIR = os.path.join(PROJECT_ROOT, "experiments", "snapshots", EXPERIMENT_NAME)
     NUM_EPOCHS = _env_int("NUM_EPOCHS", 200)
+    # Zero disables periodic model-only snapshots. Training scripts can opt in
+    # without changing the existing best-model and resume-checkpoint behavior.
+    SAVE_INTERVAL = _env_int("SIMVQ_SAVE_INTERVAL", 0)
+    # Periodic snapshots are emitted only after this completed epoch. A zero
+    # default preserves the behavior of existing training scripts.
+    SAVE_AFTER_EPOCH = _env_int("SIMVQ_SAVE_AFTER_EPOCH", 0)
     RESUME = _env_int("SIMVQ_RESUME", 0) == 1
     RESUME_PATH = os.path.join(CHECKPOINT_DIR, "last_checkpoint.pth")
 
@@ -641,6 +647,10 @@ class Config:
             )
         if cls.LR_STEP_SIZE <= 0:
             raise ValueError("SIMVQ_LR_STEP_SIZE must be a positive integer")
+        if cls.SAVE_INTERVAL < 0:
+            raise ValueError("SIMVQ_SAVE_INTERVAL must be zero or a positive integer")
+        if cls.SAVE_AFTER_EPOCH < 0:
+            raise ValueError("SIMVQ_SAVE_AFTER_EPOCH must be zero or a positive integer")
         if cls.USE_RAQ:
             required_raq_envs = {
                 # "SIMVQ_RAQ_TARGET_LIST": cls.RAQ_TARGET_LIST,
