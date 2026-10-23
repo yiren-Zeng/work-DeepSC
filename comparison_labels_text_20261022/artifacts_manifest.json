@@ -1,0 +1,308 @@
+{
+  "command": "python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage review",
+  "existing_files_modified": [
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
+      "before_sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9",
+      "after_sha256": "d13c9f50a70187dd7aa661caa7b59313866c4d347f12b4977968fe915b0709f1",
+      "bytes": 3249796
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
+      "before_sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843",
+      "after_sha256": "ddf52b95e242f197f8e38282a4e2d589884fca3b9bbfccb1a90419a8a3abc03a",
+      "bytes": 3236794
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
+      "before_sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2",
+      "after_sha256": "d3f7641b4b200bc5c572db53fe13b1e6d25cf46010ca3fe867ef51fe4c9adeba",
+      "bytes": 2548057
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
+      "before_sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d",
+      "after_sha256": "087398a5161ccc597874284f1be2b2a4dad7b2fc2a4a231100ff8b3f7cedbf88",
+      "bytes": 2547443
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
+      "before_sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033",
+      "after_sha256": "c160a609e8e0b82a49040837563ab4b9f9fb9aa36025ab6968d9c56ebea87932",
+      "bytes": 3217310
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
+      "before_sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689",
+      "after_sha256": "bdeedd65f4b46c771c83276dbe4a6864c4a376d028a17be429cece9cec48b074",
+      "bytes": 3207507
+    },
+    {
+      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
+      "before_sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9",
+      "after_sha256": "c44a028ec96ecf6734ebe05b1abb3ef54502d20f939e78db26e5abf96fb7ea29",
+      "bytes": 2882906
+    },
+    {
+      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
+      "before_sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c",
+      "after_sha256": "1d05be01638c07679832c1e645f9e3ce98162208c64df3cc3150dba261a5fc54",
+      "bytes": 2876071
+    }
+  ],
+  "new_untracked_outputs": [
+    "comparison_labels_text_20261022/README.md",
+    "comparison_labels_text_20261022/artifacts_manifest.json",
+    "comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py",
+    "comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py",
+    "comparison_labels_text_20261022/before/kodim05_comparison_20261022.pdf",
+    "comparison_labels_text_20261022/before/kodim05_comparison_20261022.png",
+    "comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.pdf",
+    "comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.png",
+    "comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.pdf",
+    "comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.png",
+    "comparison_labels_text_20261022/before/kodim21_comparison_20261022.pdf",
+    "comparison_labels_text_20261022/before/kodim21_comparison_20261022.png",
+    "comparison_labels_text_20261022/before_manifest.json",
+    "comparison_labels_text_20261022/candidate_regions.json",
+    "comparison_labels_text_20261022/changes.patch",
+    "comparison_labels_text_20261022/git_status_after.txt",
+    "comparison_labels_text_20261022/git_status_before.txt",
+    "comparison_labels_text_20261022/lettering_candidates_1.png",
+    "comparison_labels_text_20261022/lettering_candidates_2.png",
+    "comparison_labels_text_20261022/new_figure_metrics.json",
+    "comparison_labels_text_20261022/renamed_existing_figures.json",
+    "comparison_labels_text_20261022/source_manifest.json",
+    "comparison_labels_text_20261022/update_labels_and_text.py",
+    "kodim10_comparison_20261022.pdf",
+    "kodim10_comparison_20261022.png"
+  ],
+  "new_outputs_ignored_by_git": [
+    "comparison_labels_text_20261022/inspection.log",
+    "comparison_labels_text_20261022/labels.log",
+    "comparison_labels_text_20261022/new_figure.log",
+    "comparison_labels_text_20261022/prepare.log"
+  ],
+  "outside_scope_status_added": [],
+  "outside_scope_status_removed": [],
+  "patch_covers": "Complete new .py/.md/.json contents except this manifest; binary before/after files and hashes are retained",
+  "files": [
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/README.md",
+      "action": "new",
+      "bytes": 7600,
+      "sha256": "31b90d0a557a91099ce752bc5cccd10c69d28c86bc28c76709f07fe6966deaa1"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py",
+      "action": "new",
+      "bytes": 18121,
+      "sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py",
+      "action": "new",
+      "bytes": 15223,
+      "sha256": "e9e7da83f04af391e84155cd24f756ef95c9dfb276159a53458a73077754de7f"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.pdf",
+      "action": "new",
+      "bytes": 3234167,
+      "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.png",
+      "action": "new",
+      "bytes": 3247260,
+      "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.pdf",
+      "action": "new",
+      "bytes": 3204822,
+      "sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.png",
+      "action": "new",
+      "bytes": 3214495,
+      "sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.pdf",
+      "action": "new",
+      "bytes": 2873362,
+      "sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.png",
+      "action": "new",
+      "bytes": 2880606,
+      "sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.pdf",
+      "action": "new",
+      "bytes": 2544818,
+      "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.png",
+      "action": "new",
+      "bytes": 2545149,
+      "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/before_manifest.json",
+      "action": "new",
+      "bytes": 2747,
+      "sha256": "f36b225f344564804f5560e0712c774b97418d45465d4f97e85fcc3875fb9b05"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/candidate_regions.json",
+      "action": "new",
+      "bytes": 2611,
+      "sha256": "7625f1df2466bbae4947e1a48439d041401738c28829d9dc336a72e9561e9dab"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/changes.patch",
+      "action": "new",
+      "bytes": 91291,
+      "sha256": "f5634ef8c2a2008f4d8c62c00652fa314402abd71e3ac90f16a2ade5515eb4f3"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/git_status_after.txt",
+      "action": "new",
+      "bytes": 61696,
+      "sha256": "386efe4eaf1ea0a64c52332da0d62156fc8a803aa476a5ab5dd6992a05552893"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/git_status_before.txt",
+      "action": "new",
+      "bytes": 60094,
+      "sha256": "7132609b547ace495c0811b80ca2f8fddee567443ada754707a2a1a0ea25ddda"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/inspection.log",
+      "action": "new",
+      "bytes": 2236,
+      "sha256": "9055549bb0d76530ebb76e8d8fb45a7f83b015f34ca326697d24845ded5887ff"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/labels.log",
+      "action": "new",
+      "bytes": 501,
+      "sha256": "9e2e023bd14d0f7371c0d06e0f251c453cc1ec6395b976b8d6e86ca53858a80a"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/lettering_candidates_1.png",
+      "action": "new",
+      "bytes": 460409,
+      "sha256": "67abf0722caeb6988340dc3ecb19aa5140aab556be0c376f7a49e7418842ca84"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/lettering_candidates_2.png",
+      "action": "new",
+      "bytes": 418656,
+      "sha256": "afa36ffa7a66f3fffd2865ca1391c9717dc2668b68c04dce6b8440e104416ce2"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/new_figure.log",
+      "action": "new",
+      "bytes": 834,
+      "sha256": "32a5c52727e763ca4416eda084f4dde9d3dced948e14f448d15dc66b4cf0a910"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/new_figure_metrics.json",
+      "action": "new",
+      "bytes": 2046,
+      "sha256": "cb3c4406dcd5545445d57581bb373267783f0ad9526f55e83b5379a5fdcfffb3"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/prepare.log",
+      "action": "new",
+      "bytes": 168,
+      "sha256": "3973a2a93b359abfe25b28990ea2fd274b3109b7a12ee30d89791bd33a4d0152"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/renamed_existing_figures.json",
+      "action": "new",
+      "bytes": 2843,
+      "sha256": "60ec749affb4a131383422978e0e3471645c911fda6bbbb4bedc9a6964468a75"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/source_manifest.json",
+      "action": "new",
+      "bytes": 17523,
+      "sha256": "40c30f1de7cefd1d4d692e36503a329e21068a6c40570008e2c21498851a9314"
+    },
+    {
+      "path": "/workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py",
+      "action": "new",
+      "bytes": 18488,
+      "sha256": "8926ac88bc2c402d1f9363d4236a0088ee676e3f3b169ecb2853185f177ccf73"
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
+      "action": "modified",
+      "bytes": 3236794,
+      "sha256": "ddf52b95e242f197f8e38282a4e2d589884fca3b9bbfccb1a90419a8a3abc03a"
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
+      "action": "modified",
+      "bytes": 3249796,
+      "sha256": "d13c9f50a70187dd7aa661caa7b59313866c4d347f12b4977968fe915b0709f1"
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
+      "action": "modified",
+      "bytes": 3207507,
+      "sha256": "bdeedd65f4b46c771c83276dbe4a6864c4a376d028a17be429cece9cec48b074"
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
+      "action": "modified",
+      "bytes": 3217310,
+      "sha256": "c160a609e8e0b82a49040837563ab4b9f9fb9aa36025ab6968d9c56ebea87932"
+    },
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.pdf",
+      "action": "new",
+      "bytes": 2272653,
+      "sha256": "748330adecd1092093c43fb43889f118c0ab06099c2f505002bdfdb6668417c2"
+    },
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.png",
+      "action": "new",
+      "bytes": 2271461,
+      "sha256": "49f4ae601d73d3a9822e42f1dc4618f453942292d1b8b7102f4ffc3aa6f49ab3"
+    },
+    {
+      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
+      "action": "modified",
+      "bytes": 2876071,
+      "sha256": "1d05be01638c07679832c1e645f9e3ce98162208c64df3cc3150dba261a5fc54"
+    },
+    {
+      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
+      "action": "modified",
+      "bytes": 2882906,
+      "sha256": "c44a028ec96ecf6734ebe05b1abb3ef54502d20f939e78db26e5abf96fb7ea29"
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
+      "action": "modified",
+      "bytes": 2547443,
+      "sha256": "087398a5161ccc597874284f1be2b2a4dad7b2fc2a4a231100ff8b3f7cedbf88"
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
+      "action": "modified",
+      "bytes": 2548057,
+      "sha256": "d3f7641b4b200bc5c572db53fe13b1e6d25cf46010ca3fe867ef51fe4c9adeba"
+    }
+  ],
+  "manifest_self": "/workspace/yi/work/comparison_labels_text_20261022/artifacts_manifest.json"
+}

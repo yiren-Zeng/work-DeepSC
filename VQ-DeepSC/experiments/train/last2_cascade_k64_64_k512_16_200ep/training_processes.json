@@ -1,0 +1,20 @@
+[
+  {
+    "experiment": "k64_64_last2_copy_200ep",
+    "gpu_id": 3,
+    "gpu_uuid": "GPU-9c732abe-cb3d-11f9-7374-61ab2a780e2f",
+    "training_pid": 3455091,
+    "gpu_memory_mib": 20582,
+    "session_id": 3455051,
+    "environment_verified": true
+  },
+  {
+    "experiment": "k512_16_last2_copy_200ep",
+    "gpu_id": 4,
+    "gpu_uuid": "GPU-5f174e61-459c-e68c-b9fd-afb7d3d3b9ad",
+    "training_pid": 3455094,
+    "gpu_memory_mib": 20604,
+    "session_id": 3455052,
+    "environment_verified": true
+  }
+]

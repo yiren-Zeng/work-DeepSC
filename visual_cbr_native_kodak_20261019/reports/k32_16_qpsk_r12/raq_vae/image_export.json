@@ -1,0 +1,246 @@
+{
+  "status": "complete",
+  "images": [
+    {
+      "image": "kodim24.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 21.974937915802002,
+      "ms_ssim": 0.8787311874303201,
+      "png_sha256": "50ba708a4bafb506173b045c1ff72ea1fe7a60a8537ab5dd4cc5513192acea2c"
+    },
+    {
+      "image": "kodim23.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 23.98919105529785,
+      "ms_ssim": 0.8802209722886286,
+      "png_sha256": "b7c40bebec024ac82b45bc7e82d8ac8ae55acbe7fed98fd92bc58f4d22d06f25"
+    },
+    {
+      "image": "kodim22.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 24.070327281951904,
+      "ms_ssim": 0.8537713365255043,
+      "png_sha256": "c7b76cfe5c8a2fc0f2fb2b02c9dec85538c95d4fde9ed2da1145025d088b2fde"
+    },
+    {
+      "image": "kodim21.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 22.718636989593506,
+      "ms_ssim": 0.8895581034883618,
+      "png_sha256": "8bba4a0ad96517e2ba3bb4b6689e507fe469176258a73842b9881b438d74f96a"
+    },
+    {
+      "image": "kodim20.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 24.156177043914795,
+      "ms_ssim": 0.9117914694097125,
+      "png_sha256": "3a4086eac0e29078e43940d01f6e92e28dc8e3ce2d66c471885173ade07021b7"
+    },
+    {
+      "image": "kodim19.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 22.719693183898926,
+      "ms_ssim": 0.8794784917248851,
+      "png_sha256": "21663082377bd50cfb55e0f0c49417db2d0171e1a4f8445d1c625586f5294bb0"
+    },
+    {
+      "image": "kodim18.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 22.397677898406982,
+      "ms_ssim": 0.843335636537008,
+      "png_sha256": "579896cbdd5b90278a31c7f8236b38b211547c6172003bb6debafac979268660"
+    },
+    {
+      "image": "kodim17.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 25.82131862640381,
+      "ms_ssim": 0.9158469955339699,
+      "png_sha256": "76223a358496f6e9f00c118332bdcc9412d8c9ec738e28a89ace75a10e65ce48"
+    },
+    {
+      "image": "kodim16.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 25.846707820892334,
+      "ms_ssim": 0.8908826311105666,
+      "png_sha256": "41cbe883052cfcb6250b231bf019505451db2a95c4daf34120ea3678e7369de2"
+    },
+    {
+      "image": "kodim15.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 24.041128158569336,
+      "ms_ssim": 0.9018804268832271,
+      "png_sha256": "307c7c2b1b452f83496910a3c97157dc0fbcdd76f12ba4144efc1ed0631f5566"
+    },
+    {
+      "image": "kodim14.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 22.453420162200928,
+      "ms_ssim": 0.8613732335489138,
+      "png_sha256": "f3eb32f0705366b0334490355e588cf967f6b23d5019c0d5920dbb38abe88202"
+    },
+    {
+      "image": "kodim13.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 19.63588237762451,
+      "ms_ssim": 0.8259262040370545,
+      "png_sha256": "cf3148f4b0aa19d83ee724f21697c4fe8532b5bea19bcfcf64d5a9708063605c"
+    },
+    {
+      "image": "kodim12.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 24.711337089538574,
+      "ms_ssim": 0.8890118200640985,
+      "png_sha256": "71aef93b095041aab2ca68fa4fef967e731fa406ae58fc5e3884c1ef4123e1e5"
+    },
+    {
+      "image": "kodim11.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 23.28150510787964,
+      "ms_ssim": 0.8752751035012057,
+      "png_sha256": "9dbf99707b60d93f5a45f04e227236ac1e0acbf930e66f941244b8454a38c43e"
+    },
+    {
+      "image": "kodim10.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 25.06718397140503,
+      "ms_ssim": 0.8987352411430466,
+      "png_sha256": "a64042cffb7f3133c3075706dafdfd1d98c50a132d6f658c23bb9eee7f785a09"
+    },
+    {
+      "image": "kodim09.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 25.22143840789795,
+      "ms_ssim": 0.9113850042071188,
+      "png_sha256": "80062427f0308a762e0753cd8d3401c44850c714324066d70f26203f93cd7b59"
+    },
+    {
+      "image": "kodim08.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 18.933956623077393,
+      "ms_ssim": 0.8807915621163632,
+      "png_sha256": "fd83f457f15c21b0ba0d40a89b1f522f2bc181492cc834854527e1cdb82dc036"
+    },
+    {
+      "image": "kodim07.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 24.21652317047119,
+      "ms_ssim": 0.8948323548499767,
+      "png_sha256": "bbcd52306b51774f5b054a41d48ac9abebdd6b5de6a5f38572c35354c34390cf"
+    },
+    {
+      "image": "kodim06.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 22.41926670074463,
+      "ms_ssim": 0.8540804857732687,
+      "png_sha256": "b3f99e665e5ac66129fd32c63123f16d5eb3620f483c0741b9ad13daf9097cfc"
+    },
+    {
+      "image": "kodim05.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 20.37808656692505,
+      "ms_ssim": 0.8553224324670363,
+      "png_sha256": "678fd37e19c6d2a5e12013a39a2561db805d0b58363982ad8a2324dc2859d841"
+    },
+    {
+      "image": "kodim04.png",
+      "shape_hw": [
+        768,
+        512
+      ],
+      "psnr": 24.77823257446289,
+      "ms_ssim": 0.8718644335975237,
+      "png_sha256": "4b1689fb14fba0159a595b30ed3d4b776ea0090db6752e6157560a6653ba0f43"
+    },
+    {
+      "image": "kodim03.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 25.785465240478516,
+      "ms_ssim": 0.8993092568086566,
+      "png_sha256": "a6ec12f0d2d7dd45dd3dda9326fefaf6778765c8ffbfece2c785667911e7eb17"
+    },
+    {
+      "image": "kodim02.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 21.497113704681396,
+      "ms_ssim": 0.8149896073968286,
+      "png_sha256": "c8f439b3f5d86325b5ba46a471b5ba7439a4559e5a16e989b99f07f72c41f59c"
+    },
+    {
+      "image": "kodim01.png",
+      "shape_hw": [
+        512,
+        768
+      ],
+      "psnr": 21.211576461791992,
+      "ms_ssim": 0.8398408680945597,
+      "png_sha256": "cfd39ad8681d7007a8c76915c81e500e6e60476061afc59ff363034700e7281d"
+    }
+  ],
+  "original_decoder_and_metrics": true
+}

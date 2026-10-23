@@ -1,0 +1,1140 @@
+diff --git a/comparison_revision_20261022/README.md b/comparison_revision_20261022/README.md
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/README.md
+@@ -0,0 +1,75 @@
++# Kodak 对比图第二版：手臂与橡皮艇文字
++
++用户确认第一张放大其标出的骑手手臂，包含蓝白袖子字样、肩部到手套；第二张在查看文字候选后选择橡皮艇上的粗体英文，重点比较文字边缘清晰度。继续使用 Original、JPEG、RAQ-VAE、MDRQ 四列，上排完整图和红框，下排对应位置的放大图，保留整图 PSNR、MS-SSIM 指标。
++
++## 成品和修改内容
++
++| 场景 | PNG | PDF | 本次关键变化 |
++| --- | --- | --- | --- |
++| 摩托车 `kodim05` | [PNG](../kodim05_comparison_20261022_v2.png) | [PDF](../kodim05_comparison_20261022_v2.pdf) | 将车轮取样区域改为用户标出的手臂和袖子字样 |
++| 橡皮艇 `kodim14` | [PNG](../kodim14_comparison_20261022_v2.png) | [PDF](../kodim14_comparison_20261022_v2.pdf) | 替换上一版灯塔海岸场景，突出船身 SNOWMASS / WHITEWATER 英文 |
++
++文件直接位于 `/workspace/yi/work`，均为 3272 × 1580 像素、300 dpi PNG，并另存对应的无损嵌图 PDF。文件名添加 `_v2`；上一版的两个 PNG、两个 PDF 和审阅记录保留原样。
++
++## 输入和裁剪坐标
++
++- Original：`/workspace/yi/work/Kodak`
++- JPEG：`/workspace/yi/work/JPEG/generated_images/cbr1over1.2`
++- RAQ-VAE：`/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10`
++- MDRQ：`/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10`
++
++源图左上角为原点，坐标格式为 `[x1,y1,x2,y2)`：
++
++- `kodim05.png`：`[352,64,480,192]`，覆盖用户在截图上新增红框标出的手臂。
++- `kodim14.png`：`[508,352,636,480]`，覆盖船身两行粗体英文及相邻边缘。
++
++两处均为 128 × 128 原始像素，每列统一最近邻放大至 672 × 672。完整图以原生 768 × 512 像素贴入画布，仅添加边框和红框。没有对源图调色、锐化、去噪、模糊或生成新细节。
++
++筛选时对比了建筑招牌、帽子字样、飞机字样、船名和橡皮艇文字。用户最终选择橡皮艇英文，比较重点是笔画边缘、对比度及与原图的一致性；其他方法仍能辨认部分文字，未据此声称 OCR 识别率。候选的原始坐标、局部 PSNR 和同倍率拼图保留在下方文件清单中。
++
++## 实际指标
++
++图中显示整图指标。PSNR 为原始 RGB 像素上的 `10*log10(255^2/MSE)`；MS-SSIM 使用现有 `Ours-RAQ/utils/metrics.py::ms_ssim` 的五尺度算法，输入为 RGB 像素除以 255。沿用参考图的 MS-SSIM dB 格式：`-10*log10(1-MS-SSIM)`，原始 0–1 分数也保存于 JSON。
++
++| 图像 | 方法 | 整图 PSNR (dB) | MS-SSIM (0–1) | MS-SSIM (dB) | 红框 PSNR (dB) |
++| --- | --- | ---: | ---: | ---: | ---: |
++| kodim05 手臂 | JPEG | 23.0248 | 0.91777787 | 10.8501 | 21.3856 |
++| kodim05 手臂 | RAQ-VAE | 25.6385 | 0.96347244 | 14.3738 | 24.6287 |
++| kodim05 手臂 | MDRQ | 29.7836 | 0.98492779 | 18.2182 | 27.9795 |
++| kodim14 英文 | JPEG | 25.8108 | 0.93139512 | 11.6364 | 23.7058 |
++| kodim14 英文 | RAQ-VAE | 26.5759 | 0.95766379 | 13.7329 | 24.2605 |
++| kodim14 英文 | MDRQ | 30.9982 | 0.98401272 | 17.9623 | 27.2291 |
++
++MDRQ 的手臂区域 PSNR 比两种基线中较高者高 3.3507 dB；英文区域高 2.9686 dB。整图 PSNR、MS-SSIM 也在这两个样本中领先。完整精度见 [selection_and_metrics.json](selection_and_metrics.json)。
++
++## 生成命令与验证
++
++执行环境为 `/home/yi/.conda/envs/work/bin/python`，工作目录为 `/workspace/yi/work`。
++
++```bash
++python -u /workspace/yi/work/comparison_revision_20261022/revise_comparisons.py --stage inspect > /workspace/yi/work/comparison_revision_20261022/inspection.log 2>&1
++python -u /workspace/yi/work/comparison_revision_20261022/revise_comparisons.py --stage render > /workspace/yi/work/comparison_revision_20261022/generation.log 2>&1
++python -u /workspace/yi/work/comparison_revision_20261022/revise_comparisons.py --stage review
++```
++
++脚本只读复用上一版 `comparison_review_20261022/build_comparisons.py` 中的输入读取、指标和字体辅助函数。生成前后核对全部 96 张源图和上一版 18 个产物的 SHA-256，均未改变。逐像素验证 8 个完整图面板在标注外与输入一致，8 个放大面板与指定源图裁剪一致。两张成品及候选拼图均已人工查看。
++
++## 本次新增文件与审阅记录
++
++本次所有产物均为新增文件，既有工作区改动、上一版文件和 Git 暂存区均未修改。`inspection.log`、`generation.log` 被现有 Git 忽略规则排除，仍通过文件链接与清单保留。其余本次新增文件在 `git status --short --untracked-files=all` 中逐项核对。
++
++- 根目录四个成品：上表两个 `_v2.png` 和两个 `_v2.pdf`。
++- [revise_comparisons.py](revise_comparisons.py)：本次新增的候选检查、排版、指标、像素验证与审阅记录脚本。
++- `README.md`：本次需求、坐标、指标、生成命令与完整文件说明。
++- [source_manifest.json](source_manifest.json)：96 张输入图像的路径与 SHA-256。
++- [previous_artifacts_manifest.json](previous_artifacts_manifest.json)：上一版 18 个文件的路径与 SHA-256。
++- [candidate_regions.json](candidate_regions.json)：11 个候选区域的坐标、局部 PSNR 和优势评分。
++- [candidate_details_1.png](candidate_details_1.png)：手臂、袖子和建筑招牌候选。
++- [candidate_details_2.png](candidate_details_2.png)：橡皮艇、飞机和帽子文字候选。
++- [candidate_details_3.png](candidate_details_3.png)：船名候选及最终橡皮艇文字取样。
++- [selection_and_metrics.json](selection_and_metrics.json)：最终坐标、完整指标与指标/辅助脚本来源哈希。
++- [verification.json](verification.json)：输入和旧产物不变、面板像素一致及输出哈希。
++- [inspection.log](inspection.log)、[generation.log](generation.log)：实际检查及生成日志。
++- [git_status_before.txt](git_status_before.txt)、[git_status_after.txt](git_status_after.txt)：本次操作前后的工作区状态。
++- [changes.patch](changes.patch)：所有新增脚本、说明和 JSON（除产物清单本身）的实际完整新增补丁。
++- [artifacts_manifest.json](artifacts_manifest.json)：本次新增文件清单、大小和 SHA-256；清单本身通过此链接提供完整内容。
+diff --git a/comparison_revision_20261022/candidate_regions.json b/comparison_revision_20261022/candidate_regions.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/candidate_regions.json
+@@ -0,0 +1,178 @@
++[
++  {
++    "image": "kodim05.png",
++    "label": "arm",
++    "roi_xyxy": [
++      352,
++      64,
++      480,
++      192
++    ],
++    "roi_psnr_db": {
++      "JPEG": 21.385608849451106,
++      "RAQ-VAE": 24.628735648129393,
++      "MDRQ": 27.979464361825105
++    },
++    "minimum_MDRQ_advantage_db": 3.3507287136957125
++  },
++  {
++    "image": "kodim05.png",
++    "label": "sleeve lettering",
++    "roi_xyxy": [
++      360,
++      88,
++      456,
++      184
++    ],
++    "roi_psnr_db": {
++      "JPEG": 21.27117082777842,
++      "RAQ-VAE": 24.999933689568632,
++      "MDRQ": 27.88500039837397
++    },
++    "minimum_MDRQ_advantage_db": 2.8850667088053363
++  },
++  {
++    "image": "kodim08.png",
++    "label": "left sign",
++    "roi_xyxy": [
++      544,
++      296,
++      672,
++      424
++    ],
++    "roi_psnr_db": {
++      "JPEG": 22.515177245495046,
++      "RAQ-VAE": 25.00004531514235,
++      "MDRQ": 27.956366083408405
++    },
++    "minimum_MDRQ_advantage_db": 2.9563207682660533
++  },
++  {
++    "image": "kodim08.png",
++    "label": "right sign",
++    "roi_xyxy": [
++      632,
++      280,
++      760,
++      408
++    ],
++    "roi_psnr_db": {
++      "JPEG": 22.004965181680916,
++      "RAQ-VAE": 25.90105349230837,
++      "MDRQ": 28.49952642423652
++    },
++    "minimum_MDRQ_advantage_db": 2.59847293192815
++  },
++  {
++    "image": "kodim14.png",
++    "label": "raft lettering",
++    "roi_xyxy": [
++      504,
++      368,
++      648,
++      448
++    ],
++    "roi_psnr_db": {
++      "JPEG": 24.2115348887748,
++      "RAQ-VAE": 23.97321936805791,
++      "MDRQ": 26.950608108104895
++    },
++    "minimum_MDRQ_advantage_db": 2.739073219330095
++  },
++  {
++    "image": "kodim14.png",
++    "label": "raft square",
++    "roi_xyxy": [
++      504,
++      320,
++      648,
++      464
++    ],
++    "roi_psnr_db": {
++      "JPEG": 23.858114107617432,
++      "RAQ-VAE": 23.69911499463855,
++      "MDRQ": 27.506593699198124
++    },
++    "minimum_MDRQ_advantage_db": 3.648479591580692
++  },
++  {
++    "image": "kodim20.png",
++    "label": "aircraft lettering",
++    "roi_xyxy": [
++      224,
++      232,
++      368,
++      376
++    ],
++    "roi_psnr_db": {
++      "JPEG": 29.024993727492728,
++      "RAQ-VAE": 26.835109184654513,
++      "MDRQ": 29.06326796990787
++    },
++    "minimum_MDRQ_advantage_db": 0.03827424241514166
++  },
++  {
++    "image": "kodim03.png",
++    "label": "hat lettering",
++    "roi_xyxy": [
++      104,
++      112,
++      248,
++      256
++    ],
++    "roi_psnr_db": {
++      "JPEG": 32.158633417489355,
++      "RAQ-VAE": 19.920740171752037,
++      "MDRQ": 25.12505262376463
++    },
++    "minimum_MDRQ_advantage_db": -7.033580793724724
++  },
++  {
++    "image": "kodim06.png",
++    "label": "boat name square",
++    "roi_xyxy": [
++      264,
++      304,
++      408,
++      448
++    ],
++    "roi_psnr_db": {
++      "JPEG": 26.830365435581378,
++      "RAQ-VAE": 26.584134839376222,
++      "MDRQ": 32.4151181465156
++    },
++    "minimum_MDRQ_advantage_db": 5.584752710934225
++  },
++  {
++    "image": "kodim06.png",
++    "label": "boat name tight",
++    "roi_xyxy": [
++      280,
++      332,
++      408,
++      396
++    ],
++    "roi_psnr_db": {
++      "JPEG": 25.886093900023592,
++      "RAQ-VAE": 27.30763172128078,
++      "MDRQ": 32.07013347040617
++    },
++    "minimum_MDRQ_advantage_db": 4.762501749125388
++  },
++  {
++    "image": "kodim14.png",
++    "label": "selected raft text square",
++    "roi_xyxy": [
++      508,
++      352,
++      636,
++      480
++    ],
++    "roi_psnr_db": {
++      "JPEG": 23.705792525709096,
++      "RAQ-VAE": 24.26052153872837,
++      "MDRQ": 27.229132732270244
++    },
++    "minimum_MDRQ_advantage_db": 2.968611193541875
++  }
++]
+diff --git a/comparison_revision_20261022/previous_artifacts_manifest.json b/comparison_revision_20261022/previous_artifacts_manifest.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/previous_artifacts_manifest.json
+@@ -0,0 +1,74 @@
++[
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/README.md",
++    "sha256": "4cbfaea11206b29128a7023f16f7f24e277d408b381b599528aa1fccf9e5d574"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/all_image_psnr.csv",
++    "sha256": "80cd45935ad7aa41dd71a21d67b677b9d5e5244b3ae98a2c1d36b034449555b8"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/analysis.log",
++    "sha256": "bef8abcb11190cb12c70bba4ca79311f985d8bfb8c0dc3ec9787de8d3ef00c21"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/artifacts_manifest.json",
++    "sha256": "3e86651bd5e6575652924f945f2ea0218f085fc9ed8b2737851f627d02cc7081"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/build_comparisons.py",
++    "sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/changes.patch",
++    "sha256": "b81047c6741176339a00c4604e6a0fb14e931665db9882aac8c40c05e4ac71e4"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/detail_candidates.png",
++    "sha256": "00245e3e82de585f378b284e83b22b68a9b428de3f49fc820b9f4c28c8fcac1c"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/generation.log",
++    "sha256": "5e97e5a8e20c3d994d9c8e669b736061979199d2baf4cecb48d8704ec7ffbb0d"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/git_status_after.txt",
++    "sha256": "712726aef9e4b2f6a7280ab0521fee3ebe2e5b949fe83353dff24666639fe54a"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/git_status_before.txt",
++    "sha256": "eb4b4b8b29463c841a740c09d8d8c396db8c89545b97bca93159c03b8f0e8ae0"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/roi_candidates.json",
++    "sha256": "a81c04c0a1304c8ba051817147d7d444477396da6fed7eab8c41dd6dcb8f697e"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/selection_and_metrics.json",
++    "sha256": "8e1b4b2985ea93ba1cf63f62f14fd56ef872301c6a62bb3dd4ffc70d68529f39"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/source_manifest.json",
++    "sha256": "e10f739d436a55696926654e3186c160a270cb961e9dc5b0e09e755867357c45"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/verification.json",
++    "sha256": "31419f42a27bbad6fe9298e905649824971251368346c163a96659baaba35e12"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
++    "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
++    "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
++  },
++  {
++    "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
++    "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
++  },
++  {
++    "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
++    "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
++  }
++]
+diff --git a/comparison_revision_20261022/revise_comparisons.py b/comparison_revision_20261022/revise_comparisons.py
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/revise_comparisons.py
+@@ -0,0 +1,274 @@
++#!/usr/bin/env python3
++"""Inspect arm and lettering crops, then assemble source-faithful revised comparisons."""
++
++import argparse
++import difflib
++import hashlib
++import importlib.util
++import json
++import math
++import subprocess
++import sys
++from pathlib import Path
++
++import numpy as np
++from PIL import Image, ImageDraw
++
++sys.dont_write_bytecode = True
++AUDIT = Path(__file__).resolve().parent
++ROOT = AUDIT.parent
++PREVIOUS = ROOT / "comparison_review_20261022/build_comparisons.py"
++spec = importlib.util.spec_from_file_location("previous_comparison_helpers", PREVIOUS)
++previous = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(previous)
++METHODS = previous.METHODS
++CANDIDATES = [
++    ("kodim05.png", "arm", [352, 64, 480, 192]),
++    ("kodim05.png", "sleeve lettering", [360, 88, 456, 184]),
++    ("kodim08.png", "left sign", [544, 296, 672, 424]),
++    ("kodim08.png", "right sign", [632, 280, 760, 408]),
++    ("kodim14.png", "raft lettering", [504, 368, 648, 448]),
++    ("kodim14.png", "raft square", [504, 320, 648, 464]),
++    ("kodim20.png", "aircraft lettering", [224, 232, 368, 376]),
++    ("kodim03.png", "hat lettering", [104, 112, 248, 256]),
++    ("kodim06.png", "boat name square", [264, 304, 408, 448]),
++    ("kodim06.png", "boat name tight", [280, 332, 408, 396]),
++    ("kodim14.png", "selected raft text square", [508, 352, 636, 480]),
++]
++SELECTIONS = {
++    "kodim05.png": {
++        "roi_xyxy": [352, 64, 480, 192],
++        "reason": "User-marked rider's arm, blue-white sleeve lettering, shoulder and glove.",
++    },
++    "kodim14.png": {
++        "roi_xyxy": [508, 352, 636, 480],
++        "reason": "User-selected raft lettering: SNOWMASS / WHITEWATER, emphasizing the fidelity of character edges.",
++    },
++}
++
++
++def write_json(path, value):
++    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++
++
++def verify_snapshot(path):
++    records = json.loads(path.read_text(encoding="utf-8"))
++    changed = [record["path"] for record in records if previous.sha256(Path(record["path"])) != record["sha256"]]
++    if changed:
++        raise ValueError(f"Changed input or prior artifact: {changed}")
++    return len(records)
++
++
++def inspect():
++    for name in ("source_manifest.json", "previous_artifacts_manifest.json"):
++        if (AUDIT / name).exists():
++            verify_snapshot(AUDIT / name)
++    sources = []
++    inventories = {method: sorted(p.name for p in folder.glob("*.png"))
++                   for method, folder in previous.DIRECTORIES.items()}
++    if len(inventories["Original"]) != 24 or any(names != inventories["Original"] for names in inventories.values()):
++        raise ValueError("Expected 24 matching source images in all four directories")
++    for method, directory in previous.DIRECTORIES.items():
++        for name in inventories[method]:
++            path = directory / name
++            sources.append({"path": str(path), "sha256": previous.sha256(path)})
++    write_json(AUDIT / "source_manifest.json", sources)
++    write_json(AUDIT / "previous_artifacts_manifest.json", [
++        {"path": str(path), "sha256": previous.sha256(path)}
++        for path in sorted((ROOT / "comparison_review_20261022").rglob("*")) if path.is_file()
++    ] + [{"path": str(path), "sha256": previous.sha256(path)}
++         for path in sorted(ROOT.glob("kodim*_comparison_20261022.*"))])
++    records = []
++    for page_index in range(math.ceil(len(CANDIDATES) / 4)):
++        page_candidates = CANDIDATES[page_index * 4:(page_index + 1) * 4]
++        canvas = Image.new("RGB", (1600, 400 * len(page_candidates)), "white")
++        draw = ImageDraw.Draw(canvas)
++        for row_index, (name, label, roi) in enumerate(page_candidates):
++            images = previous.read_images(name)
++            metrics = {}
++            for column, method in enumerate(METHODS):
++                crop = images[method].crop(roi)
++                scale = min(384 / crop.width, 332 / crop.height)
++                scaled = crop.resize((round(crop.width * scale), round(crop.height * scale)), Image.Resampling.NEAREST)
++                left = column * 400 + (400 - scaled.width) // 2
++                top = row_index * 400 + 40 + (332 - scaled.height) // 2
++                previous.centered(draw, column * 400 + 200, row_index * 400 + 22, f"{name[:7]} | {method}", 22)
++                canvas.paste(scaled, (left, top))
++                if method != "Original":
++                    metrics[method] = previous.psnr(np.asarray(images["Original"].crop(roi)), np.asarray(crop))
++            previous.centered(draw, 800, row_index * 400 + 385, f"{label} {roi}", 19)
++            records.append({"image": name, "label": label, "roi_xyxy": roi, "roi_psnr_db": metrics,
++                            "minimum_MDRQ_advantage_db": metrics["MDRQ"] - max(metrics["JPEG"], metrics["RAQ-VAE"])})
++        path = AUDIT / f"candidate_details_{page_index + 1}.png"
++        canvas.save(path)
++        print(f"PREVIEW {path}", flush=True)
++    write_json(AUDIT / "candidate_regions.json", records)
++    for row in records:
++        print(json.dumps(row), flush=True)
++
++
++def render():
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++
++    source_count = verify_snapshot(AUDIT / "source_manifest.json")
++    prior_count = verify_snapshot(AUDIT / "previous_artifacts_manifest.json")
++    ms_ssim, metric_source = previous.metric_function()
++    selections, outputs = [], []
++    verified_panels = 0
++    for name, selection in SELECTIONS.items():
++        images = previous.read_images(name)
++        arrays = {method: np.asarray(image) for method, image in images.items()}
++        if any(image.size != (768, 512) for image in images.values()):
++            raise ValueError("Expected native 768 x 512 RGB images")
++        roi = selection["roi_xyxy"]
++        x1, y1, x2, y2 = roi
++        if x2 - x1 != 128 or y2 - y1 != 128:
++            raise ValueError("Both revisions use identical 128 x 128 crop dimensions")
++        metrics = {}
++        for method in METHODS[1:]:
++            score = float(ms_ssim(arrays["Original"] / 255.0, arrays[method] / 255.0))
++            if not 0 < score < 1:
++                raise ValueError(f"Invalid MS-SSIM: {score}")
++            metrics[method] = {
++                "psnr_db": previous.psnr(arrays["Original"], arrays[method]),
++                "ms_ssim": score,
++                "ms_ssim_db": -10 * math.log10(1 - score),
++                "roi_psnr_db": previous.psnr(arrays["Original"][y1:y2, x1:x2], arrays[method][y1:y2, x1:x2]),
++            }
++            print(f"METRIC {name} {method}: {json.dumps(metrics[method])}", flush=True)
++        for key in ("psnr_db", "ms_ssim", "roi_psnr_db"):
++            if any(metrics["MDRQ"][key] <= metrics[method][key] for method in ("JPEG", "RAQ-VAE")):
++                raise ValueError(f"MDRQ does not lead the selected example on {key}")
++        canvas = Image.new("RGB", (3272, 1580), "white")
++        draw = ImageDraw.Draw(canvas)
++        crop_checks = []
++        for column, method in enumerate(METHODS):
++            left, top = 40 + column * 808, 150
++            previous.centered(draw, left + 384, 103, method, 44)
++            canvas.paste(images[method], (left, top))
++            draw.rectangle((left, top, left + 767, top + 511), outline="#666666", width=2)
++            draw.rectangle((left + x1, top + y1, left + x2 - 1, top + y2 - 1), outline="#ff2020", width=4)
++            crop = images[method].crop(roi).resize((672, 672), Image.Resampling.NEAREST)
++            canvas.paste(crop, (left + 48, 770))
++            crop_checks.append((left + 48, np.asarray(crop)))
++            if method != "Original":
++                values = metrics[method]
++                text = f"PSNR={values['psnr_db']:.2f} dB | MS-SSIM={values['ms_ssim_db']:.2f} dB"
++                previous.centered(draw, left + 384, 1521, text, 31)
++        png = ROOT / f"{Path(name).stem}_comparison_20261022_v2.png"
++        pdf = png.with_suffix(".pdf")
++        canvas.save(png, dpi=(300, 300))
++        figure = Figure(figsize=(3272 / 300, 1580 / 300), dpi=300)
++        FigureCanvasAgg(figure)
++        axes = figure.add_axes((0, 0, 1, 1))
++        axes.imshow(np.asarray(canvas), interpolation="none")
++        axes.set_axis_off()
++        figure.savefig(pdf, dpi=300, metadata={"Title": f"Revised {name}: arm or lettering detail",
++                                              "Creator": "revise_comparisons.py"})
++        with Image.open(png) as saved:
++            assert saved.size == (3272, 1580)
++            for left, expected in crop_checks:
++                actual = np.asarray(saved.crop((left, 770, left + 672, 1442)))
++                if not np.array_equal(expected, actual):
++                    raise AssertionError("Zoom panel changed source-derived pixels")
++                verified_panels += 1
++            for column, method in enumerate(METHODS):
++                left = 40 + column * 808
++                actual = np.asarray(saved.crop((left, 150, left + 768, 662)))
++                mask = np.ones((512, 768), dtype=bool)
++                mask[:2] = mask[-2:] = False
++                mask[:, :2] = mask[:, -2:] = False
++                mask[y1:y2, x1:x2] = False
++                if not np.array_equal(actual[mask], arrays[method][mask]):
++                    raise AssertionError("Full-image pixels changed outside annotations")
++                verified_panels += 1
++        for path in (png, pdf):
++            outputs.append({"path": str(path), "bytes": path.stat().st_size, "sha256": previous.sha256(path)})
++        selections.append({"image": name, **selection, "metrics": metrics,
++                           "figure_png": str(png), "figure_pdf": str(pdf)})
++        print(f"SAVED {png}\nSAVED {pdf}", flush=True)
++    verify_snapshot(AUDIT / "source_manifest.json")
++    verify_snapshot(AUDIT / "previous_artifacts_manifest.json")
++    write_json(AUDIT / "selection_and_metrics.json", {
++        "revision": "v2, 2026-10-22; arm and user-selected raft lettering",
++        "metric_source": str(metric_source), "metric_source_sha256": previous.sha256(metric_source),
++        "helper_source": str(PREVIOUS), "helper_source_sha256": previous.sha256(PREVIOUS),
++        "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
++        "ms_ssim_definition": "Existing Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1], five scales",
++        "ms_ssim_db_definition": "-10*log10(1-MS-SSIM); untransformed score also retained",
++        "interpretation": "Selected illustrative examples; lettering comparison concerns edge and shape fidelity, not an OCR accuracy claim",
++        "selections": selections,
++    })
++    write_json(AUDIT / "verification.json", {
++        "source_images_verified_unchanged": source_count,
++        "previous_artifacts_verified_unchanged": prior_count,
++        "panels_verified_against_source_pixels": verified_panels,
++        "MDRQ_leads_selected_full_image_PSNR_MS_SSIM_and_ROI_PSNR": True,
++        "crop_size_wh": [128, 128], "zoom_size_wh": [672, 672],
++        "zoom_interpolation": "nearest neighbor, identical across all four methods",
++        "output_png_size_wh": [3272, 1580], "outputs": outputs,
++    })
++    print(f"VERIFIED {source_count} source images, {prior_count} prior artifacts unchanged; {verified_panels} panels.", flush=True)
++
++
++def review():
++    patch_path, status_path, manifest_path = (AUDIT / name for name in ("changes.patch", "git_status_after.txt", "artifacts_manifest.json"))
++    for path in (patch_path, status_path, manifest_path):
++        path.touch(exist_ok=True)
++    status = subprocess.run(["git", "-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
++                            cwd=ROOT, capture_output=True, text=True, check=True).stdout
++    status_path.write_text(status, encoding="utf-8")
++    outputs = [ROOT / f"{Path(name).stem}_comparison_20261022_v2{extension}"
++               for name in SELECTIONS for extension in (".png", ".pdf")]
++    paths = sorted([path for path in AUDIT.rglob("*") if path.is_file()] + outputs)
++    owned = {str(path.relative_to(ROOT)) for path in paths}
++    before = (AUDIT / "git_status_before.txt").read_text(encoding="utf-8").splitlines()
++    if any(line[3:] in owned for line in before):
++        raise ValueError("A revision output was present before this task")
++    missing = owned - {line[3:] for line in status.splitlines() if line.startswith("?? ")}
++    ignored = set()
++    if missing:
++        result = subprocess.run(["git", "check-ignore", "--stdin"], cwd=ROOT,
++                                input="\n".join(sorted(missing)) + "\n", capture_output=True, text=True)
++        if result.returncode not in (0, 1):
++            raise ValueError(result.stderr)
++        ignored = set(result.stdout.splitlines())
++        if missing - ignored:
++            raise ValueError(f"Missing new files from Git status: {missing - ignored}")
++    tracked_diff = subprocess.run(["git", "diff", "--", *sorted(owned)], cwd=ROOT,
++                                  capture_output=True, text=True, check=True).stdout
++    if tracked_diff:
++        raise ValueError("Unexpected tracked changes in revision outputs")
++    patch = []
++    for path in paths:
++        if path.suffix not in (".py", ".md", ".json") or path == manifest_path:
++            continue
++        relative = str(path.relative_to(ROOT))
++        patch.append(f"diff --git a/{relative} b/{relative}\nnew file mode 100644\n")
++        patch.extend(difflib.unified_diff([], path.read_text(encoding="utf-8").splitlines(keepends=True),
++                                           fromfile="/dev/null", tofile=f"b/{relative}"))
++    patch_path.write_text("".join(patch), encoding="utf-8")
++    outside_before = {line for line in before if line[3:] not in owned}
++    outside_after = {line for line in status.splitlines() if line[3:] not in owned}
++    write_json(manifest_path, {
++        "command": f"python -u {__file__} --stage review",
++        "scope": "New v2 outputs only; all previous figures and review records remain unchanged",
++        "new_untracked_outputs": sorted(owned - ignored), "new_outputs_ignored_by_git": sorted(ignored),
++        "outside_scope_status_added": sorted(outside_after - outside_before),
++        "outside_scope_status_removed": sorted(outside_before - outside_after),
++        "patch_covers": "Full new .py/.md/.json contents except this manifest; logs and images are separately linked",
++        "files": [{"path": str(path), "bytes": path.stat().st_size, "sha256": previous.sha256(path)}
++                  for path in paths if path != manifest_path], "manifest_self": str(manifest_path),
++    })
++    print(f"REVIEW {len(paths)} new files: {len(owned - ignored)} untracked, {len(ignored)} ignored logs.", flush=True)
++    print(f"OUTSIDE SCOPE status additions={len(outside_after - outside_before)}, removals={len(outside_before - outside_after)}", flush=True)
++    print(f"PATCH {patch_path}\nMANIFEST {manifest_path}", flush=True)
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--stage", choices=("inspect", "render", "review"), default="inspect")
++    args = parser.parse_args()
++    print(f"RUN python {__file__} --stage {args.stage}", flush=True)
++    {"inspect": inspect, "render": render, "review": review}[args.stage]()
+diff --git a/comparison_revision_20261022/selection_and_metrics.json b/comparison_revision_20261022/selection_and_metrics.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/selection_and_metrics.json
+@@ -0,0 +1,77 @@
++{
++  "revision": "v2, 2026-10-22; arm and user-selected raft lettering",
++  "metric_source": "/workspace/yi/work/Ours-RAQ/utils/metrics.py",
++  "metric_source_sha256": "2b76ae2b6f8aa022430a56eaad4a4d41396e0ece09f3f54a4e991e311a4c0875",
++  "helper_source": "/workspace/yi/work/comparison_review_20261022/build_comparisons.py",
++  "helper_source_sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571",
++  "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
++  "ms_ssim_definition": "Existing Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1], five scales",
++  "ms_ssim_db_definition": "-10*log10(1-MS-SSIM); untransformed score also retained",
++  "interpretation": "Selected illustrative examples; lettering comparison concerns edge and shape fidelity, not an OCR accuracy claim",
++  "selections": [
++    {
++      "image": "kodim05.png",
++      "roi_xyxy": [
++        352,
++        64,
++        480,
++        192
++      ],
++      "reason": "User-marked rider's arm, blue-white sleeve lettering, shoulder and glove.",
++      "metrics": {
++        "JPEG": {
++          "psnr_db": 23.02479517258046,
++          "ms_ssim": 0.9177778711640294,
++          "ms_ssim_db": 10.850112829710666,
++          "roi_psnr_db": 21.385608849451106
++        },
++        "RAQ-VAE": {
++          "psnr_db": 25.638485015365138,
++          "ms_ssim": 0.9634724448150147,
++          "ms_ssim_db": 14.37379394451151,
++          "roi_psnr_db": 24.628735648129393
++        },
++        "MDRQ": {
++          "psnr_db": 29.78358727375123,
++          "ms_ssim": 0.9849277943732435,
++          "ms_ssim_db": 18.218231895275444,
++          "roi_psnr_db": 27.979464361825105
++        }
++      },
++      "figure_png": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
++      "figure_pdf": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf"
++    },
++    {
++      "image": "kodim14.png",
++      "roi_xyxy": [
++        508,
++        352,
++        636,
++        480
++      ],
++      "reason": "User-selected raft lettering: SNOWMASS / WHITEWATER, emphasizing the fidelity of character edges.",
++      "metrics": {
++        "JPEG": {
++          "psnr_db": 25.81080828706397,
++          "ms_ssim": 0.9313951182695053,
++          "ms_ssim_db": 11.636449800194331,
++          "roi_psnr_db": 23.705792525709096
++        },
++        "RAQ-VAE": {
++          "psnr_db": 26.57589560694745,
++          "ms_ssim": 0.9576637943435523,
++          "ms_ssim_db": 13.732880678165852,
++          "roi_psnr_db": 24.26052153872837
++        },
++        "MDRQ": {
++          "psnr_db": 30.99817846655041,
++          "ms_ssim": 0.9840127215568205,
++          "ms_ssim_db": 17.962254610634886,
++          "roi_psnr_db": 27.229132732270244
++        }
++      },
++      "figure_png": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
++      "figure_pdf": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf"
++    }
++  ]
++}
+diff --git a/comparison_revision_20261022/source_manifest.json b/comparison_revision_20261022/source_manifest.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/source_manifest.json
+@@ -0,0 +1,386 @@
++[
++  {
++    "path": "/workspace/yi/work/Kodak/kodim01.png",
++    "sha256": "a56e27cbf5f843c048b6af1d6e090760e9c92fadba88b7dee0205918a37523bd"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim02.png",
++    "sha256": "4f4b74a79237e311d72cad958237b5f7088d8bce1c82305ebefe1a70e3022dfd"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim03.png",
++    "sha256": "e25ca1ff2f0c0cb5fdfd5f9b0a0bb21ac4c3de3c84a67f35b09a85d3306249db"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim04.png",
++    "sha256": "e3b946107c5d3441c022f678d0c3caf1e224d81b1604ba840a4f88e562de61aa"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim05.png",
++    "sha256": "10349e963c5c813d327852f82c1795fa4148d69fedffc4c589bee458e3ac3d53"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim06.png",
++    "sha256": "363510303b715d4cbc384e1ce227e466b613a09e1b71ae985882bf8e7fbd9b18"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim07.png",
++    "sha256": "b77d3f006f42414bb242222e0482e750c0fb9e5ee8d4bed2f6f11c5605fe54a4"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim08.png",
++    "sha256": "ba23983c76b4832ee0e8af0592664756841a16779acd69f792e268fb6d13d6e7"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim09.png",
++    "sha256": "6a4361c2fc194feb4edaa9f9a4a0620fb9943e460ac7fdf037fb0f6dd6607a7d"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim10.png",
++    "sha256": "9dfb70f5867c29ff9ed6313683f19b3d867849e40fbc0c4c54a4a89df341cf23"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim11.png",
++    "sha256": "7936814b58b5387fce2e4e2488b4ec830dadd95fa9520f358ddb30990b50f2b6"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim12.png",
++    "sha256": "d78c37c2f04f23761ed2367dd77e2db584ddd4c3950833fecf89f199a8126980"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim13.png",
++    "sha256": "bc34a3ce58dea09dce1704c997171602de90cb34d0c8503a988b77f473d39b08"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim14.png",
++    "sha256": "55a94550ff18f3246c4074fd32b77b0c74447c26b6ad274d564d999c0450ba6e"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim15.png",
++    "sha256": "7538cbb80cb9103606c48b806eae57d56c885c7f90b9b3be70a41160f9cbb683"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim16.png",
++    "sha256": "a89c7268ccd4718ba424a99fc4643c572cf692ca6eae887185ceb4e9f11d2e54"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim17.png",
++    "sha256": "37afcc89fbdcb76d9518e04b2fc011027e2f4cd14b3b2f83cefd721641a47c5b"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim18.png",
++    "sha256": "1a9258c365988961d87a0598725b609139c303ad48a5aad6c503c3b1a87849aa"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim19.png",
++    "sha256": "b7450b264b1b0a411390d8931b112c27905a992520fc90569dc4b920aa32bbdc"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim20.png",
++    "sha256": "3b46c71e3b92a563820ba32936be8330c586c41f938efd94be938386aae4328a"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim21.png",
++    "sha256": "ac958597c82073f6bb65129c68f72b651db5b9efd82e11547d07350214bc268b"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim22.png",
++    "sha256": "1cee58eb1f2d9c7ebb254d208a03c783ce6cf2c4d8c2cf45e235dd23b4ce1b29"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim23.png",
++    "sha256": "e3111a2fd4da24af15d6459ef9eacfe54106b38e27b4a21821b75c3f5d2d5baf"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim24.png",
++    "sha256": "1071c68372cc5a01435c2c225a5cf7d4bb803846ec08bb6b3d6721b156d7cb96"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim01.png",
++    "sha256": "e9d508b0a783e0e885567a0b0273ee0b91baf8de0745179a3aca13a0e82b9feb"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim02.png",
++    "sha256": "9d1ba3bfe5455e9e07c57da1f5322d42c8769415aee9610e0c726f24dc6e976c"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim03.png",
++    "sha256": "e84f3e7249ebf66db387edc2c10cef77b5c85b0ed51f16fce1d0be128382535e"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim04.png",
++    "sha256": "fa46578612aa245cb4896987ee4557e694ab4f897124015473b000922687af7b"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim05.png",
++    "sha256": "35ef63f20d757dad46b8832ed8a5a431227e7db9ed9c2e24211414eb278545c9"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim06.png",
++    "sha256": "f90814d71f07c1364f6a9a6ec0b64e92080b6837e334bbfa0d5fceeb52abe367"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim07.png",
++    "sha256": "5510f72643867ddc4ddda95e7a051f96a933e869f1ee41eac2f8a09a737acb67"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim08.png",
++    "sha256": "d3e378c723e72e8936ad202574cd9fed985818ea6ae894101b3314ae08179901"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim09.png",
++    "sha256": "1246c5756bd99a5405a7f2cac7637f81caaacb7d7d63206624d9fc3210e2a6c0"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim10.png",
++    "sha256": "e37d3889f241ea13bf5c8b3a96a0b00bd35c28b472ade127e75394aba996f453"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim11.png",
++    "sha256": "64242056cd745c26ebae9f863d875e7a167c4999cc0a9290ad77e162e5e3e262"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim12.png",
++    "sha256": "e59a4cfdae1fb3aab164f8f982860fc6abd4d6c92905fad2c3864c084b86f0ec"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim13.png",
++    "sha256": "1614013257f72594f01b4bbc208ea0ed3189382a68f439933497c050557adbb4"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim14.png",
++    "sha256": "cb0662ca621ecd42cc7a3c798fcfa1f4d8e9cabf0613b7a81be7c0649fc39e0d"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim15.png",
++    "sha256": "b6bf46f41952bd2d7f7fc6a659557f95b6969bd8d5ad9a21a239936846e125a4"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim16.png",
++    "sha256": "030b85a856ecbc6be795fb73793b35e408402e8ca4ce1015db32351d6b2ebc88"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim17.png",
++    "sha256": "25500eba55bfaf4bca45ce9bc233694329e9ab7f1c0a5461f4b48ca8bb1ee6a6"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim18.png",
++    "sha256": "7e77b11f2d3175a003b69530c2927fc4f737920ae795f4dcf0c2624ae66dd216"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim19.png",
++    "sha256": "400d58311a68faef8785838677560b31c4e66f6d226ab4de66af8144c09c993b"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim20.png",
++    "sha256": "2f11ac53bea603e1e132b6c6a2166a73a52a41367cc078350eba03df24047af5"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim21.png",
++    "sha256": "4aa44d2b11777d599b79fef7b0c4cda9b568b3a593a171f0123914568b3b5ed8"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim22.png",
++    "sha256": "c753373ad2d6d23cc1665ca5a28c4211cd375ba94458ec27e0aa217c390ff350"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim23.png",
++    "sha256": "41c9c1306f7b75d43e79bb80dd2de28d5269b6169fef74f708ad10e66c34e4cf"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim24.png",
++    "sha256": "eaf58317299f4c36c8aecfdb565ee7e14199342be274a7531d3a3b6ac3334cf0"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim01.png",
++    "sha256": "0d2a7873ddb460cdcbd65dc652bb4f805704ad0db5f766ab8c2e654e8b75cff3"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim02.png",
++    "sha256": "7f098adbbcd4054cd7dc3972fedd0e3537b05bec92be9afea28fd09d9acd9477"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim03.png",
++    "sha256": "4392a50aba00f6be2f50e60f021f71a752fe58f3a18d30695f6f7984757e1748"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim04.png",
++    "sha256": "8de03255487d794d6104aef8a54d685552cbfe977d9ab9636cd594574e9772a2"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim05.png",
++    "sha256": "02780a5679bde17c7c3ad84f8ea7d652757906fe28dc160b92964f6f4a446c81"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim06.png",
++    "sha256": "231ac3e08f2098d21b5f044b1a931a853bd0e4201cff61e5481e280f50b54456"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim07.png",
++    "sha256": "9fc2ab77134c0a83eeb6f8832170b804664af2d6c30c67c31f45b5f3125f6437"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim08.png",
++    "sha256": "71ab1e319836903bfe989868702a01440dd54dbf121b1439a14bb5df698660ca"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim09.png",
++    "sha256": "a8d9565b2a274c1e969e92d9fd23b4f45fb30afea062075d27b820b52d602a76"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim10.png",
++    "sha256": "afc2c745dcc931f69def8b44a4c73b7992bcf3d7e2f003d2b5847fd586416753"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim11.png",
++    "sha256": "372b02b450a2ccda8946ffb65d6fd74cfe0ecb82277d6ac0cefb81af7ff13065"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim12.png",
++    "sha256": "615da51fbc1f9354264cce7877a1b01e096a9fe66a250b0e84ea54e3e2d604be"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim13.png",
++    "sha256": "8c43150d6890c6330d41dab2a373d6b783b26e386f0a5ae3ea5fa4f29a3f3102"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim14.png",
++    "sha256": "ac9fc1c80174ca9339ccc577ccb0bdad52326f3367a3817fcc764a313b945ac9"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim15.png",
++    "sha256": "4d64f0ca0d66a2ded6a84eef9d3e316cc1059ef5e0e58033805aa21b5268d724"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim16.png",
++    "sha256": "283eefc30e850276880689a4782216387c3155e36f024910545e729f71d12ad0"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim17.png",
++    "sha256": "f66f3e8e9fc1c2184d3ec8393eb659410f34671160485bdb5327433f8ad1b166"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim18.png",
++    "sha256": "9ac73fcb9f5b04c56846f50e25f64b3168dddb96729b8411b89dcddf0a8e2708"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim19.png",
++    "sha256": "ac0b53c29cc0ce442fa22de16ff6d4b72069ce4675c03095fa2c8f56ba572548"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim20.png",
++    "sha256": "891dd16199994e22bc70052233a11d554baff229a4c0f4996613be4b215faddc"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim21.png",
++    "sha256": "f5bc465c0b4c75c66bd8d74fb02e7ca95fd3cd3651540b18d4da1b118cb65a67"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim22.png",
++    "sha256": "abeddb65511ace5b68a483444e165e0cde9a3ea3ee7a559ac49be11ddab43c4f"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim23.png",
++    "sha256": "0113aa942505875581274a2c2e5b75cd4a2e48ae3a4abcf06c82b9145a5056df"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim24.png",
++    "sha256": "525a4e23001a30a70757211f17a60d7f300f0512e7c40022d8af340d5708c7ba"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim01.png",
++    "sha256": "e63f342efa7ec7147a7a32963e0a92e4d387167e75604360c8a8f28cb597fd13"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim02.png",
++    "sha256": "0a7670a4666f0be4a90f5d646a3767a775dcfb48709b4645bdb647e72d433cb9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim03.png",
++    "sha256": "edabff956ea578371b9897bb8779d9248e525b31b584f771179c8d1e2b85ab5b"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim04.png",
++    "sha256": "a9e805457e1a7d56683dee0a1c8e5235b86879cb1f13234d099e61fd2d96a975"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim05.png",
++    "sha256": "68b957fb29afa54b2bdf191573fd530803a4a19880e0eceb9d254d995739628f"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim06.png",
++    "sha256": "566720de5b54a173a322de691a5d7a6450f4ec1a8410ae0ed004aa5a0a6face5"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim07.png",
++    "sha256": "4778697782e5708657a2ab9bba03a669ad9c3c1f70e2249f1dec2f36211ad81e"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim08.png",
++    "sha256": "8918375340b508e1c3f8a1d66a9e030521fdbd097e9b3f90f3c7c009fb810ca9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim09.png",
++    "sha256": "a037a0b9e21b23b944f21dd773b5a94653d998fd75ab6fade20f3bc61eb37c66"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim10.png",
++    "sha256": "006785260dffe148d4ffecc36e03f2700ced9158fbec3a15d46a020e168079f9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim11.png",
++    "sha256": "d8310b6f646397883ab633e023b865ffefb4dd739bbd7d3b9c014ad4ed6ef7e6"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim12.png",
++    "sha256": "a4211fd725ab0879cf4d3aff9659be5b1e0caeaa34c5ee0986ccb5f21782bd72"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim13.png",
++    "sha256": "5f068e987524029e9903cea524fbbd1bda3847143fc0bf338cb4caea10d52b53"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim14.png",
++    "sha256": "472c59a8d03440e5f1fe0438a76ac74f0c4382d37748bdbc5efeecefaa43eec6"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim15.png",
++    "sha256": "1a55de3ef2117c983406a47745da76e1c0776f227f4a7f60cba81f4c5d2a10ed"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim16.png",
++    "sha256": "8e92eafb98efef42bac737c215c540610ccab6d88df458f78340d1eb2d2953bf"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim17.png",
++    "sha256": "80e1bd280795ed114d5b47a1692a83e8359ef74c414e96bf6459f4e473311cab"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim18.png",
++    "sha256": "3fba189db0c126ecb25b92f00ac97b6f56a120fb37dc6a601682b97ccb573750"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim19.png",
++    "sha256": "8853c325a39b5b5d1c7ab2cbfcbb7b09941cb7eaa4b35d87af06a1a0664d931b"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim20.png",
++    "sha256": "ae4a949ab69f1fd770725fa769323e44e1db28d232997c1ed50639538980d75d"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim21.png",
++    "sha256": "9b358cc41c08f581b90e00e66e7d6c0917f2e5458d6221630284cf83f390eb4d"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim22.png",
++    "sha256": "7b3e0fa5a9280156992609c9e1c9aef332abc35acd859ce1edebe1ab2178b5f4"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim23.png",
++    "sha256": "4df88161f8d078828c084231904221131cf621bdb9ef6e0e37f04aa62d7125fd"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim24.png",
++    "sha256": "f17398755984ae39a6926cecd4fb11334f15e111987a3d1fe21efd76e0ab8590"
++  }
++]
+diff --git a/comparison_revision_20261022/verification.json b/comparison_revision_20261022/verification.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_revision_20261022/verification.json
+@@ -0,0 +1,41 @@
++{
++  "source_images_verified_unchanged": 96,
++  "previous_artifacts_verified_unchanged": 18,
++  "panels_verified_against_source_pixels": 16,
++  "MDRQ_leads_selected_full_image_PSNR_MS_SSIM_and_ROI_PSNR": true,
++  "crop_size_wh": [
++    128,
++    128
++  ],
++  "zoom_size_wh": [
++    672,
++    672
++  ],
++  "zoom_interpolation": "nearest neighbor, identical across all four methods",
++  "output_png_size_wh": [
++    3272,
++    1580
++  ],
++  "outputs": [
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
++      "bytes": 3214495,
++      "sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033"
++    },
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
++      "bytes": 3204822,
++      "sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689"
++    },
++    {
++      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
++      "bytes": 2880606,
++      "sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9"
++    },
++    {
++      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
++      "bytes": 2873362,
++      "sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c"
++    }
++  ]
++}

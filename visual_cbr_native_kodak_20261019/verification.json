@@ -1,0 +1,64 @@
+{
+  "integrity": {
+    "source": {
+      "unchanged": true,
+      "count": 989
+    },
+    "checkpoint": {
+      "unchanged": true,
+      "count": 6
+    },
+    "dataset": {
+      "unchanged": true,
+      "count": 24
+    }
+  },
+  "pixel_count_per_image": 393216,
+  "native_sizes_wh": {
+    "768x512": 18,
+    "512x768": 6
+  },
+  "matched_conditions_passed": true,
+  "cscr_enabled": false,
+  "configurations_compared": 6,
+  "complete_native_method_runs": 14,
+  "raw_native_reconstructions": 336,
+  "unique_cbr_values": [
+    "1/32",
+    "5/128",
+    "5/192",
+    "7/192"
+  ],
+  "adapter_at_256_matches_original_pngs_metrics_and_bits_exactly": true,
+  "seed": 42,
+  "jpeg2000_included": false,
+  "selected_case": {
+    "id": "k64_16_qpsk_r12",
+    "effective_k": [
+      64,
+      16
+    ],
+    "rvq_k_lists": [
+      [
+        2,
+        32
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    "channel": "awgn",
+    "snr_db": 10,
+    "modulation": "qpsk",
+    "ldpc_rate": 0.5,
+    "ldpc_n": 256,
+    "ldpc_k": 128,
+    "payload_bits_per_image": 43008,
+    "symbols_per_image": 43008,
+    "cbr": "7/192"
+  },
+  "intermediate_storage": "/tmp/visual_cbr_native_kodak_20261019",
+  "durable_reports": "/workspace/yi/work/visual_cbr_native_kodak_20261019/reports",
+  "final_images_published_inside_workspace": true
+}

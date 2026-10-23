@@ -1,0 +1,26 @@
+{
+  "case_id": "k64_16_qpsk_r12",
+  "status": "provisional while remaining native allocations run",
+  "images": [
+    {
+      "image": "kodim03.png",
+      "xywh": [
+        448,
+        208,
+        160,
+        160
+      ],
+      "detail": "Green cap contour and seams; lettering remains degraded in all methods"
+    },
+    {
+      "image": "kodim12.png",
+      "xywh": [
+        224,
+        288,
+        160,
+        160
+      ],
+      "detail": "Pink flipper edges and feet in the water; no enhancement"
+    }
+  ]
+}

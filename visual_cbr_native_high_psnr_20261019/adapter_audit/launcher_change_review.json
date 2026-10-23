@@ -1,0 +1,12 @@
+{
+  "path": "/workspace/yi/work/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh",
+  "before_sha256": "6e1b3a637aa345be5a67397b362fc3938125d7967b47854d0034a821f3b1f60a",
+  "after_sha256": "7657fb80d6e3a2da1c71ce7ceb0f7fadef49e6679550e875f0786bdcf3f3e545",
+  "observed_mtime_local": "2026-10-19T19:18:32.461467",
+  "role": "shell evaluation launcher; not model, quantizer, codec, LDPC, modulation or channel implementation",
+  "written_by_this_experiment": false,
+  "before_full_text_available": false,
+  "full_before_after_diff_available": false,
+  "review": "Current launcher inspected in full. Actual AWGN/SNR/QPSK/LDPC/seed/K/budget conditions are independently asserted from every native result. All other 988 original source files and all 6 weights remain byte-identical.",
+  "limitation": "The launcher is not byte-identical to its initial SHA256; do not report all original source files as unchanged."
+}

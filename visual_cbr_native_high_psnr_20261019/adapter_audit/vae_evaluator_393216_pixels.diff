@@ -1,0 +1,62 @@
+--- /workspace/yi/work/RAQ-VAE-main/eval_seq2seq_channel.py
++++ /workspace/yi/work/visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_393216_pixels.py
+@@ -527,13 +527,13 @@
+         if DUAL_K:
+             plan = dual_k_transmission_plan(
+                 BOTTOM_INDEX_COUNT, TOP_INDEX_COUNT, args.bottom_k, args.top_k,
+-                3 * 256 * 256, ldpc_k, ldpc_n, modulation_bits,
++                3 * NATIVE_PIXELS, ldpc_k, ldpc_n, modulation_bits,
+                 args.ratio_denominator, model_args.num_embeddings_min,
+                 model_args.num_embeddings_max,
+             )
+         else:
+             plan = transmission_plan(
+-                SOURCE_INDEX_COUNT, 3 * 256 * 256, ldpc_k, ldpc_n,
++                SOURCE_INDEX_COUNT, 3 * NATIVE_PIXELS, ldpc_k, ldpc_n,
+                 modulation_bits, args.ratio_denominator, args.rate_policy,
+                 model_args.num_embeddings_min, model_args.num_embeddings_max,
+                 args.target_k,
+@@ -561,8 +561,8 @@
+     if args.dry_run:
+         selected = plan["selected"]
+         symbols = math.ceil((selected["source_payload_bits"] + plan["budget_padding_bits"]) / ldpc_k) * ldpc_n // modulation_bits
+-        print(f"预计实际传输比：{symbols / (3 * 256 * 256):.8f}"
+-              f"（约 1/{3 * 256 * 256 / symbols:.4f}）", flush=True)
++        print(f"预计实际传输比：{symbols / (3 * NATIVE_PIXELS):.8f}"
++              f"（约 1/{3 * NATIVE_PIXELS / symbols:.4f}）", flush=True)
+     if not args.console_only and (not args.concise or args.dry_run):
+         print(f"CHECKPOINT {source_checkpoint}\nOUTPUT {output}", flush=True)
+     if args.dry_run:
+@@ -736,7 +736,7 @@
+     rows = []
+     for image_index, image in enumerate(loader):
+         image = image.to(device)
+-        if tuple(image.shape) != (1, 3, 256, 256):
++        if tuple(image.shape) != NATIVE_SHAPES[filenames[image_index]]:
+             raise ValueError(f"Unexpected image size without resizing: {image.shape}")
+         result = (model(image, target_bottom, target_top) if DUAL_K
+                   else model(image, target))
+@@ -820,8 +820,8 @@
+             "coded_bits": stats["coded_bits"], "transmitted_bits": stats["transmitted_bits"],
+             "channel_symbols": stats["channel_symbols"],
+             "transmission_ratio": stats["channel_symbols"] / image.numel(),
+-            "source_payload_bpp": payload.size / (256 * 256),
+-            "padded_payload_bpp": stats["ldpc_input_bits"] / (256 * 256),
++            "source_payload_bpp": payload.size / (NATIVE_PIXELS),
++            "padded_payload_bpp": stats["ldpc_input_bits"] / (NATIVE_PIXELS),
+             "source_bit_errors": source_errors, "source_ber": source_errors / payload.size,
+             "combined_bit_errors": stats["bit_errors"],
+             "forward_vs_index_decode_max_abs": float((forward_clean - clean).abs().max()),
+@@ -858,9 +858,9 @@
+     metrics["ms_ssim_db"] = ms_ssim_to_db(metrics["ms_ssim"])
+     report = {
+         "metadata": metadata, "num_images": 24, "metrics": metrics, "totals": totals,
+-        "source_payload_bpp": totals["source_payload_bits"] / (24 * 256 * 256),
+-        "padded_payload_bpp": totals["ldpc_input_bits"] / (24 * 256 * 256),
+-        "transmission_ratio": totals["channel_symbols"] / (24 * 3 * 256 * 256),
++        "source_payload_bpp": totals["source_payload_bits"] / (24 * NATIVE_PIXELS),
++        "padded_payload_bpp": totals["ldpc_input_bits"] / (24 * NATIVE_PIXELS),
++        "transmission_ratio": totals["channel_symbols"] / (24 * 3 * NATIVE_PIXELS),
+         "source_ber": totals["source_bit_errors"] / totals["source_payload_bits"],
+         "combined_ber": totals["combined_bit_errors"] / totals["ldpc_input_bits"],
+         "elapsed_seconds": time.time() - started, "per_image": rows,

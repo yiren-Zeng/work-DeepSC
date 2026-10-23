@@ -1,0 +1,2210 @@
+{
+  "kodim01.png": [
+    {
+      "roi_xyxy": [
+        168,
+        320,
+        312,
+        464
+      ],
+      "minimum_psnr_advantage_db": 5.073193226142406,
+      "original_gradient_rms": 15.446124468759772,
+      "patch_psnr_db": {
+        "JPEG": 26.210704003037687,
+        "RAQ-VAE": 26.31214451617559,
+        "MDRQ": 31.385337742317994
+      }
+    },
+    {
+      "roi_xyxy": [
+        24,
+        240,
+        168,
+        384
+      ],
+      "minimum_psnr_advantage_db": 4.792987023795431,
+      "original_gradient_rms": 16.541270449341077,
+      "patch_psnr_db": {
+        "JPEG": 25.908630697480874,
+        "RAQ-VAE": 26.706084846661582,
+        "MDRQ": 31.499071870457016
+      }
+    },
+    {
+      "roi_xyxy": [
+        176,
+        248,
+        320,
+        392
+      ],
+      "minimum_psnr_advantage_db": 4.672517375912046,
+      "original_gradient_rms": 17.944588982293574,
+      "patch_psnr_db": {
+        "JPEG": 25.972076884687773,
+        "RAQ-VAE": 26.06031789864994,
+        "MDRQ": 30.732835274561985
+      }
+    },
+    {
+      "roi_xyxy": [
+        608,
+        248,
+        752,
+        392
+      ],
+      "minimum_psnr_advantage_db": 4.6553919739494685,
+      "original_gradient_rms": 20.42846119575808,
+      "patch_psnr_db": {
+        "JPEG": 25.517534980915908,
+        "RAQ-VAE": 26.98297697774858,
+        "MDRQ": 31.638368951698048
+      }
+    },
+    {
+      "roi_xyxy": [
+        400,
+        248,
+        544,
+        392
+      ],
+      "minimum_psnr_advantage_db": 4.536415610948899,
+      "original_gradient_rms": 21.209723413068904,
+      "patch_psnr_db": {
+        "JPEG": 25.57756080664751,
+        "RAQ-VAE": 25.511468462738915,
+        "MDRQ": 30.11397641759641
+      }
+    },
+    {
+      "roi_xyxy": [
+        512,
+        256,
+        656,
+        400
+      ],
+      "minimum_psnr_advantage_db": 4.461675709148205,
+      "original_gradient_rms": 18.342476344728063,
+      "patch_psnr_db": {
+        "JPEG": 24.730106256800465,
+        "RAQ-VAE": 26.14610617172221,
+        "MDRQ": 30.607781880870412
+      }
+    }
+  ],
+  "kodim02.png": [
+    {
+      "roi_xyxy": [
+        96,
+        104,
+        240,
+        248
+      ],
+      "minimum_psnr_advantage_db": 3.1069760500607875,
+      "original_gradient_rms": 12.01010634289646,
+      "patch_psnr_db": {
+        "JPEG": 29.747059562537853,
+        "RAQ-VAE": 23.287311743438217,
+        "MDRQ": 32.854035612598636
+      }
+    },
+    {
+      "roi_xyxy": [
+        152,
+        56,
+        296,
+        200
+      ],
+      "minimum_psnr_advantage_db": 2.8145355500328595,
+      "original_gradient_rms": 12.089659340865072,
+      "patch_psnr_db": {
+        "JPEG": 30.327226908831392,
+        "RAQ-VAE": 22.816138050596393,
+        "MDRQ": 33.14176245886425
+      }
+    },
+    {
+      "roi_xyxy": [
+        336,
+        40,
+        480,
+        184
+      ],
+      "minimum_psnr_advantage_db": 2.7941133958153634,
+      "original_gradient_rms": 12.515995518998283,
+      "patch_psnr_db": {
+        "JPEG": 29.151479658869324,
+        "RAQ-VAE": 22.619627699327616,
+        "MDRQ": 31.945593054684686
+      }
+    },
+    {
+      "roi_xyxy": [
+        432,
+        32,
+        576,
+        176
+      ],
+      "minimum_psnr_advantage_db": 2.613462087082741,
+      "original_gradient_rms": 12.009254406894586,
+      "patch_psnr_db": {
+        "JPEG": 29.402587947538102,
+        "RAQ-VAE": 22.39737849060011,
+        "MDRQ": 32.01605003462084
+      }
+    },
+    {
+      "roi_xyxy": [
+        552,
+        16,
+        696,
+        160
+      ],
+      "minimum_psnr_advantage_db": 2.6046377171216193,
+      "original_gradient_rms": 12.172026998106483,
+      "patch_psnr_db": {
+        "JPEG": 29.75244744367664,
+        "RAQ-VAE": 21.620621206156166,
+        "MDRQ": 32.357085160798256
+      }
+    },
+    {
+      "roi_xyxy": [
+        288,
+        96,
+        432,
+        240
+      ],
+      "minimum_psnr_advantage_db": 2.380982017344339,
+      "original_gradient_rms": 12.505351855026875,
+      "patch_psnr_db": {
+        "JPEG": 29.78091240157,
+        "RAQ-VAE": 23.09675616883485,
+        "MDRQ": 32.161894418914336
+      }
+    }
+  ],
+  "kodim03.png": [
+    {
+      "roi_xyxy": [
+        296,
+        160,
+        440,
+        304
+      ],
+      "minimum_psnr_advantage_db": 1.420716113563775,
+      "original_gradient_rms": 12.552903663542834,
+      "patch_psnr_db": {
+        "JPEG": 29.783686854143234,
+        "RAQ-VAE": 18.95939096761611,
+        "MDRQ": 31.204402967707008
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        16,
+        160,
+        160
+      ],
+      "minimum_psnr_advantage_db": 1.0752186073011625,
+      "original_gradient_rms": 16.01594602783118,
+      "patch_psnr_db": {
+        "JPEG": 29.09222757458742,
+        "RAQ-VAE": 24.130508764605683,
+        "MDRQ": 30.167446181888575
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        184,
+        160,
+        328
+      ],
+      "minimum_psnr_advantage_db": -1.0645187246318564,
+      "original_gradient_rms": 12.234527676923474,
+      "patch_psnr_db": {
+        "JPEG": 31.184709308467838,
+        "RAQ-VAE": 25.219389199765118,
+        "MDRQ": 30.120190583835985
+      }
+    },
+    {
+      "roi_xyxy": [
+        264,
+        88,
+        408,
+        232
+      ],
+      "minimum_psnr_advantage_db": -1.1438788252979548,
+      "original_gradient_rms": 12.18567997566374,
+      "patch_psnr_db": {
+        "JPEG": 31.200277889158542,
+        "RAQ-VAE": 21.10819334788569,
+        "MDRQ": 30.05639906386059
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        96,
+        160,
+        240
+      ],
+      "minimum_psnr_advantage_db": -1.7831863040054619,
+      "original_gradient_rms": 15.466581274534574,
+      "patch_psnr_db": {
+        "JPEG": 29.76107019335783,
+        "RAQ-VAE": 22.41607910410455,
+        "MDRQ": 27.977883889352366
+      }
+    },
+    {
+      "roi_xyxy": [
+        216,
+        160,
+        360,
+        304
+      ],
+      "minimum_psnr_advantage_db": -2.2716550526578994,
+      "original_gradient_rms": 12.325272905639627,
+      "patch_psnr_db": {
+        "JPEG": 30.419966072951915,
+        "RAQ-VAE": 21.227978064616625,
+        "MDRQ": 28.148311020294017
+      }
+    }
+  ],
+  "kodim04.png": [
+    {
+      "roi_xyxy": [
+        56,
+        568,
+        200,
+        712
+      ],
+      "minimum_psnr_advantage_db": 3.9980124720735284,
+      "original_gradient_rms": 12.016397947872145,
+      "patch_psnr_db": {
+        "JPEG": 28.737820793668078,
+        "RAQ-VAE": 23.334347247671545,
+        "MDRQ": 32.735833265741604
+      }
+    },
+    {
+      "roi_xyxy": [
+        104,
+        32,
+        248,
+        176
+      ],
+      "minimum_psnr_advantage_db": 3.974629320204386,
+      "original_gradient_rms": 12.386238904320976,
+      "patch_psnr_db": {
+        "JPEG": 28.021890439896012,
+        "RAQ-VAE": 21.19652567367108,
+        "MDRQ": 31.996519760100398
+      }
+    },
+    {
+      "roi_xyxy": [
+        32,
+        496,
+        176,
+        640
+      ],
+      "minimum_psnr_advantage_db": 3.7317514836278765,
+      "original_gradient_rms": 12.13641112687046,
+      "patch_psnr_db": {
+        "JPEG": 29.53069299798485,
+        "RAQ-VAE": 24.651707644784977,
+        "MDRQ": 33.262444481612725
+      }
+    },
+    {
+      "roi_xyxy": [
+        120,
+        608,
+        264,
+        752
+      ],
+      "minimum_psnr_advantage_db": 3.7299134353658236,
+      "original_gradient_rms": 13.485149002692088,
+      "patch_psnr_db": {
+        "JPEG": 28.74139981190774,
+        "RAQ-VAE": 22.90769212290812,
+        "MDRQ": 32.471313247273564
+      }
+    },
+    {
+      "roi_xyxy": [
+        128,
+        536,
+        272,
+        680
+      ],
+      "minimum_psnr_advantage_db": 3.594886701947333,
+      "original_gradient_rms": 12.970589694404968,
+      "patch_psnr_db": {
+        "JPEG": 29.627834507216512,
+        "RAQ-VAE": 23.928781856652233,
+        "MDRQ": 33.22272120916384
+      }
+    },
+    {
+      "roi_xyxy": [
+        168,
+        72,
+        312,
+        216
+      ],
+      "minimum_psnr_advantage_db": 3.45036477680597,
+      "original_gradient_rms": 12.187665634634389,
+      "patch_psnr_db": {
+        "JPEG": 27.937783199632626,
+        "RAQ-VAE": 21.169710859340967,
+        "MDRQ": 31.388147976438596
+      }
+    }
+  ],
+  "kodim05.png": [
+    {
+      "roi_xyxy": [
+        320,
+        224,
+        464,
+        368
+      ],
+      "minimum_psnr_advantage_db": 6.185732213573808,
+      "original_gradient_rms": 24.854733651772932,
+      "patch_psnr_db": {
+        "JPEG": 22.669941034768833,
+        "RAQ-VAE": 23.090557897003066,
+        "MDRQ": 29.276290110576877
+      }
+    },
+    {
+      "roi_xyxy": [
+        232,
+        240,
+        376,
+        384
+      ],
+      "minimum_psnr_advantage_db": 6.061581762170324,
+      "original_gradient_rms": 22.683376684774363,
+      "patch_psnr_db": {
+        "JPEG": 23.007924860935958,
+        "RAQ-VAE": 23.96131821399613,
+        "MDRQ": 30.02289997616645
+      }
+    },
+    {
+      "roi_xyxy": [
+        392,
+        200,
+        536,
+        344
+      ],
+      "minimum_psnr_advantage_db": 5.954411099411172,
+      "original_gradient_rms": 28.383492003785314,
+      "patch_psnr_db": {
+        "JPEG": 22.06119983483672,
+        "RAQ-VAE": 22.888539526392364,
+        "MDRQ": 28.84295062580353
+      }
+    },
+    {
+      "roi_xyxy": [
+        464,
+        192,
+        608,
+        336
+      ],
+      "minimum_psnr_advantage_db": 5.827956460819487,
+      "original_gradient_rms": 26.95105170720196,
+      "patch_psnr_db": {
+        "JPEG": 22.309028810228323,
+        "RAQ-VAE": 23.228879908551015,
+        "MDRQ": 29.056836369370505
+      }
+    },
+    {
+      "roi_xyxy": [
+        264,
+        168,
+        408,
+        312
+      ],
+      "minimum_psnr_advantage_db": 5.658606630498873,
+      "original_gradient_rms": 29.027454201086467,
+      "patch_psnr_db": {
+        "JPEG": 22.40564018351457,
+        "RAQ-VAE": 22.583049536457995,
+        "MDRQ": 28.24165616695687
+      }
+    },
+    {
+      "roi_xyxy": [
+        336,
+        152,
+        480,
+        296
+      ],
+      "minimum_psnr_advantage_db": 5.365588370591807,
+      "original_gradient_rms": 32.11103836973631,
+      "patch_psnr_db": {
+        "JPEG": 21.667533414765874,
+        "RAQ-VAE": 22.372038788173786,
+        "MDRQ": 27.737627158765594
+      }
+    }
+  ],
+  "kodim06.png": [
+    {
+      "roi_xyxy": [
+        192,
+        320,
+        336,
+        464
+      ],
+      "minimum_psnr_advantage_db": 6.45112350984462,
+      "original_gradient_rms": 12.107563041070666,
+      "patch_psnr_db": {
+        "JPEG": 28.841640530036322,
+        "RAQ-VAE": 28.58254836585621,
+        "MDRQ": 35.29276403988094
+      }
+    },
+    {
+      "roi_xyxy": [
+        264,
+        336,
+        408,
+        480
+      ],
+      "minimum_psnr_advantage_db": 5.980082975984872,
+      "original_gradient_rms": 12.262302192374435,
+      "patch_psnr_db": {
+        "JPEG": 28.66577649999322,
+        "RAQ-VAE": 28.368322460107475,
+        "MDRQ": 34.6458594759781
+      }
+    },
+    {
+      "roi_xyxy": [
+        368,
+        336,
+        512,
+        480
+      ],
+      "minimum_psnr_advantage_db": 5.538044779232435,
+      "original_gradient_rms": 12.044255735900332,
+      "patch_psnr_db": {
+        "JPEG": 27.64434186119258,
+        "RAQ-VAE": 27.653033786595948,
+        "MDRQ": 33.191078565828384
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        296,
+        664,
+        440
+      ],
+      "minimum_psnr_advantage_db": 5.471934607487463,
+      "original_gradient_rms": 12.080159336204987,
+      "patch_psnr_db": {
+        "JPEG": 26.966916338846634,
+        "RAQ-VAE": 27.840975094905293,
+        "MDRQ": 33.31290970239276
+      }
+    },
+    {
+      "roi_xyxy": [
+        448,
+        328,
+        592,
+        472
+      ],
+      "minimum_psnr_advantage_db": 5.245435790731355,
+      "original_gradient_rms": 12.394997437599471,
+      "patch_psnr_db": {
+        "JPEG": 27.088273188488664,
+        "RAQ-VAE": 27.761353931030857,
+        "MDRQ": 33.00678972176221
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        128,
+        664,
+        272
+      ],
+      "minimum_psnr_advantage_db": 5.192373584520742,
+      "original_gradient_rms": 12.15651330239896,
+      "patch_psnr_db": {
+        "JPEG": 27.235558701926582,
+        "RAQ-VAE": 27.748881933588805,
+        "MDRQ": 32.94125551810955
+      }
+    }
+  ],
+  "kodim07.png": [
+    {
+      "roi_xyxy": [
+        584,
+        96,
+        728,
+        240
+      ],
+      "minimum_psnr_advantage_db": 5.8784017918347855,
+      "original_gradient_rms": 14.158333666891812,
+      "patch_psnr_db": {
+        "JPEG": 28.957758621624002,
+        "RAQ-VAE": 28.931639728559674,
+        "MDRQ": 34.836160413458785
+      }
+    },
+    {
+      "roi_xyxy": [
+        424,
+        256,
+        568,
+        400
+      ],
+      "minimum_psnr_advantage_db": 5.553304461935196,
+      "original_gradient_rms": 14.180398068209046,
+      "patch_psnr_db": {
+        "JPEG": 28.742394685905342,
+        "RAQ-VAE": 27.557823448062972,
+        "MDRQ": 34.29569914784054
+      }
+    },
+    {
+      "roi_xyxy": [
+        584,
+        16,
+        728,
+        160
+      ],
+      "minimum_psnr_advantage_db": 5.517352880425078,
+      "original_gradient_rms": 14.480591963556925,
+      "patch_psnr_db": {
+        "JPEG": 28.713554032033784,
+        "RAQ-VAE": 27.227312256134752,
+        "MDRQ": 34.23090691245886
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        256,
+        664,
+        400
+      ],
+      "minimum_psnr_advantage_db": 5.3640281893057296,
+      "original_gradient_rms": 15.520389616156924,
+      "patch_psnr_db": {
+        "JPEG": 28.047115243245088,
+        "RAQ-VAE": 25.080811036740137,
+        "MDRQ": 33.411143432550816
+      }
+    },
+    {
+      "roi_xyxy": [
+        608,
+        344,
+        752,
+        488
+      ],
+      "minimum_psnr_advantage_db": 5.332854476361613,
+      "original_gradient_rms": 15.652487922950778,
+      "patch_psnr_db": {
+        "JPEG": 28.49355218234283,
+        "RAQ-VAE": 24.998290862443312,
+        "MDRQ": 33.82640665870444
+      }
+    },
+    {
+      "roi_xyxy": [
+        504,
+        16,
+        648,
+        160
+      ],
+      "minimum_psnr_advantage_db": 5.027475647079026,
+      "original_gradient_rms": 14.980608338886007,
+      "patch_psnr_db": {
+        "JPEG": 28.004381826931176,
+        "RAQ-VAE": 27.98886744218864,
+        "MDRQ": 33.0318574740102
+      }
+    }
+  ],
+  "kodim08.png": [
+    {
+      "roi_xyxy": [
+        48,
+        48,
+        192,
+        192
+      ],
+      "minimum_psnr_advantage_db": 3.778429981190609,
+      "original_gradient_rms": 14.440084931567185,
+      "patch_psnr_db": {
+        "JPEG": 25.193941920744084,
+        "RAQ-VAE": 28.823673021338486,
+        "MDRQ": 32.60210300252909
+      }
+    },
+    {
+      "roi_xyxy": [
+        48,
+        160,
+        192,
+        304
+      ],
+      "minimum_psnr_advantage_db": 3.2333797250202374,
+      "original_gradient_rms": 30.074779188263193,
+      "patch_psnr_db": {
+        "JPEG": 21.534123973329578,
+        "RAQ-VAE": 24.374359129137908,
+        "MDRQ": 27.607738854158143
+      }
+    },
+    {
+      "roi_xyxy": [
+        232,
+        312,
+        376,
+        456
+      ],
+      "minimum_psnr_advantage_db": 3.190419417480988,
+      "original_gradient_rms": 19.54132271424965,
+      "patch_psnr_db": {
+        "JPEG": 24.07789662715023,
+        "RAQ-VAE": 28.1146753086843,
+        "MDRQ": 31.30509472616529
+      }
+    },
+    {
+      "roi_xyxy": [
+        568,
+        328,
+        712,
+        472
+      ],
+      "minimum_psnr_advantage_db": 3.1896419259778157,
+      "original_gradient_rms": 32.16268487092996,
+      "patch_psnr_db": {
+        "JPEG": 22.730888575137715,
+        "RAQ-VAE": 24.719473307511848,
+        "MDRQ": 27.909115233489665
+      }
+    },
+    {
+      "roi_xyxy": [
+        240,
+        216,
+        384,
+        360
+      ],
+      "minimum_psnr_advantage_db": 3.180097989966342,
+      "original_gradient_rms": 19.72255787213887,
+      "patch_psnr_db": {
+        "JPEG": 24.08609247463415,
+        "RAQ-VAE": 28.306065711021503,
+        "MDRQ": 31.486163700987845
+      }
+    },
+    {
+      "roi_xyxy": [
+        488,
+        328,
+        632,
+        472
+      ],
+      "minimum_psnr_advantage_db": 3.1239089847082555,
+      "original_gradient_rms": 33.97653595170778,
+      "patch_psnr_db": {
+        "JPEG": 22.263709362916405,
+        "RAQ-VAE": 24.668640784381154,
+        "MDRQ": 27.792549769089412
+      }
+    }
+  ],
+  "kodim09.png": [
+    {
+      "roi_xyxy": [
+        16,
+        520,
+        160,
+        664
+      ],
+      "minimum_psnr_advantage_db": 3.6904523516608445,
+      "original_gradient_rms": 16.417503164194958,
+      "patch_psnr_db": {
+        "JPEG": 28.843330652188847,
+        "RAQ-VAE": 28.685259773551653,
+        "MDRQ": 32.53378300384969
+      }
+    },
+    {
+      "roi_xyxy": [
+        328,
+        496,
+        472,
+        640
+      ],
+      "minimum_psnr_advantage_db": 3.683262943171457,
+      "original_gradient_rms": 15.57366009801793,
+      "patch_psnr_db": {
+        "JPEG": 30.403524176717337,
+        "RAQ-VAE": 30.391118048673825,
+        "MDRQ": 34.08678711988879
+      }
+    },
+    {
+      "roi_xyxy": [
+        232,
+        192,
+        376,
+        336
+      ],
+      "minimum_psnr_advantage_db": 3.418970687152612,
+      "original_gradient_rms": 12.633588655930067,
+      "patch_psnr_db": {
+        "JPEG": 32.08799884617835,
+        "RAQ-VAE": 30.49177535536373,
+        "MDRQ": 35.50696953333096
+      }
+    },
+    {
+      "roi_xyxy": [
+        256,
+        488,
+        400,
+        632
+      ],
+      "minimum_psnr_advantage_db": 3.3850639955778417,
+      "original_gradient_rms": 15.100626013894349,
+      "patch_psnr_db": {
+        "JPEG": 30.307225866756365,
+        "RAQ-VAE": 30.59428799244451,
+        "MDRQ": 33.97935198802235
+      }
+    },
+    {
+      "roi_xyxy": [
+        352,
+        568,
+        496,
+        712
+      ],
+      "minimum_psnr_advantage_db": 2.9908221959622354,
+      "original_gradient_rms": 16.6278495944053,
+      "patch_psnr_db": {
+        "JPEG": 28.731149337208155,
+        "RAQ-VAE": 30.430938308212706,
+        "MDRQ": 33.42176050417494
+      }
+    },
+    {
+      "roi_xyxy": [
+        280,
+        560,
+        424,
+        704
+      ],
+      "minimum_psnr_advantage_db": 2.7656688619218057,
+      "original_gradient_rms": 17.932861426337084,
+      "patch_psnr_db": {
+        "JPEG": 28.376854182927417,
+        "RAQ-VAE": 30.135670855906724,
+        "MDRQ": 32.90133971782853
+      }
+    }
+  ],
+  "kodim10.png": [
+    {
+      "roi_xyxy": [
+        328,
+        240,
+        472,
+        384
+      ],
+      "minimum_psnr_advantage_db": 4.561728536478215,
+      "original_gradient_rms": 12.240928117964062,
+      "patch_psnr_db": {
+        "JPEG": 30.654906467276753,
+        "RAQ-VAE": 30.124396862484645,
+        "MDRQ": 35.216635003754966
+      }
+    },
+    {
+      "roi_xyxy": [
+        128,
+        512,
+        272,
+        656
+      ],
+      "minimum_psnr_advantage_db": 4.457851170970509,
+      "original_gradient_rms": 12.318668261598157,
+      "patch_psnr_db": {
+        "JPEG": 30.7515986643315,
+        "RAQ-VAE": 30.522036984046927,
+        "MDRQ": 35.20944983530201
+      }
+    },
+    {
+      "roi_xyxy": [
+        176,
+        576,
+        320,
+        720
+      ],
+      "minimum_psnr_advantage_db": 4.136032484197929,
+      "original_gradient_rms": 15.693834900086287,
+      "patch_psnr_db": {
+        "JPEG": 29.526088147939582,
+        "RAQ-VAE": 29.58841501241768,
+        "MDRQ": 33.72444749661561
+      }
+    },
+    {
+      "roi_xyxy": [
+        296,
+        152,
+        440,
+        296
+      ],
+      "minimum_psnr_advantage_db": 3.869728688484061,
+      "original_gradient_rms": 12.00866022082203,
+      "patch_psnr_db": {
+        "JPEG": 31.004352323055222,
+        "RAQ-VAE": 30.644095193415403,
+        "MDRQ": 34.87408101153928
+      }
+    },
+    {
+      "roi_xyxy": [
+        328,
+        608,
+        472,
+        752
+      ],
+      "minimum_psnr_advantage_db": 3.851818424653177,
+      "original_gradient_rms": 13.463969892582716,
+      "patch_psnr_db": {
+        "JPEG": 29.583024814422075,
+        "RAQ-VAE": 30.156148493037243,
+        "MDRQ": 34.00796691769042
+      }
+    },
+    {
+      "roi_xyxy": [
+        104,
+        584,
+        248,
+        728
+      ],
+      "minimum_psnr_advantage_db": 3.769180528353253,
+      "original_gradient_rms": 15.226468706235185,
+      "patch_psnr_db": {
+        "JPEG": 29.704985860300326,
+        "RAQ-VAE": 30.61323125881249,
+        "MDRQ": 34.38241178716574
+      }
+    }
+  ],
+  "kodim11.png": [
+    {
+      "roi_xyxy": [
+        608,
+        352,
+        752,
+        496
+      ],
+      "minimum_psnr_advantage_db": 5.981499136065276,
+      "original_gradient_rms": 13.424697169688105,
+      "patch_psnr_db": {
+        "JPEG": 27.04692853568759,
+        "RAQ-VAE": 26.958962073286838,
+        "MDRQ": 33.028427671752866
+      }
+    },
+    {
+      "roi_xyxy": [
+        424,
+        304,
+        568,
+        448
+      ],
+      "minimum_psnr_advantage_db": 5.702344997785942,
+      "original_gradient_rms": 14.091485736651851,
+      "patch_psnr_db": {
+        "JPEG": 27.41662978681514,
+        "RAQ-VAE": 27.221623226875028,
+        "MDRQ": 33.11897478460108
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        240,
+        160,
+        384
+      ],
+      "minimum_psnr_advantage_db": 5.412012786052851,
+      "original_gradient_rms": 12.07475524892367,
+      "patch_psnr_db": {
+        "JPEG": 27.740040270428644,
+        "RAQ-VAE": 25.650150848221003,
+        "MDRQ": 33.1520530564815
+      }
+    },
+    {
+      "roi_xyxy": [
+        512,
+        336,
+        656,
+        480
+      ],
+      "minimum_psnr_advantage_db": 5.299374041498989,
+      "original_gradient_rms": 12.138153196161062,
+      "patch_psnr_db": {
+        "JPEG": 28.126745862398472,
+        "RAQ-VAE": 28.287922148242842,
+        "MDRQ": 33.587296189741835
+      }
+    },
+    {
+      "roi_xyxy": [
+        24,
+        168,
+        168,
+        312
+      ],
+      "minimum_psnr_advantage_db": 5.196871335176894,
+      "original_gradient_rms": 16.931726652406415,
+      "patch_psnr_db": {
+        "JPEG": 26.984402941028634,
+        "RAQ-VAE": 26.314472282872877,
+        "MDRQ": 32.18127427620553
+      }
+    },
+    {
+      "roi_xyxy": [
+        160,
+        40,
+        304,
+        184
+      ],
+      "minimum_psnr_advantage_db": 5.142431094894756,
+      "original_gradient_rms": 14.319801396779564,
+      "patch_psnr_db": {
+        "JPEG": 29.154004267869887,
+        "RAQ-VAE": 28.36644107996788,
+        "MDRQ": 34.29643536276465
+      }
+    }
+  ],
+  "kodim12.png": [
+    {
+      "roi_xyxy": [
+        608,
+        104,
+        752,
+        248
+      ],
+      "minimum_psnr_advantage_db": 3.8669494255052457,
+      "original_gradient_rms": 12.448164237762615,
+      "patch_psnr_db": {
+        "JPEG": 30.78153317451133,
+        "RAQ-VAE": 29.290752883119517,
+        "MDRQ": 34.64848260001658
+      }
+    },
+    {
+      "roi_xyxy": [
+        600,
+        32,
+        744,
+        176
+      ],
+      "minimum_psnr_advantage_db": 2.961641759799397,
+      "original_gradient_rms": 12.520465171473225,
+      "patch_psnr_db": {
+        "JPEG": 30.442475634515652,
+        "RAQ-VAE": 30.150215002196916,
+        "MDRQ": 33.40411739431505
+      }
+    },
+    {
+      "roi_xyxy": [
+        528,
+        64,
+        672,
+        208
+      ],
+      "minimum_psnr_advantage_db": 1.9538424287980418,
+      "original_gradient_rms": 12.028009625244344,
+      "patch_psnr_db": {
+        "JPEG": 30.844158577953124,
+        "RAQ-VAE": 28.854456625366197,
+        "MDRQ": 32.798001006751164
+      }
+    },
+    {
+      "roi_xyxy": [
+        304,
+        248,
+        448,
+        392
+      ],
+      "minimum_psnr_advantage_db": 0.690798642321029,
+      "original_gradient_rms": 12.217836329680498,
+      "patch_psnr_db": {
+        "JPEG": 31.12334034676804,
+        "RAQ-VAE": 27.674121636961093,
+        "MDRQ": 31.81413898908907
+      }
+    },
+    {
+      "roi_xyxy": [
+        208,
+        176,
+        352,
+        320
+      ],
+      "minimum_psnr_advantage_db": 0.6787131977255433,
+      "original_gradient_rms": 17.186338724196105,
+      "patch_psnr_db": {
+        "JPEG": 30.25169966157156,
+        "RAQ-VAE": 25.423813860227362,
+        "MDRQ": 30.930412859297107
+      }
+    },
+    {
+      "roi_xyxy": [
+        216,
+        256,
+        360,
+        400
+      ],
+      "minimum_psnr_advantage_db": 0.45791983164655375,
+      "original_gradient_rms": 14.109588355751034,
+      "patch_psnr_db": {
+        "JPEG": 30.09153664552973,
+        "RAQ-VAE": 24.416839953977988,
+        "MDRQ": 30.549456477176285
+      }
+    }
+  ],
+  "kodim13.png": [
+    {
+      "roi_xyxy": [
+        88,
+        16,
+        232,
+        160
+      ],
+      "minimum_psnr_advantage_db": 2.8721074552619763,
+      "original_gradient_rms": 14.398000183703237,
+      "patch_psnr_db": {
+        "JPEG": 25.167161772043226,
+        "RAQ-VAE": 28.65369270982572,
+        "MDRQ": 31.525800165087695
+      }
+    },
+    {
+      "roi_xyxy": [
+        168,
+        16,
+        312,
+        160
+      ],
+      "minimum_psnr_advantage_db": 2.7569344404984095,
+      "original_gradient_rms": 17.28273407452501,
+      "patch_psnr_db": {
+        "JPEG": 24.192223296126343,
+        "RAQ-VAE": 27.320280246143113,
+        "MDRQ": 30.07721468664152
+      }
+    },
+    {
+      "roi_xyxy": [
+        88,
+        120,
+        232,
+        264
+      ],
+      "minimum_psnr_advantage_db": 2.5926703935730675,
+      "original_gradient_rms": 15.632667819875094,
+      "patch_psnr_db": {
+        "JPEG": 24.515815424443606,
+        "RAQ-VAE": 27.399631151425936,
+        "MDRQ": 29.99230154499901
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        24,
+        160,
+        168
+      ],
+      "minimum_psnr_advantage_db": 2.545043674428029,
+      "original_gradient_rms": 15.32184018461842,
+      "patch_psnr_db": {
+        "JPEG": 24.708484708819142,
+        "RAQ-VAE": 28.32570097180794,
+        "MDRQ": 30.87074464623597
+      }
+    },
+    {
+      "roi_xyxy": [
+        576,
+        96,
+        720,
+        240
+      ],
+      "minimum_psnr_advantage_db": 2.452266631436353,
+      "original_gradient_rms": 14.779030060646084,
+      "patch_psnr_db": {
+        "JPEG": 24.858380056726407,
+        "RAQ-VAE": 28.943021485640728,
+        "MDRQ": 31.39528811707708
+      }
+    },
+    {
+      "roi_xyxy": [
+        208,
+        88,
+        352,
+        232
+      ],
+      "minimum_psnr_advantage_db": 2.300981772749534,
+      "original_gradient_rms": 15.426336707857743,
+      "patch_psnr_db": {
+        "JPEG": 24.52969919536622,
+        "RAQ-VAE": 27.61929203660244,
+        "MDRQ": 29.920273809351976
+      }
+    }
+  ],
+  "kodim14.png": [
+    {
+      "roi_xyxy": [
+        24,
+        32,
+        168,
+        176
+      ],
+      "minimum_psnr_advantage_db": 6.521242019490046,
+      "original_gradient_rms": 14.153417930146638,
+      "patch_psnr_db": {
+        "JPEG": 25.86996634817916,
+        "RAQ-VAE": 25.913329500754156,
+        "MDRQ": 32.434571520244205
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        104,
+        160,
+        248
+      ],
+      "minimum_psnr_advantage_db": 6.296037425455899,
+      "original_gradient_rms": 19.11147022796619,
+      "patch_psnr_db": {
+        "JPEG": 24.083226484306195,
+        "RAQ-VAE": 24.066762692147524,
+        "MDRQ": 30.379263909762095
+      }
+    },
+    {
+      "roi_xyxy": [
+        96,
+        40,
+        240,
+        184
+      ],
+      "minimum_psnr_advantage_db": 6.288645046005035,
+      "original_gradient_rms": 14.36970317917226,
+      "patch_psnr_db": {
+        "JPEG": 25.880389039656478,
+        "RAQ-VAE": 25.839279163509495,
+        "MDRQ": 32.16903408566151
+      }
+    },
+    {
+      "roi_xyxy": [
+        288,
+        112,
+        432,
+        256
+      ],
+      "minimum_psnr_advantage_db": 5.865311539139335,
+      "original_gradient_rms": 18.512696983619474,
+      "patch_psnr_db": {
+        "JPEG": 24.719414744967523,
+        "RAQ-VAE": 24.952221844435464,
+        "MDRQ": 30.817533383574798
+      }
+    },
+    {
+      "roi_xyxy": [
+        472,
+        144,
+        616,
+        288
+      ],
+      "minimum_psnr_advantage_db": 5.72898298645489,
+      "original_gradient_rms": 16.467890577772074,
+      "patch_psnr_db": {
+        "JPEG": 24.889780016251066,
+        "RAQ-VAE": 24.883196336922687,
+        "MDRQ": 30.618763002705954
+      }
+    },
+    {
+      "roi_xyxy": [
+        368,
+        128,
+        512,
+        272
+      ],
+      "minimum_psnr_advantage_db": 5.642284957900758,
+      "original_gradient_rms": 19.930203249633696,
+      "patch_psnr_db": {
+        "JPEG": 24.382141436119955,
+        "RAQ-VAE": 24.272304411847692,
+        "MDRQ": 30.02442639402071
+      }
+    }
+  ],
+  "kodim15.png": [
+    {
+      "roi_xyxy": [
+        240,
+        264,
+        384,
+        408
+      ],
+      "minimum_psnr_advantage_db": 3.7131794691618087,
+      "original_gradient_rms": 12.492892011704287,
+      "patch_psnr_db": {
+        "JPEG": 27.7150886358365,
+        "RAQ-VAE": 20.668371546516898,
+        "MDRQ": 31.42826810499831
+      }
+    },
+    {
+      "roi_xyxy": [
+        168,
+        352,
+        312,
+        496
+      ],
+      "minimum_psnr_advantage_db": 3.3744982207873697,
+      "original_gradient_rms": 12.250228463310243,
+      "patch_psnr_db": {
+        "JPEG": 28.325681987262303,
+        "RAQ-VAE": 18.207617575959485,
+        "MDRQ": 31.700180208049673
+      }
+    },
+    {
+      "roi_xyxy": [
+        280,
+        352,
+        424,
+        496
+      ],
+      "minimum_psnr_advantage_db": 3.22488644881169,
+      "original_gradient_rms": 12.454113956534897,
+      "patch_psnr_db": {
+        "JPEG": 28.44956836682091,
+        "RAQ-VAE": 22.881269250661994,
+        "MDRQ": 31.674454815632597
+      }
+    },
+    {
+      "roi_xyxy": [
+        392,
+        64,
+        536,
+        208
+      ],
+      "minimum_psnr_advantage_db": 2.764046349584251,
+      "original_gradient_rms": 12.734451364665816,
+      "patch_psnr_db": {
+        "JPEG": 28.612970312351024,
+        "RAQ-VAE": 28.631530460037816,
+        "MDRQ": 31.39557680962207
+      }
+    },
+    {
+      "roi_xyxy": [
+        320,
+        40,
+        464,
+        184
+      ],
+      "minimum_psnr_advantage_db": 2.57202466607738,
+      "original_gradient_rms": 12.242967136785742,
+      "patch_psnr_db": {
+        "JPEG": 29.735988582045067,
+        "RAQ-VAE": 28.956448053017766,
+        "MDRQ": 32.30801324812244
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        296,
+        664,
+        440
+      ],
+      "minimum_psnr_advantage_db": 2.492892841350401,
+      "original_gradient_rms": 12.175288855365066,
+      "patch_psnr_db": {
+        "JPEG": 33.7575938762595,
+        "RAQ-VAE": 32.81479287758644,
+        "MDRQ": 36.2504867176099
+      }
+    }
+  ],
+  "kodim16.png": [
+    {
+      "roi_xyxy": [
+        480,
+        168,
+        624,
+        312
+      ],
+      "minimum_psnr_advantage_db": 3.5000051963780914,
+      "original_gradient_rms": 12.001413060104573,
+      "patch_psnr_db": {
+        "JPEG": 29.57060882595687,
+        "RAQ-VAE": 29.615142544660436,
+        "MDRQ": 33.11514774103853
+      }
+    },
+    {
+      "roi_xyxy": [
+        240,
+        160,
+        384,
+        304
+      ],
+      "minimum_psnr_advantage_db": 3.1934952658852818,
+      "original_gradient_rms": 12.712979214571037,
+      "patch_psnr_db": {
+        "JPEG": 30.081685842709113,
+        "RAQ-VAE": 30.08464070873635,
+        "MDRQ": 33.278135974621634
+      }
+    },
+    {
+      "roi_xyxy": [
+        568,
+        216,
+        712,
+        360
+      ],
+      "minimum_psnr_advantage_db": 2.9069124307266025,
+      "original_gradient_rms": 12.042489778702594,
+      "patch_psnr_db": {
+        "JPEG": 29.047484410626634,
+        "RAQ-VAE": 29.92764616970035,
+        "MDRQ": 32.834558600426945
+      }
+    },
+    {
+      "roi_xyxy": [
+        280,
+        224,
+        424,
+        368
+      ],
+      "minimum_psnr_advantage_db": 2.8160797798545123,
+      "original_gradient_rms": 13.598717951191254,
+      "patch_psnr_db": {
+        "JPEG": 29.596557390593308,
+        "RAQ-VAE": 30.52035555099024,
+        "MDRQ": 33.33643533084475
+      }
+    },
+    {
+      "roi_xyxy": [
+        432,
+        112,
+        576,
+        256
+      ],
+      "minimum_psnr_advantage_db": 2.77561839610671,
+      "original_gradient_rms": 12.19114970148253,
+      "patch_psnr_db": {
+        "JPEG": 29.859857112107882,
+        "RAQ-VAE": 29.059973157216955,
+        "MDRQ": 32.63547550821459
+      }
+    },
+    {
+      "roi_xyxy": [
+        48,
+        352,
+        192,
+        496
+      ],
+      "minimum_psnr_advantage_db": 2.657809927201126,
+      "original_gradient_rms": 14.658177804392574,
+      "patch_psnr_db": {
+        "JPEG": 28.94473385096271,
+        "RAQ-VAE": 30.999543771835967,
+        "MDRQ": 33.657353699037095
+      }
+    }
+  ],
+  "kodim17.png": [
+    {
+      "roi_xyxy": [
+        352,
+        272,
+        496,
+        416
+      ],
+      "minimum_psnr_advantage_db": 4.680182211761159,
+      "original_gradient_rms": 12.575009863357014,
+      "patch_psnr_db": {
+        "JPEG": 29.727116985370436,
+        "RAQ-VAE": 31.659399495753092,
+        "MDRQ": 36.339581707514256
+      }
+    },
+    {
+      "roi_xyxy": [
+        88,
+        120,
+        232,
+        264
+      ],
+      "minimum_psnr_advantage_db": 4.5611410962179075,
+      "original_gradient_rms": 12.309262070747108,
+      "patch_psnr_db": {
+        "JPEG": 30.273765563777154,
+        "RAQ-VAE": 30.415664559543636,
+        "MDRQ": 34.976805655761545
+      }
+    },
+    {
+      "roi_xyxy": [
+        176,
+        472,
+        320,
+        616
+      ],
+      "minimum_psnr_advantage_db": 4.257023368847879,
+      "original_gradient_rms": 12.26031788642539,
+      "patch_psnr_db": {
+        "JPEG": 29.518610979734635,
+        "RAQ-VAE": 30.835429333574076,
+        "MDRQ": 35.09245270242196
+      }
+    },
+    {
+      "roi_xyxy": [
+        304,
+        216,
+        448,
+        360
+      ],
+      "minimum_psnr_advantage_db": 4.196310241909598,
+      "original_gradient_rms": 12.061537041308808,
+      "patch_psnr_db": {
+        "JPEG": 30.289498788094576,
+        "RAQ-VAE": 30.912122031850654,
+        "MDRQ": 35.10843227376025
+      }
+    },
+    {
+      "roi_xyxy": [
+        288,
+        536,
+        432,
+        680
+      ],
+      "minimum_psnr_advantage_db": 4.172994029785311,
+      "original_gradient_rms": 12.255127598351748,
+      "patch_psnr_db": {
+        "JPEG": 29.605776785061785,
+        "RAQ-VAE": 28.594846487053758,
+        "MDRQ": 33.7787708148471
+      }
+    },
+    {
+      "roi_xyxy": [
+        104,
+        48,
+        248,
+        192
+      ],
+      "minimum_psnr_advantage_db": 3.8920039143683556,
+      "original_gradient_rms": 13.253863611217628,
+      "patch_psnr_db": {
+        "JPEG": 29.947486355710197,
+        "RAQ-VAE": 29.973278156181912,
+        "MDRQ": 33.865282070550265
+      }
+    }
+  ],
+  "kodim18.png": [
+    {
+      "roi_xyxy": [
+        72,
+        448,
+        216,
+        592
+      ],
+      "minimum_psnr_advantage_db": 5.802096416864419,
+      "original_gradient_rms": 14.297720722749958,
+      "patch_psnr_db": {
+        "JPEG": 25.65698701412794,
+        "RAQ-VAE": 26.206337936444953,
+        "MDRQ": 32.00843435330937
+      }
+    },
+    {
+      "roi_xyxy": [
+        128,
+        400,
+        272,
+        544
+      ],
+      "minimum_psnr_advantage_db": 5.243658554238784,
+      "original_gradient_rms": 13.489141414220688,
+      "patch_psnr_db": {
+        "JPEG": 26.210592734026356,
+        "RAQ-VAE": 26.592707876677252,
+        "MDRQ": 31.836366430916033
+      }
+    },
+    {
+      "roi_xyxy": [
+        264,
+        96,
+        408,
+        240
+      ],
+      "minimum_psnr_advantage_db": 4.837777430125737,
+      "original_gradient_rms": 12.1025719997891,
+      "patch_psnr_db": {
+        "JPEG": 27.83544456016639,
+        "RAQ-VAE": 28.571430707739577,
+        "MDRQ": 33.40920813786531
+      }
+    },
+    {
+      "roi_xyxy": [
+        352,
+        104,
+        496,
+        248
+      ],
+      "minimum_psnr_advantage_db": 4.621764204503446,
+      "original_gradient_rms": 12.663096105619022,
+      "patch_psnr_db": {
+        "JPEG": 27.395677285844986,
+        "RAQ-VAE": 29.851977234837758,
+        "MDRQ": 34.473741439341204
+      }
+    },
+    {
+      "roi_xyxy": [
+        112,
+        192,
+        256,
+        336
+      ],
+      "minimum_psnr_advantage_db": 4.602127130249705,
+      "original_gradient_rms": 15.337891813351229,
+      "patch_psnr_db": {
+        "JPEG": 26.159446395903593,
+        "RAQ-VAE": 27.669790015179082,
+        "MDRQ": 32.27191714542879
+      }
+    },
+    {
+      "roi_xyxy": [
+        16,
+        400,
+        160,
+        544
+      ],
+      "minimum_psnr_advantage_db": 4.551451540445531,
+      "original_gradient_rms": 16.440726214327828,
+      "patch_psnr_db": {
+        "JPEG": 24.872728994805673,
+        "RAQ-VAE": 26.422426434761558,
+        "MDRQ": 30.97387797520709
+      }
+    }
+  ],
+  "kodim19.png": [
+    {
+      "roi_xyxy": [
+        248,
+        40,
+        392,
+        184
+      ],
+      "minimum_psnr_advantage_db": 4.975345399356757,
+      "original_gradient_rms": 12.005800257426769,
+      "patch_psnr_db": {
+        "JPEG": 31.15991985314258,
+        "RAQ-VAE": 29.847643013587927,
+        "MDRQ": 36.13526525249934
+      }
+    },
+    {
+      "roi_xyxy": [
+        120,
+        312,
+        264,
+        456
+      ],
+      "minimum_psnr_advantage_db": 4.914411233442689,
+      "original_gradient_rms": 12.07729660129691,
+      "patch_psnr_db": {
+        "JPEG": 30.18805437086821,
+        "RAQ-VAE": 30.239243800298695,
+        "MDRQ": 35.15365503374138
+      }
+    },
+    {
+      "roi_xyxy": [
+        296,
+        96,
+        440,
+        240
+      ],
+      "minimum_psnr_advantage_db": 4.68206604095829,
+      "original_gradient_rms": 12.48091429624058,
+      "patch_psnr_db": {
+        "JPEG": 30.714207020295966,
+        "RAQ-VAE": 30.644734069364826,
+        "MDRQ": 35.396273061254256
+      }
+    },
+    {
+      "roi_xyxy": [
+        320,
+        168,
+        464,
+        312
+      ],
+      "minimum_psnr_advantage_db": 4.30988587713559,
+      "original_gradient_rms": 13.375545799415272,
+      "patch_psnr_db": {
+        "JPEG": 30.20964746778847,
+        "RAQ-VAE": 30.17611486995201,
+        "MDRQ": 34.51953334492406
+      }
+    },
+    {
+      "roi_xyxy": [
+        32,
+        232,
+        176,
+        376
+      ],
+      "minimum_psnr_advantage_db": 4.1894472565720395,
+      "original_gradient_rms": 12.149093226063867,
+      "patch_psnr_db": {
+        "JPEG": 32.032588348367305,
+        "RAQ-VAE": 31.818257487488417,
+        "MDRQ": 36.22203560493934
+      }
+    },
+    {
+      "roi_xyxy": [
+        288,
+        520,
+        432,
+        664
+      ],
+      "minimum_psnr_advantage_db": 4.005216060037478,
+      "original_gradient_rms": 16.611446730483003,
+      "patch_psnr_db": {
+        "JPEG": 27.961352369280064,
+        "RAQ-VAE": 28.220530135458507,
+        "MDRQ": 32.22574619549599
+      }
+    }
+  ],
+  "kodim20.png": [
+    {
+      "roi_xyxy": [
+        336,
+        336,
+        480,
+        480
+      ],
+      "minimum_psnr_advantage_db": 4.991835430808598,
+      "original_gradient_rms": 17.607851607467286,
+      "patch_psnr_db": {
+        "JPEG": 29.54443250902053,
+        "RAQ-VAE": 29.52095835126164,
+        "MDRQ": 34.53626793982913
+      }
+    },
+    {
+      "roi_xyxy": [
+        400,
+        296,
+        544,
+        440
+      ],
+      "minimum_psnr_advantage_db": 4.814808409377922,
+      "original_gradient_rms": 17.863203375057363,
+      "patch_psnr_db": {
+        "JPEG": 29.694806021190576,
+        "RAQ-VAE": 29.124865518812506,
+        "MDRQ": 34.5096144305685
+      }
+    },
+    {
+      "roi_xyxy": [
+        216,
+        320,
+        360,
+        464
+      ],
+      "minimum_psnr_advantage_db": 4.7502642859170265,
+      "original_gradient_rms": 12.644609470038539,
+      "patch_psnr_db": {
+        "JPEG": 30.320548884210705,
+        "RAQ-VAE": 30.302090623947375,
+        "MDRQ": 35.070813170127735
+      }
+    },
+    {
+      "roi_xyxy": [
+        472,
+        304,
+        616,
+        448
+      ],
+      "minimum_psnr_advantage_db": 4.687054733016193,
+      "original_gradient_rms": 13.135803647666142,
+      "patch_psnr_db": {
+        "JPEG": 29.880725101931095,
+        "RAQ-VAE": 29.707285638191962,
+        "MDRQ": 34.56777983494729
+      }
+    },
+    {
+      "roi_xyxy": [
+        144,
+        344,
+        288,
+        488
+      ],
+      "minimum_psnr_advantage_db": 4.018113714287769,
+      "original_gradient_rms": 17.01116724326366,
+      "patch_psnr_db": {
+        "JPEG": 28.467414597973026,
+        "RAQ-VAE": 28.561887760034253,
+        "MDRQ": 32.580001474322025
+      }
+    },
+    {
+      "roi_xyxy": [
+        448,
+        232,
+        592,
+        376
+      ],
+      "minimum_psnr_advantage_db": 3.9863417438580493,
+      "original_gradient_rms": 12.041863109366115,
+      "patch_psnr_db": {
+        "JPEG": 32.42585204427253,
+        "RAQ-VAE": 28.829808374666882,
+        "MDRQ": 36.41219378813058
+      }
+    }
+  ],
+  "kodim21.png": [
+    {
+      "roi_xyxy": [
+        40,
+        128,
+        184,
+        272
+      ],
+      "minimum_psnr_advantage_db": 5.601026963430442,
+      "original_gradient_rms": 15.64034509536167,
+      "patch_psnr_db": {
+        "JPEG": 27.801045463192157,
+        "RAQ-VAE": 26.94896217312386,
+        "MDRQ": 33.4020724266226
+      }
+    },
+    {
+      "roi_xyxy": [
+        112,
+        136,
+        256,
+        280
+      ],
+      "minimum_psnr_advantage_db": 5.3308935309978835,
+      "original_gradient_rms": 18.417893983798873,
+      "patch_psnr_db": {
+        "JPEG": 27.46922439359669,
+        "RAQ-VAE": 27.357582601876523,
+        "MDRQ": 32.80011792459457
+      }
+    },
+    {
+      "roi_xyxy": [
+        184,
+        144,
+        328,
+        288
+      ],
+      "minimum_psnr_advantage_db": 4.267283613277245,
+      "original_gradient_rms": 16.61270461858216,
+      "patch_psnr_db": {
+        "JPEG": 28.2930681660428,
+        "RAQ-VAE": 27.728947096052885,
+        "MDRQ": 32.560351779320044
+      }
+    },
+    {
+      "roi_xyxy": [
+        384,
+        168,
+        528,
+        312
+      ],
+      "minimum_psnr_advantage_db": 4.246292041237922,
+      "original_gradient_rms": 12.309216630903634,
+      "patch_psnr_db": {
+        "JPEG": 28.617511354071542,
+        "RAQ-VAE": 29.07601400987206,
+        "MDRQ": 33.32230605110999
+      }
+    },
+    {
+      "roi_xyxy": [
+        480,
+        192,
+        624,
+        336
+      ],
+      "minimum_psnr_advantage_db": 3.558908246513906,
+      "original_gradient_rms": 12.033505720359921,
+      "patch_psnr_db": {
+        "JPEG": 28.835747931903573,
+        "RAQ-VAE": 30.105913692005068,
+        "MDRQ": 33.66482193851897
+      }
+    },
+    {
+      "roi_xyxy": [
+        304,
+        144,
+        448,
+        288
+      ],
+      "minimum_psnr_advantage_db": 3.5115429025289817,
+      "original_gradient_rms": 14.3775950238031,
+      "patch_psnr_db": {
+        "JPEG": 28.342628741395824,
+        "RAQ-VAE": 28.468200749382248,
+        "MDRQ": 31.979743651911228
+      }
+    }
+  ],
+  "kodim22.png": [
+    {
+      "roi_xyxy": [
+        328,
+        216,
+        472,
+        360
+      ],
+      "minimum_psnr_advantage_db": 3.886649961746623,
+      "original_gradient_rms": 12.321739969511416,
+      "patch_psnr_db": {
+        "JPEG": 27.630704305174767,
+        "RAQ-VAE": 27.651705630276233,
+        "MDRQ": 31.538355592022857
+      }
+    },
+    {
+      "roi_xyxy": [
+        24,
+        304,
+        168,
+        448
+      ],
+      "minimum_psnr_advantage_db": 3.754620520265716,
+      "original_gradient_rms": 12.246531160678659,
+      "patch_psnr_db": {
+        "JPEG": 28.47650325299938,
+        "RAQ-VAE": 29.681658688407637,
+        "MDRQ": 33.436279208673355
+      }
+    },
+    {
+      "roi_xyxy": [
+        416,
+        264,
+        560,
+        408
+      ],
+      "minimum_psnr_advantage_db": 3.704266087412043,
+      "original_gradient_rms": 12.162011224118698,
+      "patch_psnr_db": {
+        "JPEG": 27.987611524873188,
+        "RAQ-VAE": 28.78813410471027,
+        "MDRQ": 32.49240019212231
+      }
+    },
+    {
+      "roi_xyxy": [
+        104,
+        304,
+        248,
+        448
+      ],
+      "minimum_psnr_advantage_db": 3.3184043721227416,
+      "original_gradient_rms": 12.199456457653518,
+      "patch_psnr_db": {
+        "JPEG": 29.009735585451747,
+        "RAQ-VAE": 30.33425146923505,
+        "MDRQ": 33.652655841357785
+      }
+    },
+    {
+      "roi_xyxy": [
+        168,
+        16,
+        312,
+        160
+      ],
+      "minimum_psnr_advantage_db": 3.2773675204763424,
+      "original_gradient_rms": 15.919364545919729,
+      "patch_psnr_db": {
+        "JPEG": 28.94663811369748,
+        "RAQ-VAE": 29.015263251277716,
+        "MDRQ": 32.292630771754055
+      }
+    },
+    {
+      "roi_xyxy": [
+        176,
+        88,
+        320,
+        232
+      ],
+      "minimum_psnr_advantage_db": 2.950173617286724,
+      "original_gradient_rms": 16.863167928038532,
+      "patch_psnr_db": {
+        "JPEG": 27.069601354873743,
+        "RAQ-VAE": 27.102468080844528,
+        "MDRQ": 30.052641698131254
+      }
+    }
+  ],
+  "kodim23.png": [
+    {
+      "roi_xyxy": [
+        528,
+        160,
+        672,
+        304
+      ],
+      "minimum_psnr_advantage_db": 2.523535192322248,
+      "original_gradient_rms": 12.113142240508465,
+      "patch_psnr_db": {
+        "JPEG": 31.395687850326407,
+        "RAQ-VAE": 20.29288347907942,
+        "MDRQ": 33.91922304264865
+      }
+    },
+    {
+      "roi_xyxy": [
+        472,
+        208,
+        616,
+        352
+      ],
+      "minimum_psnr_advantage_db": 2.4315465080620595,
+      "original_gradient_rms": 12.322065946580373,
+      "patch_psnr_db": {
+        "JPEG": 31.301294496479557,
+        "RAQ-VAE": 23.080613458345272,
+        "MDRQ": 33.73284100454161
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        88,
+        664,
+        232
+      ],
+      "minimum_psnr_advantage_db": 1.234796238575762,
+      "original_gradient_rms": 13.22939880855482,
+      "patch_psnr_db": {
+        "JPEG": 31.485643697180137,
+        "RAQ-VAE": 19.822947025326762,
+        "MDRQ": 32.720439935755905
+      }
+    },
+    {
+      "roi_xyxy": [
+        96,
+        224,
+        240,
+        368
+      ],
+      "minimum_psnr_advantage_db": 0.9209166679706715,
+      "original_gradient_rms": 23.194816059531096,
+      "patch_psnr_db": {
+        "JPEG": 30.570170502209265,
+        "RAQ-VAE": 28.208773576496505,
+        "MDRQ": 31.491087170179938
+      }
+    },
+    {
+      "roi_xyxy": [
+        432,
+        144,
+        576,
+        288
+      ],
+      "minimum_psnr_advantage_db": 0.7202414736649916,
+      "original_gradient_rms": 21.98808295757356,
+      "patch_psnr_db": {
+        "JPEG": 29.692119759715638,
+        "RAQ-VAE": 21.706317278119297,
+        "MDRQ": 30.412361233380626
+      }
+    },
+    {
+      "roi_xyxy": [
+        464,
+        40,
+        608,
+        184
+      ],
+      "minimum_psnr_advantage_db": 0.3753697997329433,
+      "original_gradient_rms": 12.504260670138338,
+      "patch_psnr_db": {
+        "JPEG": 32.34379483806603,
+        "RAQ-VAE": 20.60199129037587,
+        "MDRQ": 32.71916463779897
+      }
+    }
+  ],
+  "kodim24.png": [
+    {
+      "roi_xyxy": [
+        432,
+        192,
+        576,
+        336
+      ],
+      "minimum_psnr_advantage_db": 4.16562451740189,
+      "original_gradient_rms": 13.78586129093292,
+      "patch_psnr_db": {
+        "JPEG": 27.71605557664231,
+        "RAQ-VAE": 31.53453531657835,
+        "MDRQ": 35.70015983398024
+      }
+    },
+    {
+      "roi_xyxy": [
+        360,
+        176,
+        504,
+        320
+      ],
+      "minimum_psnr_advantage_db": 3.666311992123234,
+      "original_gradient_rms": 13.568433460065709,
+      "patch_psnr_db": {
+        "JPEG": 27.752908575001864,
+        "RAQ-VAE": 32.043368256853896,
+        "MDRQ": 35.709680248977136
+      }
+    },
+    {
+      "roi_xyxy": [
+        384,
+        248,
+        528,
+        392
+      ],
+      "minimum_psnr_advantage_db": 3.624911313574718,
+      "original_gradient_rms": 13.70118818792107,
+      "patch_psnr_db": {
+        "JPEG": 27.33492177725672,
+        "RAQ-VAE": 32.005535271317044,
+        "MDRQ": 35.630446584891764
+      }
+    },
+    {
+      "roi_xyxy": [
+        520,
+        200,
+        664,
+        344
+      ],
+      "minimum_psnr_advantage_db": 3.437161746027045,
+      "original_gradient_rms": 12.426507529811614,
+      "patch_psnr_db": {
+        "JPEG": 29.762439184929505,
+        "RAQ-VAE": 31.1423101064628,
+        "MDRQ": 34.579471852489846
+      }
+    },
+    {
+      "roi_xyxy": [
+        120,
+        288,
+        264,
+        432
+      ],
+      "minimum_psnr_advantage_db": 3.064787322619411,
+      "original_gradient_rms": 12.164571516077991,
+      "patch_psnr_db": {
+        "JPEG": 26.930961703725792,
+        "RAQ-VAE": 32.16683030195107,
+        "MDRQ": 35.23161762457048
+      }
+    },
+    {
+      "roi_xyxy": [
+        312,
+        256,
+        456,
+        400
+      ],
+      "minimum_psnr_advantage_db": 2.9140830842013035,
+      "original_gradient_rms": 12.854823156100322,
+      "patch_psnr_db": {
+        "JPEG": 27.35503474965897,
+        "RAQ-VAE": 32.43294503681019,
+        "MDRQ": 35.34702812101149
+      }
+    }
+  ]
+}

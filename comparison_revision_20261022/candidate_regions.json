@@ -1,0 +1,178 @@
+[
+  {
+    "image": "kodim05.png",
+    "label": "arm",
+    "roi_xyxy": [
+      352,
+      64,
+      480,
+      192
+    ],
+    "roi_psnr_db": {
+      "JPEG": 21.385608849451106,
+      "RAQ-VAE": 24.628735648129393,
+      "MDRQ": 27.979464361825105
+    },
+    "minimum_MDRQ_advantage_db": 3.3507287136957125
+  },
+  {
+    "image": "kodim05.png",
+    "label": "sleeve lettering",
+    "roi_xyxy": [
+      360,
+      88,
+      456,
+      184
+    ],
+    "roi_psnr_db": {
+      "JPEG": 21.27117082777842,
+      "RAQ-VAE": 24.999933689568632,
+      "MDRQ": 27.88500039837397
+    },
+    "minimum_MDRQ_advantage_db": 2.8850667088053363
+  },
+  {
+    "image": "kodim08.png",
+    "label": "left sign",
+    "roi_xyxy": [
+      544,
+      296,
+      672,
+      424
+    ],
+    "roi_psnr_db": {
+      "JPEG": 22.515177245495046,
+      "RAQ-VAE": 25.00004531514235,
+      "MDRQ": 27.956366083408405
+    },
+    "minimum_MDRQ_advantage_db": 2.9563207682660533
+  },
+  {
+    "image": "kodim08.png",
+    "label": "right sign",
+    "roi_xyxy": [
+      632,
+      280,
+      760,
+      408
+    ],
+    "roi_psnr_db": {
+      "JPEG": 22.004965181680916,
+      "RAQ-VAE": 25.90105349230837,
+      "MDRQ": 28.49952642423652
+    },
+    "minimum_MDRQ_advantage_db": 2.59847293192815
+  },
+  {
+    "image": "kodim14.png",
+    "label": "raft lettering",
+    "roi_xyxy": [
+      504,
+      368,
+      648,
+      448
+    ],
+    "roi_psnr_db": {
+      "JPEG": 24.2115348887748,
+      "RAQ-VAE": 23.97321936805791,
+      "MDRQ": 26.950608108104895
+    },
+    "minimum_MDRQ_advantage_db": 2.739073219330095
+  },
+  {
+    "image": "kodim14.png",
+    "label": "raft square",
+    "roi_xyxy": [
+      504,
+      320,
+      648,
+      464
+    ],
+    "roi_psnr_db": {
+      "JPEG": 23.858114107617432,
+      "RAQ-VAE": 23.69911499463855,
+      "MDRQ": 27.506593699198124
+    },
+    "minimum_MDRQ_advantage_db": 3.648479591580692
+  },
+  {
+    "image": "kodim20.png",
+    "label": "aircraft lettering",
+    "roi_xyxy": [
+      224,
+      232,
+      368,
+      376
+    ],
+    "roi_psnr_db": {
+      "JPEG": 29.024993727492728,
+      "RAQ-VAE": 26.835109184654513,
+      "MDRQ": 29.06326796990787
+    },
+    "minimum_MDRQ_advantage_db": 0.03827424241514166
+  },
+  {
+    "image": "kodim03.png",
+    "label": "hat lettering",
+    "roi_xyxy": [
+      104,
+      112,
+      248,
+      256
+    ],
+    "roi_psnr_db": {
+      "JPEG": 32.158633417489355,
+      "RAQ-VAE": 19.920740171752037,
+      "MDRQ": 25.12505262376463
+    },
+    "minimum_MDRQ_advantage_db": -7.033580793724724
+  },
+  {
+    "image": "kodim06.png",
+    "label": "boat name square",
+    "roi_xyxy": [
+      264,
+      304,
+      408,
+      448
+    ],
+    "roi_psnr_db": {
+      "JPEG": 26.830365435581378,
+      "RAQ-VAE": 26.584134839376222,
+      "MDRQ": 32.4151181465156
+    },
+    "minimum_MDRQ_advantage_db": 5.584752710934225
+  },
+  {
+    "image": "kodim06.png",
+    "label": "boat name tight",
+    "roi_xyxy": [
+      280,
+      332,
+      408,
+      396
+    ],
+    "roi_psnr_db": {
+      "JPEG": 25.886093900023592,
+      "RAQ-VAE": 27.30763172128078,
+      "MDRQ": 32.07013347040617
+    },
+    "minimum_MDRQ_advantage_db": 4.762501749125388
+  },
+  {
+    "image": "kodim14.png",
+    "label": "selected raft text square",
+    "roi_xyxy": [
+      508,
+      352,
+      636,
+      480
+    ],
+    "roi_psnr_db": {
+      "JPEG": 23.705792525709096,
+      "RAQ-VAE": 24.26052153872837,
+      "MDRQ": 27.229132732270244
+    },
+    "minimum_MDRQ_advantage_db": 2.968611193541875
+  }
+]

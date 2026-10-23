@@ -4,6 +4,7 @@ The legacy padded mode fills the requested channel budget explicitly. The neares
 mode chooses the closest naturally occurring transmission ratio and adds only the
 padding required by LDPC/modulation. Model and external reference code are unchanged.
 Use --target-k to select a fixed shared codebook without artificial budget padding.
+Use --console-only to read the checkpoint in place without saving test artifacts.
 """
 import os
 import sys
@@ -35,6 +36,8 @@ import numpy as np
 import torch
 from torchvision.utils import save_image
 
+from cscr import build_cscr_mapping
+
 MODEL_CLASS = RAQVAE_TWO
 SOURCE_INDEX_COUNT = 5120
 OUTPUT_TAG = "seq2seq"
@@ -42,6 +45,50 @@ SPATIAL_SCALES = {"bottom": "1/4", "top": "1/8"}
 DUAL_K = False
 BOTTOM_INDEX_COUNT = 4096
 TOP_INDEX_COUNT = 1024
+
+
+def evaluation_geometry(image_shapes=None):
+    """Keep legacy 256-square geometry unless an entry supplies native shapes."""
+    shapes = tuple(sorted(set(tuple(shape) for shape in (
+        image_shapes if image_shapes is not None else ((256, 256),)
+    ))))
+    stride = max(int(scale.split("/")[1]) for scale in SPATIAL_SCALES.values())
+    if not shapes or any(
+        height <= 0 or width <= 0 or height % stride or width % stride
+        for height, width in shapes
+    ):
+        raise ValueError(f"Image height and width must be positive multiples of {stride}")
+    pixel_counts = {height * width for height, width in shapes}
+    if len(pixel_counts) != 1:
+        raise ValueError("Native images must have equal pixel counts; portrait/landscape may differ")
+    pixels = pixel_counts.pop()
+    counts = (SOURCE_INDEX_COUNT, BOTTOM_INDEX_COUNT, TOP_INDEX_COUNT)
+    if any(pixels * count % (256 * 256) for count in counts):
+        raise ValueError("Image dimensions do not match the model's latent strides")
+    source, bottom, top = (pixels * count // (256 * 256) for count in counts)
+    return {
+        "shapes": shapes, "pixels": pixels, "source_values": 3 * pixels,
+        "source_indices": source, "bottom_indices": bottom, "top_indices": top,
+    }
+
+
+def dataset_image_shapes(dataset):
+    """Read image headers only; retain the original height and width."""
+    from PIL import Image
+
+    directory = Path(dataset)
+    if not directory.is_dir():
+        raise ValueError(f"Dataset directory does not exist: {directory}")
+    files = [path for path in directory.iterdir()
+             if path.is_file() and path.suffix.lower() in (".png", ".jpg", ".jpeg")]
+    if len(files) != 24:
+        raise ValueError(f"Expected all 24 Kodak images, found {len(files)}")
+    shapes = []
+    for path in files:
+        with Image.open(path) as image:
+            width, height = image.size
+            shapes.append((height, width))
+    return shapes
 
 
 def ms_ssim_to_db(ms_ssim):
@@ -251,6 +298,7 @@ def transmit_ldpc_stream_exact(
     ldpc_decode,
     channel,
     rician_k_factor,
+    use_actual_noise_variance=True,
 ):
     """Transmit one combined stream using the same receiver as RAQ-RVQ."""
     flat_bits = np.asarray(flat_bits, dtype=np.uint8).reshape(-1)
@@ -281,12 +329,18 @@ def transmit_ldpc_stream_exact(
     else:
         raise ValueError(f"Unsupported channel: {channel!r}")
 
+    # Ours-RAQ's historical receiver derives N0 directly from the configured
+    # SNR.  Callers can select that convention by withholding the generated
+    # block variance while leaving the actual channel samples unchanged.
+    receiver_noise_variance = (
+        noise_variance if use_actual_noise_variance else None
+    )
     llrs = calculate_llr(
         received,
         target_snr,
         device,
         channel_gain=channel_gain,
-        noise_variance=noise_variance,
+        noise_variance=receiver_noise_variance,
     ).reshape(-1)
     decoded = np.asarray(
         ldpc_decode(llrs[:coded_bits].detach().cpu().numpy(), ldpc_code)
@@ -423,20 +477,23 @@ def format_console_result(report, results_path):
     codebook_text = (f"K_bottom={meta['target_K_bottom']} | K_top={meta['target_K_top']}"
                      if meta.get("dual_k") else f"K={meta['target_K_shared']}")
     selected_channel = channel_label(meta["channel"], meta["rician_k_factor"])
+    cscr_text = (" | CSCR=on" if meta.get("cscr", {}).get("enabled") else
+                 " | CSCR=off" if results_path is None else "")
+    header = (f"\n测试完成：{report['num_images']} 张图片\n"
+              if results_path is not None else "\n")
+    footer = f"\n结果文件：{results_path}" if results_path is not None else ""
     return (
-        f"\n测试完成：{report['num_images']} 张图片\n"
-        f"配置：{codebook_text} | LDPC {rate} | "
+        header + f"配置：{codebook_text} | LDPC {rate} | "
         f"{meta['modulation'].upper()} | {selected_channel} | "
-        f"SNR={meta['snr_db']:g} dB\n"
+        f"SNR={meta['snr_db']:g} dB{cscr_text}\n"
         f"PSNR：{metrics['psnr']:.4f} dB\n"
         f"MS-SSIM：{format_ms_ssim(metrics['ms_ssim'])}\n"
-        f"实际传输比：{ratio:.8f}（约 1/{1 / ratio:.4f}）\n"
-        f"结果文件：{results_path}"
+        f"实际传输比：{ratio:.8f}（约 1/{1 / ratio:.4f}）" + footer
     )
 
 
 @torch.no_grad()
-def main():
+def main(argv=None, *, native_resolution=False):
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-dir", required=True)
     parser.add_argument("--checkpoint", help="Defaults to the current recorded best validation checkpoint")
@@ -469,13 +526,21 @@ def main():
     parser.add_argument("--target-k", type=int, help="Target codebook size shared by top/bottom; trained powers of two only")
     parser.add_argument("--bottom-k", type=int, help="Dual-K mode: fixed bottom codebook size")
     parser.add_argument("--top-k", type=int, help="Dual-K mode: fixed top codebook size")
+    parser.add_argument(
+        "--cscr", action=argparse.BooleanOptionalAction, default=False,
+        help="Apply training-free cosine-greedy/Gray labels to both target codebooks (default: off)",
+    )
     parser.add_argument("--ratio-denominator", type=float, default=48.0)
     parser.add_argument("--rate-policy", choices=["fixed", "padded", "nearest"],
                         help="Default: fixed when --target-k is given, otherwise legacy padded mode")
     parser.add_argument("--dry-run", action="store_true", help="Validate arguments and print rate plan without evaluating or creating output")
     parser.add_argument("--concise", action="store_true",
                         help="Only print the final channel-test summary (apart from dependency messages)")
-    args = parser.parse_args()
+    parser.add_argument("--console-only", action="store_true",
+                        help="Read the original checkpoint and write no test artifacts; also return the report in memory")
+    args = parser.parse_args(argv)
+    if args.console_only:
+        args.concise = True
     if DUAL_K:
         if args.bottom_k is None or args.top_k is None:
             parser.error("Dual-K model requires both --bottom-k and --top-k")
@@ -503,29 +568,36 @@ def main():
     modulation_bits = {"bpsk": 1, "qpsk": 2, "16qam": 4}[args.modulation]
     ldpc_k, ldpc_n = int(256 * args.ldpc_rate), 256
     try:
+        geometry = evaluation_geometry(
+            dataset_image_shapes(args.dataset) if native_resolution else None
+        )
         if DUAL_K:
             plan = dual_k_transmission_plan(
-                BOTTOM_INDEX_COUNT, TOP_INDEX_COUNT, args.bottom_k, args.top_k,
-                3 * 256 * 256, ldpc_k, ldpc_n, modulation_bits,
+                geometry["bottom_indices"], geometry["top_indices"], args.bottom_k, args.top_k,
+                geometry["source_values"], ldpc_k, ldpc_n, modulation_bits,
                 args.ratio_denominator, model_args.num_embeddings_min,
                 model_args.num_embeddings_max,
             )
         else:
             plan = transmission_plan(
-                SOURCE_INDEX_COUNT, 3 * 256 * 256, ldpc_k, ldpc_n,
+                geometry["source_indices"], geometry["source_values"], ldpc_k, ldpc_n,
                 modulation_bits, args.ratio_denominator, args.rate_policy,
                 model_args.num_embeddings_min, model_args.num_embeddings_max,
                 args.target_k,
             )
     except ValueError as error:
         parser.error(str(error))
+    if native_resolution:
+        sizes = " / ".join(f"{width}×{height}" for height, width in geometry["shapes"])
+        print(f"输入图像：原始尺寸 {sizes}（宽×高，不缩放、不裁剪）", flush=True)
     target_k = None if DUAL_K else plan["selected"]["K"]
     target_bottom_k = args.bottom_k if DUAL_K else target_k
     target_top_k = args.top_k if DUAL_K else target_k
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    output = local_path(args.output or ROOT / "runs" / (
-        (f"eval_{OUTPUT_TAG}_kb{target_bottom_k}_kt{target_top_k}_"
-         if DUAL_K else f"eval_{OUTPUT_TAG}_k{target_k}_") +
+    cscr_suffix = "_cscr" if args.cscr else ""
+    output = None if args.console_only else local_path(args.output or ROOT / "runs" / (
+        (f"eval_{OUTPUT_TAG}{cscr_suffix}_kb{target_bottom_k}_kt{target_top_k}_"
+         if DUAL_K else f"eval_{OUTPUT_TAG}{cscr_suffix}_k{target_k}_") +
         f"ldpc{ldpc_k}of{ldpc_n}_{args.modulation}_{args.channel}_"
         f"snr{args.snr:g}_{stamp}"))
     if not args.concise or args.dry_run:
@@ -534,20 +606,25 @@ def main():
         print(f"测试配置：{k_text} | LDPC {Fraction(args.ldpc_rate).limit_denominator()} | "
               f"{args.modulation.upper()} | "
               f"{channel_label(args.channel, args.rician_k_factor)} | "
-              f"SNR={args.snr:g} dB | 模式={args.rate_policy}", flush=True)
+              f"SNR={args.snr:g} dB | 模式={args.rate_policy}"
+              + (" | CSCR=on" if args.cscr else ""), flush=True)
     if args.dry_run:
         selected = plan["selected"]
         symbols = math.ceil((selected["source_payload_bits"] + plan["budget_padding_bits"]) / ldpc_k) * ldpc_n // modulation_bits
-        print(f"预计实际传输比：{symbols / (3 * 256 * 256):.8f}"
-              f"（约 1/{3 * 256 * 256 / symbols:.4f}）", flush=True)
-    if not args.concise or args.dry_run:
+        print(f"预计实际传输比：{symbols / geometry['source_values']:.8f}"
+              f"（约 1/{geometry['source_values'] / symbols:.4f}）", flush=True)
+    if not args.console_only and (not args.concise or args.dry_run):
         print(f"CHECKPOINT {source_checkpoint}\nOUTPUT {output}", flush=True)
     if args.dry_run:
         return
-    output.mkdir(parents=True, exist_ok=False)
-    snapshot = output / "checkpoint_snapshot.ckpt"
-    shutil.copy2(source_checkpoint, snapshot)
-    checkpoint = torch.load(snapshot, map_location="cpu", weights_only=False)
+    snapshot = None
+    checkpoint_path = source_checkpoint
+    if not args.console_only:
+        output.mkdir(parents=True, exist_ok=False)
+        snapshot = output / "checkpoint_snapshot.ckpt"
+        shutil.copy2(source_checkpoint, snapshot)
+        checkpoint_path = snapshot
+    checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     if not args.concise:
         print(f"SNAPSHOT {source_checkpoint} -> {snapshot}", flush=True)
 
@@ -587,14 +664,42 @@ def main():
         codebook_bottom = model.cbk2cbk(model.src.to(device), target_bottom).squeeze(1)
         codebook_top = model.cbk2cbk(model.src.to(device), target_top).squeeze(1)
         assert torch.isfinite(codebook_bottom).all() and torch.isfinite(codebook_top).all()
-        torch.save(codebook_bottom.cpu(), output / f"target_codebook_bottom_k{target_bottom_k}.pt")
-        torch.save(codebook_top.cpu(), output / f"target_codebook_top_k{target_top_k}.pt")
+        if not args.console_only:
+            torch.save(codebook_bottom.cpu(), output / f"target_codebook_bottom_k{target_bottom_k}.pt")
+            torch.save(codebook_top.cpu(), output / f"target_codebook_top_k{target_top_k}.pt")
     else:
         target = target_bottom
         codebook = model.cbk2cbk(model.src.to(device), target).squeeze(1)
         assert torch.isfinite(codebook).all()
         codebook_bottom = codebook_top = codebook
-        torch.save(codebook.cpu(), output / f"target_codebook_k{target_k}.pt")
+        if not args.console_only:
+            torch.save(codebook.cpu(), output / f"target_codebook_k{target_k}.pt")
+
+    cscr_mappings = (None, None)  # Bottom then top, matching the bitstream order.
+    cscr_metadata = {"enabled": args.cscr}
+    if args.cscr:
+        cscr_mappings = (
+            build_cscr_mapping(codebook_bottom),
+            build_cscr_mapping(codebook_top),
+        )
+        saved_mappings = {
+            branch: {name: tensor.cpu() for name, tensor in mapping.items()}
+            for branch, mapping in zip(("bottom", "top"), cscr_mappings)
+        }
+        if not args.console_only:
+            torch.save(saved_mappings, output / "cscr_mappings.pt")
+        cscr_metadata.update({
+            "method": "cosine_greedy_gray_v1",
+            "start": "largest_l2_norm",
+            "tie_break": "smallest_original_index",
+            "application": "map indices before LDPC; invert labels after LDPC; original codebooks unchanged",
+            "source_ber_definition": "errors in transmitted CSCR label bits after LDPC decoding",
+            "mappings_file": None if args.console_only else "cscr_mappings.pt",
+            **{
+                branch: {name: tensor.tolist() for name, tensor in mapping.items()}
+                for branch, mapping in saved_mappings.items()
+            },
+        })
 
     os.environ["SIMVQ_TEST_NO_RESIZE"] = "1"
     loader = get_dataloader(args.dataset, batch_size=1, shuffle=False, mode="test",
@@ -607,8 +712,9 @@ def main():
         ldpc = get_ldpc_code(ldpc_k, rate=args.ldpc_rate)
     assert ldpc["k"] == ldpc_k and ldpc["n"] == ldpc_n
     metadata = {
-        "source_checkpoint": str(source_checkpoint), "snapshot": str(snapshot),
-        "checkpoint_sha256": digest(snapshot),
+        "source_checkpoint": str(source_checkpoint),
+        "snapshot": str(snapshot) if snapshot is not None else None,
+        "checkpoint_sha256": digest(checkpoint_path),
         "checkpoint_epoch_index": checkpoint["epoch"],
         "checkpoint_epoch_number": checkpoint["epoch"] + 1,
         "checkpoint_global_step": checkpoint["global_step"],
@@ -618,8 +724,9 @@ def main():
         "source_K": model_args.num_embeddings, "dual_k": DUAL_K,
         "target_K_shared": target_k,
         "target_K_bottom": target_bottom_k, "target_K_top": target_top_k,
+        "cscr": cscr_metadata,
         "requested_target_K": args.target_k,
-        "source_index_count": SOURCE_INDEX_COUNT, "spatial_scales": SPATIAL_SCALES,
+        "source_index_count": geometry["source_indices"], "spatial_scales": SPATIAL_SCALES,
         "dataset": args.dataset, "dataset_order": filenames,
         "dataset_sha256": {name: digest(Path(args.dataset) / name)
                            for name in filenames},
@@ -650,7 +757,8 @@ def main():
         "padding_policy": ("only mandatory LDPC/modulation padding, no artificial budget padding"
                            if args.rate_policy != "padded" else
                            "explicit trailing zeros before LDPC to fill exact channel budget"),
-        "image_export": "PNG images clipped to [0,1] for visualization only; metrics computed before export",
+        "image_export": (None if args.console_only else
+                         "PNG images clipped to [0,1] for visualization only; metrics computed before export"),
         "gpu": torch.cuda.get_device_name(0),
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
         "created_at": datetime.datetime.now().astimezone().isoformat(),
@@ -663,21 +771,37 @@ def main():
             ]
         },
     }
-    write_json(output / "metadata.json", metadata)
+    if native_resolution:
+        metadata.update({
+            "native_resolution": True,
+            "image_shapes_hw": [list(shape) for shape in geometry["shapes"]],
+            "source_pixels_per_image": geometry["pixels"],
+            "bottom_index_count": geometry["bottom_indices"],
+            "top_index_count": geometry["top_indices"],
+        })
+    if not args.console_only:
+        write_json(output / "metadata.json", metadata)
     channel_suffix = (
         f"rician_k{args.rician_k_factor:g}"
         if args.channel == "rician"
         else "awgn"
     )
     channel_folder = f"channel_{channel_suffix}_{args.snr:g}db"
-    for name in ("reference", "no_channel", channel_folder):
-        (output / name).mkdir()
+    if not args.console_only:
+        for name in ("reference", "no_channel", channel_folder):
+            (output / name).mkdir()
     _reset_eval_seed(args.seed)
     rows = []
+    total_pixels = 0
+    total_source_values = 0
     for image_index, image in enumerate(loader):
         image = image.to(device)
-        if tuple(image.shape) != (1, 3, 256, 256):
+        if (image.ndim != 4 or tuple(image.shape[:2]) != (1, 3)
+                or tuple(image.shape[-2:]) not in geometry["shapes"]):
             raise ValueError(f"Unexpected image size without resizing: {image.shape}")
+        image_pixels = int(image.shape[-2] * image.shape[-1])
+        total_pixels += image_pixels
+        total_source_values += int(image.numel())
         result = (model(image, target_bottom, target_top) if DUAL_K
                   else model(image, target))
         forward_clean = result[4]
@@ -688,10 +812,16 @@ def main():
         clean = (model.decode_latent(index_top, index_bottom, target_bottom, target_top)
                  if DUAL_K else model.decode_latent(index_top, index_bottom, target))
         segments = []
-        for indices, segment_k in ((index_bottom, target_bottom_k),
-                                   (index_top, target_top_k)):
-            bits, shape, k = index_tensor_to_bits(indices, segment_k)
+        for indices, segment_k, mapping in (
+            (index_bottom, target_bottom_k, cscr_mappings[0]),
+            (index_top, target_top_k, cscr_mappings[1]),
+        ):
+            wire_indices = (mapping["index_to_label"][indices]
+                            if mapping is not None else indices)
+            bits, shape, k = index_tensor_to_bits(wire_indices, segment_k)
             roundtrip = bits_to_index_tensor(bits, shape, k).to(device)
+            if mapping is not None:
+                roundtrip = mapping["label_to_index"][roundtrip]
             assert torch.equal(indices, roundtrip), "Noiseless bit packing changed indices"
             segments.append((bits, shape, k))
         payload = np.concatenate([segment[0] for segment in segments])
@@ -720,10 +850,13 @@ def main():
             assert stats["channel_symbols"] * args.ratio_denominator == image.numel()
         received_indices = []
         offset = 0
-        for bits, shape, k in segments:
-            received_indices.append(bits_to_index_tensor(
+        for (bits, shape, k), mapping in zip(segments, cscr_mappings):
+            received = bits_to_index_tensor(
                 decoded[offset:offset + len(bits)], shape, k
-            ).to(device))
+            ).to(device)
+            if mapping is not None:
+                received = mapping["label_to_index"][received]
+            received_indices.append(received)
             offset += len(bits)
         received_bottom, received_top = received_indices
         quant_top = torch.nn.functional.embedding(received_top, codebook_top).permute(0, 3, 1, 2)
@@ -751,8 +884,8 @@ def main():
             "coded_bits": stats["coded_bits"], "transmitted_bits": stats["transmitted_bits"],
             "channel_symbols": stats["channel_symbols"],
             "transmission_ratio": stats["channel_symbols"] / image.numel(),
-            "source_payload_bpp": payload.size / (256 * 256),
-            "padded_payload_bpp": stats["ldpc_input_bits"] / (256 * 256),
+            "source_payload_bpp": payload.size / image_pixels,
+            "padded_payload_bpp": stats["ldpc_input_bits"] / image_pixels,
             "source_bit_errors": source_errors, "source_ber": source_errors / payload.size,
             "combined_bit_errors": stats["bit_errors"],
             "forward_vs_index_decode_max_abs": float((forward_clean - clean).abs().max()),
@@ -765,11 +898,12 @@ def main():
             ).tolist(),
         }
         rows.append(row)
-        for folder, tensor in (("reference", image), ("no_channel", clean),
-                               (channel_folder, reconstructed)):
-            save_image(((tensor + 1) / 2).clamp(0, 1), output / folder / filenames[image_index])
-        write_json(output / "progress.json", {"finished_images": len(rows), "total_images": 24,
-                                               "last_image": row})
+        if not args.console_only:
+            for folder, tensor in (("reference", image), ("no_channel", clean),
+                                   (channel_folder, reconstructed)):
+                save_image(((tensor + 1) / 2).clamp(0, 1), output / folder / filenames[image_index])
+            write_json(output / "progress.json", {"finished_images": len(rows), "total_images": 24,
+                                                   "last_image": row})
         if not args.concise:
             print(f"IMAGE {image_index + 1}/24 {filenames[image_index]} "
                   f"PSNR={channel_psnr:.4f} "
@@ -788,13 +922,16 @@ def main():
     metrics["ms_ssim_db"] = ms_ssim_to_db(metrics["ms_ssim"])
     report = {
         "metadata": metadata, "num_images": 24, "metrics": metrics, "totals": totals,
-        "source_payload_bpp": totals["source_payload_bits"] / (24 * 256 * 256),
-        "padded_payload_bpp": totals["ldpc_input_bits"] / (24 * 256 * 256),
-        "transmission_ratio": totals["channel_symbols"] / (24 * 3 * 256 * 256),
+        "source_payload_bpp": totals["source_payload_bits"] / total_pixels,
+        "padded_payload_bpp": totals["ldpc_input_bits"] / total_pixels,
+        "transmission_ratio": totals["channel_symbols"] / total_source_values,
         "source_ber": totals["source_bit_errors"] / totals["source_payload_bits"],
         "combined_ber": totals["combined_bit_errors"] / totals["ldpc_input_bits"],
         "elapsed_seconds": time.time() - started, "per_image": rows,
     }
+    if args.console_only:
+        print(format_console_result(report, None), flush=True)
+        return report
     write_json(output / "results.json", report)
     with (output / "per_image.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))

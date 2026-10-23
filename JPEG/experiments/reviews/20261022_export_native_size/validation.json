@@ -1,0 +1,481 @@
+{
+  "fixture_generation": "24 reversible JPEG2000 RGB gradients, num_resolutions=3, cyclic sizes 256x256/768x512/512x768/512x716/319x241",
+  "temporary_inputs_and_outputs_cleaned": true,
+  "cases": [
+    {
+      "case": "existing_native_jp2",
+      "command": [
+        "/home/yi/.conda/envs/work/bin/python",
+        "-B",
+        "/workspace/yi/work/JPEG/export_reconstruction_png.py",
+        "--source",
+        "/workspace/yi/work/JPEG/output_jpeg",
+        "--output",
+        "/tmp/jpeg_export_native_size_g7vshsyt/existing_native_jp2"
+      ],
+      "exit_code": 0,
+      "images": [
+        {
+          "source": "val_000001.jp2",
+          "image": "kodim01.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "e9d508b0a783e0e885567a0b0273ee0b91baf8de0745179a3aca13a0e82b9feb"
+        },
+        {
+          "source": "val_000002.jp2",
+          "image": "kodim02.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "9d1ba3bfe5455e9e07c57da1f5322d42c8769415aee9610e0c726f24dc6e976c"
+        },
+        {
+          "source": "val_000003.jp2",
+          "image": "kodim03.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "e84f3e7249ebf66db387edc2c10cef77b5c85b0ed51f16fce1d0be128382535e"
+        },
+        {
+          "source": "val_000004.jp2",
+          "image": "kodim04.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "fa46578612aa245cb4896987ee4557e694ab4f897124015473b000922687af7b"
+        },
+        {
+          "source": "val_000005.jp2",
+          "image": "kodim05.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "35ef63f20d757dad46b8832ed8a5a431227e7db9ed9c2e24211414eb278545c9"
+        },
+        {
+          "source": "val_000006.jp2",
+          "image": "kodim06.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "f90814d71f07c1364f6a9a6ec0b64e92080b6837e334bbfa0d5fceeb52abe367"
+        },
+        {
+          "source": "val_000007.jp2",
+          "image": "kodim07.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "5510f72643867ddc4ddda95e7a051f96a933e869f1ee41eac2f8a09a737acb67"
+        },
+        {
+          "source": "val_000008.jp2",
+          "image": "kodim08.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "d3e378c723e72e8936ad202574cd9fed985818ea6ae894101b3314ae08179901"
+        },
+        {
+          "source": "val_000009.jp2",
+          "image": "kodim09.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "1246c5756bd99a5405a7f2cac7637f81caaacb7d7d63206624d9fc3210e2a6c0"
+        },
+        {
+          "source": "val_000010.jp2",
+          "image": "kodim10.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "e37d3889f241ea13bf5c8b3a96a0b00bd35c28b472ade127e75394aba996f453"
+        },
+        {
+          "source": "val_000011.jp2",
+          "image": "kodim11.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "64242056cd745c26ebae9f863d875e7a167c4999cc0a9290ad77e162e5e3e262"
+        },
+        {
+          "source": "val_000012.jp2",
+          "image": "kodim12.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "e59a4cfdae1fb3aab164f8f982860fc6abd4d6c92905fad2c3864c084b86f0ec"
+        },
+        {
+          "source": "val_000013.jp2",
+          "image": "kodim13.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "1614013257f72594f01b4bbc208ea0ed3189382a68f439933497c050557adbb4"
+        },
+        {
+          "source": "val_000014.jp2",
+          "image": "kodim14.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "cb0662ca621ecd42cc7a3c798fcfa1f4d8e9cabf0613b7a81be7c0649fc39e0d"
+        },
+        {
+          "source": "val_000015.jp2",
+          "image": "kodim15.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "b6bf46f41952bd2d7f7fc6a659557f95b6969bd8d5ad9a21a239936846e125a4"
+        },
+        {
+          "source": "val_000016.jp2",
+          "image": "kodim16.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "030b85a856ecbc6be795fb73793b35e408402e8ca4ce1015db32351d6b2ebc88"
+        },
+        {
+          "source": "val_000017.jp2",
+          "image": "kodim17.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "25500eba55bfaf4bca45ce9bc233694329e9ab7f1c0a5461f4b48ca8bb1ee6a6"
+        },
+        {
+          "source": "val_000018.jp2",
+          "image": "kodim18.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "7e77b11f2d3175a003b69530c2927fc4f737920ae795f4dcf0c2624ae66dd216"
+        },
+        {
+          "source": "val_000019.jp2",
+          "image": "kodim19.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "400d58311a68faef8785838677560b31c4e66f6d226ab4de66af8144c09c993b"
+        },
+        {
+          "source": "val_000020.jp2",
+          "image": "kodim20.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "2f11ac53bea603e1e132b6c6a2166a73a52a41367cc078350eba03df24047af5"
+        },
+        {
+          "source": "val_000021.jp2",
+          "image": "kodim21.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "4aa44d2b11777d599b79fef7b0c4cda9b568b3a593a171f0123914568b3b5ed8"
+        },
+        {
+          "source": "val_000022.jp2",
+          "image": "kodim22.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "c753373ad2d6d23cc1665ca5a28c4211cd375ba94458ec27e0aa217c390ff350"
+        },
+        {
+          "source": "val_000023.jp2",
+          "image": "kodim23.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "41c9c1306f7b75d43e79bb80dd2de28d5269b6169fef74f708ad10e66c34e4cf"
+        },
+        {
+          "source": "val_000024.jp2",
+          "image": "kodim24.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "eaf58317299f4c36c8aecfdb565ee7e14199342be274a7531d3a3b6ac3334cf0"
+        }
+      ],
+      "size_counts": {
+        "768x512": 18,
+        "512x768": 6
+      },
+      "dimensions_and_rgb_pixels_identical": true
+    },
+    {
+      "case": "mixed_sizes",
+      "command": [
+        "/home/yi/.conda/envs/work/bin/python",
+        "-B",
+        "/workspace/yi/work/JPEG/export_reconstruction_png.py",
+        "--source",
+        "/tmp/jpeg_export_native_size_g7vshsyt/mixed_jp2",
+        "--output",
+        "/tmp/jpeg_export_native_size_g7vshsyt/mixed_sizes"
+      ],
+      "exit_code": 0,
+      "images": [
+        {
+          "source": "val_000001.jp2",
+          "image": "kodim01.png",
+          "size": [
+            256,
+            256
+          ],
+          "png_sha256": "94d95dad87b4accecb12957c3fbf86b80eb28a525c918833edc6965a8f18a756"
+        },
+        {
+          "source": "val_000002.jp2",
+          "image": "kodim02.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "aa1febeb27ee70b2ba67ab066fda90699c2eb00a1e68271bffcd77532532bb34"
+        },
+        {
+          "source": "val_000003.jp2",
+          "image": "kodim03.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "99bbddec2e78dd53efd2779621d2c51022d20a2ed53d5b738bca14e90b46f8cb"
+        },
+        {
+          "source": "val_000004.jp2",
+          "image": "kodim04.png",
+          "size": [
+            512,
+            716
+          ],
+          "png_sha256": "4966be5f37c84452dc5a18d052e6e2876180254cc0d26095c6a539adea779c5f"
+        },
+        {
+          "source": "val_000005.jp2",
+          "image": "kodim05.png",
+          "size": [
+            319,
+            241
+          ],
+          "png_sha256": "9454ceda9c1faf5ff1e345e09d933ddc19b3e438596109e1b76324b7009f342b"
+        },
+        {
+          "source": "val_000006.jp2",
+          "image": "kodim06.png",
+          "size": [
+            256,
+            256
+          ],
+          "png_sha256": "16e44e674036d3310a5f2aa119197eb10b99fa8619c08bd826402eecbb434a36"
+        },
+        {
+          "source": "val_000007.jp2",
+          "image": "kodim07.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "ccbde13cda988904ba51f728d8ff27cbe0f8158eded72a2cfbb462ee0c710c7f"
+        },
+        {
+          "source": "val_000008.jp2",
+          "image": "kodim08.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "8f51757d927fd35d992e29c6b60f54a52fc6a3e706a72fbc404b1841571b33fe"
+        },
+        {
+          "source": "val_000009.jp2",
+          "image": "kodim09.png",
+          "size": [
+            512,
+            716
+          ],
+          "png_sha256": "da510022042fb841a21bac8bf778a0e692e329b720bc71a2a46b36d5c42c1aae"
+        },
+        {
+          "source": "val_000010.jp2",
+          "image": "kodim10.png",
+          "size": [
+            319,
+            241
+          ],
+          "png_sha256": "ac89d49cad091268a90f4814a3c53400184b7066124f3974edec69471f118a38"
+        },
+        {
+          "source": "val_000011.jp2",
+          "image": "kodim11.png",
+          "size": [
+            256,
+            256
+          ],
+          "png_sha256": "ee3d8a1d1118c2cd0128e4977d4db6dca3f16c749c8d08bb2638f77ddd0d5246"
+        },
+        {
+          "source": "val_000012.jp2",
+          "image": "kodim12.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "0adf676959b7bf2621557aa2ffc6040c7179838ffaa33293d3e9214778e08e39"
+        },
+        {
+          "source": "val_000013.jp2",
+          "image": "kodim13.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "b2124e0ff0c0dd62e725c9f05d8d844ba4e56d3c62187595da40b0873a663b80"
+        },
+        {
+          "source": "val_000014.jp2",
+          "image": "kodim14.png",
+          "size": [
+            512,
+            716
+          ],
+          "png_sha256": "a16a4e0a5b1654ae7d3b1aa5339a84876d2314859d4a6b5acf4101c0ae9ba0a8"
+        },
+        {
+          "source": "val_000015.jp2",
+          "image": "kodim15.png",
+          "size": [
+            319,
+            241
+          ],
+          "png_sha256": "d8a26fd4d36809c30430848d4815a15b2701201d774fec88f773cb53df58567f"
+        },
+        {
+          "source": "val_000016.jp2",
+          "image": "kodim16.png",
+          "size": [
+            256,
+            256
+          ],
+          "png_sha256": "e605b128889abc347ad83699d7ae43222a04c8529d1055e1b61ce155f2425670"
+        },
+        {
+          "source": "val_000017.jp2",
+          "image": "kodim17.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "382dc473520a70c0e5457941b7aaf7e2af8d1c91a4ba3840a6351c1a16140d34"
+        },
+        {
+          "source": "val_000018.jp2",
+          "image": "kodim18.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "044dccc7cc568f890dcd4594e6c10033ad28e1d9fccf924d5f0ee77846b33406"
+        },
+        {
+          "source": "val_000019.jp2",
+          "image": "kodim19.png",
+          "size": [
+            512,
+            716
+          ],
+          "png_sha256": "c4f7ede5b6aea76e05b0f9884a3d14da5167088e548d9f00e64b2174541897c3"
+        },
+        {
+          "source": "val_000020.jp2",
+          "image": "kodim20.png",
+          "size": [
+            319,
+            241
+          ],
+          "png_sha256": "e12c093141d5b0bcdde2415b2cfa9150da78381a04f9b8cc1ebbcb8fee9278bb"
+        },
+        {
+          "source": "val_000021.jp2",
+          "image": "kodim21.png",
+          "size": [
+            256,
+            256
+          ],
+          "png_sha256": "ab895ad6a8a3acdbee63427af2fd3a7f13fdf6ef4570299a98361743206c6231"
+        },
+        {
+          "source": "val_000022.jp2",
+          "image": "kodim22.png",
+          "size": [
+            768,
+            512
+          ],
+          "png_sha256": "cbbf1960306292bf0744f7d77f923dffb8a1bc3a6d85fd870344ee906b84319f"
+        },
+        {
+          "source": "val_000023.jp2",
+          "image": "kodim23.png",
+          "size": [
+            512,
+            768
+          ],
+          "png_sha256": "47e32c6282286ed4b08828fad72d9ded6476b1b3eb1c21ca7a202995236c2886"
+        },
+        {
+          "source": "val_000024.jp2",
+          "image": "kodim24.png",
+          "size": [
+            512,
+            716
+          ],
+          "png_sha256": "9baab874e1455edd802abbf22c8ed3da1b6c5538c50b3146a1889dd3be1de6de"
+        }
+      ],
+      "size_counts": {
+        "256x256": 5,
+        "768x512": 5,
+        "512x768": 5,
+        "512x716": 5,
+        "319x241": 4
+      },
+      "dimensions_and_rgb_pixels_identical": true
+    }
+  ]
+}

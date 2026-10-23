@@ -1,0 +1,188 @@
+{
+  "case_id": "k64_16_qpsk_r12",
+  "images": [
+    {
+      "image": "kodim04.png",
+      "xywh": [
+        160,
+        48,
+        160,
+        160
+      ],
+      "detail": "Red hat mesh and brim structure",
+      "observation": "MDRQ retains a more regular mesh layout closer to the reference; VQ-DeepSC introduces more distorted mesh shapes, RAQ-VAE smooths away much of the mesh.",
+      "limitation": "Individual knit stitches and hair texture remain blurred; exact mesh holes are not all recovered."
+    },
+    {
+      "image": "kodim15.png",
+      "xywh": [
+        400,
+        112,
+        128,
+        128
+      ],
+      "detail": "Eye, iris and eyelid contour",
+      "observation": "MDRQ better preserves the iris highlight, overall eye shape and eyelid placement; the baselines show greater shape or color deviations.",
+      "limitation": "Eyelashes and skin texture remain blurred; none is a pixel-perfect reconstruction."
+    }
+  ],
+  "visual_assessment": "Clearer whole-image candidates at native resolution with localized structural advantages; residual fine-texture loss remains.",
+  "average_psnr_margin_requirement": false,
+  "jpeg2000_included": false,
+  "case": {
+    "id": "k64_16_qpsk_r12",
+    "effective_k": [
+      64,
+      16
+    ],
+    "rvq_k_lists": [
+      [
+        2,
+        32
+      ],
+      [
+        8,
+        2
+      ]
+    ],
+    "channel": "awgn",
+    "snr_db": 10,
+    "modulation": "qpsk",
+    "ldpc_rate": 0.5,
+    "ldpc_n": 256,
+    "ldpc_k": 128,
+    "payload_bits_per_image": 43008,
+    "symbols_per_image": 43008,
+    "cbr": "7/192"
+  },
+  "metrics": [
+    {
+      "image": "kodim04.png",
+      "method_id": "vq_deepsc",
+      "display_name": "VQ-DeepSC",
+      "psnr": 26.443827152252197,
+      "ms_ssim": 0.9005437212209858,
+      "ms_ssim_db": 10.023677942086955,
+      "roi_xywh": [
+        160,
+        48,
+        160,
+        160
+      ],
+      "png_roi_psnr": 23.746556988896952,
+      "native_size_wh": [
+        512,
+        768
+      ],
+      "png_sha256": "55f1ba28fbf095ad04900ca8ae0e8613441864e98a424bdd8c84e4e62dbbe202"
+    },
+    {
+      "image": "kodim04.png",
+      "method_id": "raq_vae",
+      "display_name": "RAQ-VAE",
+      "psnr": 25.364527702331543,
+      "ms_ssim": 0.8871567174283798,
+      "ms_ssim_db": 9.475242888583429,
+      "roi_xywh": [
+        160,
+        48,
+        160,
+        160
+      ],
+      "png_roi_psnr": 23.155078476277595,
+      "native_size_wh": [
+        512,
+        768
+      ],
+      "png_sha256": "2c44d8dc464c48faf3b649469b8531f6b90d5ae749547b08f674f070ec8f7286"
+    },
+    {
+      "image": "kodim04.png",
+      "method_id": "raq_rvq",
+      "display_name": "MDRQ",
+      "psnr": 26.8988037109375,
+      "ms_ssim": 0.9219015237806129,
+      "ms_ssim_db": 11.073574395665878,
+      "roi_xywh": [
+        160,
+        48,
+        160,
+        160
+      ],
+      "png_roi_psnr": 24.352796608787962,
+      "native_size_wh": [
+        512,
+        768
+      ],
+      "png_sha256": "531c621c3693fc53c6e1e852c176188a43b2a06c93fce69c08573c07348cedc2"
+    },
+    {
+      "image": "kodim15.png",
+      "method_id": "vq_deepsc",
+      "display_name": "VQ-DeepSC",
+      "psnr": 25.99149227142334,
+      "ms_ssim": 0.9260127089968426,
+      "ms_ssim_db": 11.308428737989875,
+      "roi_xywh": [
+        400,
+        112,
+        128,
+        128
+      ],
+      "png_roi_psnr": 26.25272114555915,
+      "native_size_wh": [
+        768,
+        512
+      ],
+      "png_sha256": "1d033d338608313cfac966619b5578f2ffb2fa27db3c664711fdba9a381c5022"
+    },
+    {
+      "image": "kodim15.png",
+      "method_id": "raq_vae",
+      "display_name": "RAQ-VAE",
+      "psnr": 24.512996673583984,
+      "ms_ssim": 0.9118343421742306,
+      "ms_ssim_db": 10.54700547761027,
+      "roi_xywh": [
+        400,
+        112,
+        128,
+        128
+      ],
+      "png_roi_psnr": 25.251969763013445,
+      "native_size_wh": [
+        768,
+        512
+      ],
+      "png_sha256": "48c85752cd263391448536a1504206d91c08f7e40071dfeb006e7729ecd307bf"
+    },
+    {
+      "image": "kodim15.png",
+      "method_id": "raq_rvq",
+      "display_name": "MDRQ",
+      "psnr": 26.477456092834473,
+      "ms_ssim": 0.9400968985514074,
+      "ms_ssim_db": 12.225506916817992,
+      "roi_xywh": [
+        400,
+        112,
+        128,
+        128
+      ],
+      "png_roi_psnr": 26.541443537867337,
+      "native_size_wh": [
+        768,
+        512
+      ],
+      "png_sha256": "e16d5d0e0a852742eee0a34a57a69214db73db18c5210912c95158e6fb175ee1"
+    }
+  ],
+  "published_image_directories": {
+    "raq_rvq": "/workspace/yi/work/RAQ-RVQ/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42",
+    "vq_deepsc": "/workspace/yi/work/VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42",
+    "raq_vae": "/workspace/yi/work/RAQ-VAE-main/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42"
+  },
+  "dataset": "/workspace/yi/work/Kodak",
+  "native_resolution_preserved": true,
+  "layout": "two rows, four columns; full-image metrics only; JPEG-2000 excluded"
+}

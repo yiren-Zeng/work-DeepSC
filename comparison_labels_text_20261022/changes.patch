@@ -1,0 +1,1804 @@
+diff --git a/comparison_labels_text_20261022/README.md b/comparison_labels_text_20261022/README.md
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/README.md
+@@ -0,0 +1,75 @@
++# 对比图统一命名并新增帆船数字样本
++
++用户确认将此前四张对比图的列标题全部改为 `JPEG-2000`、`RAQJSCC`；`Original`、`MDRQ` 保持原名称。新增样本在比较建筑招牌、警示牌、墙面字样与帆船数字后，按用户选择采用 `kodim10.png` 的帆船数字 `63455`，重点展示数字边缘和轮廓清晰度。
++
++## 五张最新成品
++
++| 场景 | PNG | PDF | 本次操作 |
++| --- | --- | --- | --- |
++| 帆船数字 `63455` | [PNG](../kodim10_comparison_20261022.png) | [PDF](../kodim10_comparison_20261022.pdf) | 新增样本，统一列名 |
++| 手臂与袖子字样 | [PNG](../kodim05_comparison_20261022_v2.png) | [PDF](../kodim05_comparison_20261022_v2.pdf) | 原路径更新列名 |
++| 橡皮艇英文 | [PNG](../kodim14_comparison_20261022_v2.png) | [PDF](../kodim14_comparison_20261022_v2.pdf) | 原路径更新列名 |
++| 车轮与前叉 | [PNG](../kodim05_comparison_20261022.png) | [PDF](../kodim05_comparison_20261022.pdf) | 原路径更新列名 |
++| 灯塔海岸 | [PNG](../kodim21_comparison_20261022.png) | [PDF](../kodim21_comparison_20261022.pdf) | 原路径更新列名 |
++
++所有成品仍位于 `/workspace/yi/work`。四张旧图为 3272 × 1580 像素；新增原图是竖幅，按原生 512 × 768 像素保留完整画面，新拼图为 2248 × 1612 像素。各 PNG 记录 300 dpi；PDF 使用同一画面无损嵌图。
++
++## 新增样本与真实指标
++
++原图左上角为原点，帆船数字红框坐标为 `[152,28,312,188)`，大小 160 × 160 原始像素。四列均取完全相同的位置，用最近邻统一放大至 448 × 448，没有生成新笔画或改变源图颜色。
++
++| 方法 | 整图 PSNR (dB) | MS-SSIM (0–1) | MS-SSIM (dB) | 数字区域 PSNR (dB) |
++| --- | ---: | ---: | ---: | ---: |
++| JPEG-2000 | 31.5424 | 0.96906123 | 15.0950 | 32.3522 |
++| RAQJSCC | 28.7578 | 0.96902228 | 15.0895 | 32.2822 |
++| MDRQ | 34.1274 | 0.98760162 | 19.0664 | 37.1842 |
++
++MDRQ 的数字区域 PSNR 分别高 4.8320 dB、4.9019 dB，整图 PSNR、MS-SSIM 也领先。用户选用的是数字边缘与轮廓清晰度这一比较目标；其他方法仍可辨认部分数字，未据此声称只有 MDRQ 能读清或进行 OCR 识别率测量。
++
++整图 PSNR 为原始 RGB 像素上的 `10*log10(255^2/MSE)`。MS-SSIM 复用 `Ours-RAQ/utils/metrics.py::ms_ssim` 的原有五尺度算法，输入为 RGB 像素除以 255，显示值沿用参考图的 `-10*log10(1-MS-SSIM)` dB 格式。完整精度见 [new_figure_metrics.json](new_figure_metrics.json)。
++
++## 输入路径及后续生成入口
++
++- Original：`/workspace/yi/work/Kodak`
++- JPEG-2000：`/workspace/yi/work/JPEG/generated_images/cbr1over1.2`
++- RAQJSCC：`/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10`
++- MDRQ：`/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10`
++
++本次及后续样本使用 [update_labels_and_text.py](update_labels_and_text.py) 的 `new_figure` 入口，标题由 `DISPLAY` 映射统一为新名称。历史脚本和历史审阅目录保留原始记录，未改动。JSON 的源目录/方法键中出现 `JPEG`、`RAQ-VAE` 是来源标识，图中展示名称统一使用 JPEG-2000、RAQJSCC。
++
++## 生成命令和验证
++
++执行环境为 `/home/yi/.conda/envs/work/bin/python`，工作目录为 `/workspace/yi/work`。实际命令如下：
++
++```bash
++python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage prepare > /workspace/yi/work/comparison_labels_text_20261022/prepare.log 2>&1
++python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage inspect > /workspace/yi/work/comparison_labels_text_20261022/inspection.log 2>&1
++python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage labels > /workspace/yi/work/comparison_labels_text_20261022/labels.log 2>&1
++python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage new --image kodim10.png --roi 152 28 312 188 > /workspace/yi/work/comparison_labels_text_20261022/new_figure.log 2>&1
++python -u /workspace/yi/work/comparison_labels_text_20261022/update_labels_and_text.py --stage review
++```
++
++`prepare` 在修改前复制四个旧 PNG、四个旧 PDF 和两个历史脚本，保存完整原文件及 SHA-256；该阶段不覆盖已有快照。`labels` 对每个旧 PNG 仅清除并重绘两个方法标题，随后重新导出对应 PDF。逐像素确认旧图其他部分一致，包括原图、重建图、红框、放大图、指标和其余标题；每张实际修改 6458 个标题像素。
++
++新增图的 4 个完整图面板在边框/红框标注外与输入像素完全一致，4 个放大面板与指定裁剪完全一致。全部 96 张输入图像在操作前后 SHA-256 均不变。所有成品使用真实重建文件，没有调色、锐化、去噪、模糊或超分辨率。候选拼图、新增成品及改名后的代表图均已人工查看。
++
++## 本次文件变更清单与审阅
++
++本次实际修改旧文件 8 个（上表后四行各自的 PNG、PDF），新增首行两个成品及本目录中的审阅文件。旧文件操作前已是未跟踪文件，因此普通 `git diff` 不会显示其本次差异；通过修改前完整快照及前后 SHA-256 保留实际变更记录。未操作 Git 暂存区、提交或推送。
++
++- [renamed_existing_figures.json](renamed_existing_figures.json)：8 个实际修改旧文件的路径、前后 SHA-256、标题修改区域和像素验证结果。
++- [before_manifest.json](before_manifest.json)：修改前 10 个完整快照的原路径、快照路径、哈希。
++- [before/](before/)：上述四个旧 PNG、四个旧 PDF、两个历史脚本的完整修改前副本；逐项链接也在 `before_manifest.json` 中。
++- [update_labels_and_text.py](update_labels_and_text.py)：本次新增的快照、候选比较、统一改名、新样本排版与审阅脚本。
++- `README.md`：本次需求、输入、成品、命令、指标及文件说明。
++- [source_manifest.json](source_manifest.json)：全部 96 张输入图像的路径、SHA-256。
++- [candidate_regions.json](candidate_regions.json)：8 个文字/数字候选区域的坐标和真实局部 PSNR。
++- [lettering_candidates_1.png](lettering_candidates_1.png)：建筑招牌文字候选。
++- [lettering_candidates_2.png](lettering_candidates_2.png)：警示牌、帆船数字和墙面文字候选。
++- [new_figure_metrics.json](new_figure_metrics.json)：新增帆船图的完整指标、尺寸、裁剪坐标、像素验证和输出哈希。
++- [prepare.log](prepare.log)、[inspection.log](inspection.log)、[labels.log](labels.log)、[new_figure.log](new_figure.log)：实际运行日志；这些日志被现有 Git 忽略规则排除，已通过完整文件链接和清单保留。
++- [git_status_before.txt](git_status_before.txt)、[git_status_after.txt](git_status_after.txt)：本次操作前后的工作区状态快照，核对新增未跟踪文件及已有改动。
++- [changes.patch](changes.patch)：新增脚本、说明和 JSON（除产物清单本身）及历史脚本副本的真实完整新增补丁。
++- [artifacts_manifest.json](artifacts_manifest.json)：本次修改/新增文件的完整路径、操作类型、大小和 SHA-256；提供完整清单内容并区分旧文件修改与新增未跟踪/被忽略文件。
++
++先前两次审阅目录保留各自交付时的历史哈希。本次旧成品改名的前后记录以本目录中的快照、`renamed_existing_figures.json` 和 `artifacts_manifest.json` 为准。
+diff --git a/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py b/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py
+@@ -0,0 +1,358 @@
++#!/usr/bin/env python3
++"""Select and assemble factual Kodak reconstruction comparisons without enhancement."""
++
++import argparse
++import csv
++import difflib
++import hashlib
++import importlib.util
++import json
++import math
++import subprocess
++import sys
++from datetime import datetime
++from pathlib import Path
++from zoneinfo import ZoneInfo
++
++import numpy as np
++from PIL import Image, ImageDraw, ImageFont
++
++sys.dont_write_bytecode = True
++AUDIT = Path(__file__).resolve().parent
++ROOT = AUDIT.parent
++DIRECTORIES = {
++    "Original": ROOT / "Kodak",
++    "JPEG": ROOT / "JPEG/generated_images/cbr1over1.2",
++    "RAQ-VAE": ROOT / "RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10",
++    "MDRQ": ROOT / "Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10",
++}
++SELECTIONS = {
++    "kodim05.png": {
++        "roi_xyxy": [320, 224, 464, 368],
++        "reason": "Motorcycle front fork, wheel spokes and fender edges: thin structures and strong color boundaries.",
++    },
++    "kodim21.png": {
++        "roi_xyxy": [112, 136, 256, 280],
++        "reason": "Lighthouse keeper's house: roof edges, windows and facade; a different scene from motorcycles.",
++    },
++}
++METHODS = tuple(DIRECTORIES)
++RECONSTRUCTIONS = METHODS[1:]
++
++
++def sha256(path):
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def write_json(path, value):
++    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++
++
++def read_images(name):
++    images = {}
++    for method, folder in DIRECTORIES.items():
++        with Image.open(folder / name) as image:
++            if image.mode != "RGB":
++                raise ValueError(f"Unexpected mode in {folder / name}: {image.mode}")
++            images[method] = image.copy()
++    if len({im.size for im in images.values()}) != 1:
++        raise ValueError(f"Size mismatch for {name}")
++    return images
++
++
++def psnr(original, reconstruction):
++    mse = float(np.mean((original.astype(np.float64) - reconstruction.astype(np.float64)) ** 2))
++    return 10 * math.log10(255 ** 2 / mse) if mse else math.inf
++
++
++def integral(array):
++    return np.pad(array.cumsum(0).cumsum(1), ((1, 0), (1, 0)))
++
++
++def window_mean(array, x, y, side):
++    return float((array[y + side, x + side] - array[y, x + side]
++                  - array[y + side, x] + array[y, x]) / side ** 2)
++
++
++def candidate_rois(images):
++    original = np.asarray(images["Original"], dtype=np.float64)
++    errors = {
++        method: integral(np.mean((original - np.asarray(images[method], dtype=float)) ** 2, axis=2))
++        for method in RECONSTRUCTIONS
++    }
++    gray = original @ np.array([0.299, 0.587, 0.114])
++    dy, dx = np.gradient(gray)
++    gradient = integral(dx ** 2 + dy ** 2)
++    rows, side = [], 144
++    for y in range(16, original.shape[0] - side - 16 + 1, 8):
++        for x in range(16, original.shape[1] - side - 16 + 1, 8):
++            texture = math.sqrt(max(0, window_mean(gradient, x, y, side)))
++            if texture < 12:
++                continue
++            mse = {key: window_mean(value, x, y, side) for key, value in errors.items()}
++            gap = min(10 * math.log10(mse[key] / mse["MDRQ"]) for key in ("JPEG", "RAQ-VAE"))
++            rows.append({
++                "roi_xyxy": [x, y, x + side, y + side],
++                "minimum_psnr_advantage_db": gap,
++                "original_gradient_rms": texture,
++                "patch_psnr_db": {key: 10 * math.log10(255 ** 2 / value) for key, value in mse.items()},
++            })
++    picked = []
++    for row in sorted(rows, key=lambda r: r["minimum_psnr_advantage_db"], reverse=True):
++        x, y = row["roi_xyxy"][:2]
++        if all((x - other["roi_xyxy"][0]) ** 2 + (y - other["roi_xyxy"][1]) ** 2 > 72 ** 2
++               for other in picked):
++            picked.append(row)
++        if len(picked) == 6:
++            break
++    return picked
++
++
++def font(size):
++    return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", size)
++
++
++def centered(draw, x, y, text, size, fill="#111111"):
++    draw.text((x, y), text, font=font(size), fill=fill, anchor="mm")
++
++
++def analyze():
++    inventories = {key: sorted(p.name for p in folder.glob("*.png")) for key, folder in DIRECTORIES.items()}
++    names = inventories["Original"]
++    if len(names) != 24 or any(inventory != names for inventory in inventories.values()):
++        raise ValueError("Expected exactly 24 matching PNG names in every directory")
++    records, source_manifest, rois = [], [], {}
++    for name in names:
++        images = read_images(name)
++        arrays = {key: np.asarray(value) for key, value in images.items()}
++        scores = {method: psnr(arrays["Original"], arrays[method]) for method in RECONSTRUCTIONS}
++        gap = scores["MDRQ"] - max(scores["JPEG"], scores["RAQ-VAE"])
++        records.append({"image": name, **{f"{key}_psnr_db": value for key, value in scores.items()},
++                        "MDRQ_minimum_advantage_db": gap})
++        for method, folder in DIRECTORIES.items():
++            source_manifest.append({"method": method, "path": str(folder / name),
++                                    "size_wh": list(images[method].size), "sha256": sha256(folder / name)})
++        rois[name] = candidate_rois(images)
++        print(f"ANALYZE {name}: JPEG={scores['JPEG']:.4f}, RAQ-VAE={scores['RAQ-VAE']:.4f}, "
++              f"MDRQ={scores['MDRQ']:.4f}, minimum gap={gap:.4f} dB", flush=True)
++    records.sort(key=lambda row: row["MDRQ_minimum_advantage_db"], reverse=True)
++    with (AUDIT / "all_image_psnr.csv").open("w", newline="", encoding="utf-8") as handle:
++        writer = csv.DictWriter(handle, fieldnames=list(records[0]))
++        writer.writeheader()
++        writer.writerows(records)
++    write_json(AUDIT / "source_manifest.json", source_manifest)
++    write_json(AUDIT / "roi_candidates.json", rois)
++    candidates = []
++    for name, selection in SELECTIONS.items():
++        candidates.append((name, selection["roi_xyxy"], "selected"))
++        candidates.extend((name, row["roi_xyxy"], f"alternative {i + 1}") for i, row in enumerate(rois[name][:2]))
++    preview = Image.new("RGB", (1248, len(candidates) * 354), "white")
++    draw = ImageDraw.Draw(preview)
++    for row_index, (name, roi, label) in enumerate(candidates):
++        images = read_images(name)
++        top = row_index * 354
++        for column, method in enumerate(METHODS):
++            centered(draw, 156 + column * 312, top + 24, f"{name[:7]} | {method}", 19)
++            preview.paste(images[method].crop(roi).resize((288, 288), Image.Resampling.NEAREST),
++                          (12 + column * 312, top + 46))
++        centered(draw, 624, top + 343, f"{label}: ROI={roi}", 16)
++    preview.save(AUDIT / "detail_candidates.png")
++    print("Analysis and diagnostic crop preview saved.", flush=True)
++
++
++def metric_function():
++    source = ROOT / "Ours-RAQ/utils/metrics.py"
++    spec = importlib.util.spec_from_file_location("comparison_existing_metrics", source)
++    module = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(module)
++    return module.ms_ssim, source
++
++
++def render():
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++
++    ms_ssim, metric_source = metric_function()
++    source_manifest = json.loads((AUDIT / "source_manifest.json").read_text(encoding="utf-8"))
++    if any(sha256(Path(row["path"])) != row["sha256"] for row in source_manifest):
++        raise ValueError("An input image changed since analysis")
++    selected = []
++    output_paths, verified_panels = [], 0
++    for name, selection in SELECTIONS.items():
++        images = read_images(name)
++        arrays = {key: np.asarray(value) for key, value in images.items()}
++        if images["Original"].size != (768, 512):
++            raise ValueError("This layout expects landscape Kodak images at native 768 x 512")
++        roi = selection["roi_xyxy"]
++        x1, y1, x2, y2 = roi
++        if x2 - x1 != y2 - y1 or not (0 <= x1 < x2 <= 768 and 0 <= y1 < y2 <= 512):
++            raise ValueError(f"Invalid ROI: {roi}")
++        metrics = {}
++        for method in RECONSTRUCTIONS:
++            score = float(ms_ssim(arrays["Original"] / 255.0, arrays[method] / 255.0))
++            if not 0 < score < 1:
++                raise ValueError(f"Unexpected MS-SSIM {score}")
++            metrics[method] = {
++                "psnr_db": psnr(arrays["Original"], arrays[method]),
++                "ms_ssim": score,
++                "ms_ssim_db": -10 * math.log10(1 - score),
++                "roi_psnr_db": psnr(arrays["Original"][y1:y2, x1:x2], arrays[method][y1:y2, x1:x2]),
++            }
++            print(f"METRIC {name} {method}: {json.dumps(metrics[method])}", flush=True)
++        for key in ("psnr_db", "ms_ssim", "roi_psnr_db"):
++            if not all(metrics["MDRQ"][key] > metrics[method][key] for method in ("JPEG", "RAQ-VAE")):
++                raise ValueError(f"MDRQ does not lead on {name}: {key}")
++        width, height = 3272, 1580
++        panel_width, gap, margin, full_top, crop_top, crop_side = 768, 40, 40, 150, 770, 672
++        canvas = Image.new("RGB", (width, height), "white")
++        draw = ImageDraw.Draw(canvas)
++        expected_crops = []
++        for column, method in enumerate(METHODS):
++            left = margin + column * (panel_width + gap)
++            center = left + panel_width / 2
++            centered(draw, center, 103, method, 44)
++            canvas.paste(images[method], (left, full_top))
++            draw.rectangle((left, full_top, left + 767, full_top + 511), outline="#666666", width=2)
++            draw.rectangle((left + x1, full_top + y1, left + x2 - 1, full_top + y2 - 1),
++                           outline="#ff2020", width=4)
++            crop = images[method].crop(roi).resize((crop_side, crop_side), Image.Resampling.NEAREST)
++            crop_left = left + (panel_width - crop_side) // 2
++            canvas.paste(crop, (crop_left, crop_top))
++            expected_crops.append((crop_left, crop_top, np.asarray(crop)))
++            if method != "Original":
++                values = metrics[method]
++                text = f"PSNR={values['psnr_db']:.2f} dB | MS-SSIM={values['ms_ssim_db']:.2f} dB"
++                centered(draw, center, 1521, text, 31)
++        png = ROOT / f"{Path(name).stem}_comparison_20261022.png"
++        pdf = png.with_suffix(".pdf")
++        canvas.save(png, dpi=(300, 300))
++        figure = Figure(figsize=(width / 300, height / 300), dpi=300)
++        FigureCanvasAgg(figure)
++        axes = figure.add_axes((0, 0, 1, 1))
++        axes.imshow(np.asarray(canvas), interpolation="none")
++        axes.set_axis_off()
++        figure.savefig(pdf, dpi=300, metadata={"Title": f"{name}: Original, JPEG, RAQ-VAE, MDRQ",
++                                              "Creator": "build_comparisons.py"})
++        with Image.open(png) as saved:
++            if saved.size != (width, height):
++                raise AssertionError("Wrong figure size")
++            for crop_left, crop_y, expected in expected_crops:
++                actual = np.asarray(saved.crop((crop_left, crop_y, crop_left + crop_side, crop_y + crop_side)))
++                if not np.array_equal(actual, expected):
++                    raise AssertionError("Saved zoom panel differs from the source crop")
++                verified_panels += 1
++            for column, method in enumerate(METHODS):
++                left = margin + column * (panel_width + gap)
++                actual = np.asarray(saved.crop((left, full_top, left + 768, full_top + 512)))
++                mask = np.ones((512, 768), dtype=bool)
++                mask[:2] = mask[-2:] = False
++                mask[:, :2] = mask[:, -2:] = False
++                mask[y1:y2, x1:x2] = False
++                if not np.array_equal(actual[mask], arrays[method][mask]):
++                    raise AssertionError("Full image pixels changed outside the annotated border and ROI")
++                verified_panels += 1
++        for path in (png, pdf):
++            output_paths.append({"path": str(path), "bytes": path.stat().st_size, "sha256": sha256(path)})
++        selected.append({"image": name, **selection, "metrics": metrics, "figure_png": str(png), "figure_pdf": str(pdf)})
++        print(f"SAVED {png}\nSAVED {pdf}", flush=True)
++    unchanged = all(sha256(Path(row["path"])) == row["sha256"] for row in source_manifest)
++    if not unchanged:
++        raise AssertionError("Input source image hash changed")
++    write_json(AUDIT / "selection_and_metrics.json", {
++        "created_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
++        "metric_source": str(metric_source), "metric_source_sha256": sha256(metric_source),
++        "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE), unrounded source PNG pixels",
++        "ms_ssim_definition": "Existing Ours-RAQ/utils/metrics.py::ms_ssim on RGB float64 in [0,1], five scales",
++        "ms_ssim_db_definition": "-10*log10(1-MS-SSIM); raw MS-SSIM also retained",
++        "image_operations": "Lossless PNG input, native-size full images, identical ROI coordinates, nearest-neighbor zoom; no enhancement",
++        "selection_scope": "Two deliberately selected illustrative examples; not an average over all 24 images",
++        "selections": selected,
++    })
++    write_json(AUDIT / "verification.json", {
++        "matching_image_counts": {method: 24 for method in METHODS},
++        "source_images_verified_unchanged": len(source_manifest) if unchanged else 0,
++        "panels_verified_against_source_pixels": verified_panels,
++        "MDRQ_leads_selected_full_image_PSNR_MS_SSIM_and_ROI_PSNR": True,
++        "zoom_interpolation": "nearest neighbor, identical for all methods",
++        "roi_shape": [144, 144], "displayed_zoom_shape": [672, 672],
++        "output_png_size_wh": [3272, 1580], "outputs": output_paths,
++    })
++    print(f"VERIFIED {len(source_manifest)} unchanged source images, {verified_panels} source-derived panels.", flush=True)
++
++
++def review():
++    patch_path = AUDIT / "changes.patch"
++    status_path = AUDIT / "git_status_after.txt"
++    manifest_path = AUDIT / "artifacts_manifest.json"
++    for path in (patch_path, status_path, manifest_path):
++        path.touch(exist_ok=True)
++    status = subprocess.run(
++        ["git", "-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
++        cwd=ROOT, check=True, capture_output=True, text=True,
++    ).stdout
++    status_path.write_text(status, encoding="utf-8")
++    figures = [ROOT / f"{Path(name).stem}_comparison_20261022{extension}"
++               for name in SELECTIONS for extension in (".png", ".pdf")]
++    paths = sorted([path for path in AUDIT.rglob("*") if path.is_file()] + figures)
++    owned = {str(path.relative_to(ROOT)) for path in paths}
++    before = (AUDIT / "git_status_before.txt").read_text(encoding="utf-8").splitlines()
++    previous_owned = [line for line in before if line[3:] in owned]
++    if previous_owned:
++        raise ValueError(f"An output was present before this task: {previous_owned}")
++    missing = [path for path in owned if f"?? {path}" not in status.splitlines()]
++    ignored = set()
++    if missing:
++        result = subprocess.run(["git", "check-ignore", "--stdin"], cwd=ROOT,
++                                input="\n".join(missing) + "\n", capture_output=True, text=True)
++        if result.returncode not in (0, 1):
++            raise ValueError(result.stderr)
++        ignored = set(result.stdout.splitlines())
++        if set(missing) - ignored:
++            raise ValueError(f"Expected new outputs absent from status: {sorted(set(missing) - ignored)}")
++    tracked_diff = subprocess.run(
++        ["git", "diff", "--", *sorted(owned)], cwd=ROOT, check=True, capture_output=True, text=True,
++    ).stdout
++    if tracked_diff:
++        raise ValueError("Unexpected tracked diff in this task's output paths")
++    patch = []
++    for path in paths:
++        if path.suffix not in (".py", ".md", ".json", ".csv") or path == manifest_path:
++            continue
++        relative = str(path.relative_to(ROOT))
++        patch.append(f"diff --git a/{relative} b/{relative}\nnew file mode 100644\n")
++        patch.extend(difflib.unified_diff([], path.read_text(encoding="utf-8").splitlines(keepends=True),
++                                           fromfile="/dev/null", tofile=f"b/{relative}"))
++    patch_path.write_text("".join(patch), encoding="utf-8")
++    outside_before = {line for line in before if line[3:] not in owned}
++    outside_after = {line for line in status.splitlines() if line[3:] not in owned}
++    write_json(manifest_path, {
++        "command": f"python -u {__file__} --stage review",
++        "scope": "New outputs only; existing workspace modifications are excluded",
++        "tracked_changes_in_output_paths": False,
++        "new_untracked_outputs": sorted(owned - ignored),
++        "new_outputs_ignored_by_git": sorted(ignored),
++        "outside_scope_status_added": sorted(outside_after - outside_before),
++        "outside_scope_status_removed": sorted(outside_before - outside_after),
++        "patch_covers": "Complete new .py/.md/.csv/.json contents except this manifest; logs and binary images are linked separately",
++        "files": [{"path": str(path), "bytes": path.stat().st_size, "sha256": sha256(path)}
++                  for path in paths if path != manifest_path],
++        "manifest_self": str(manifest_path),
++    })
++    print(f"REVIEW {len(paths)} new files: {len(owned - ignored)} untracked, {len(ignored)} ignored logs; "
++          "tracked diff empty for all output paths.", flush=True)
++    print(f"OUTSIDE SCOPE status additions={len(outside_after - outside_before)}, "
++          f"removals={len(outside_before - outside_after)}", flush=True)
++    print(f"PATCH {patch_path}\nMANIFEST {manifest_path}", flush=True)
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--stage", choices=("analyze", "render", "review", "all"), default="all")
++    args = parser.parse_args()
++    print(f"RUN python {__file__} --stage {args.stage}", flush=True)
++    if args.stage in ("analyze", "all"):
++        analyze()
++    if args.stage in ("render", "all"):
++        render()
++    if args.stage in ("review", "all"):
++        review()
+diff --git a/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py b/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py
+@@ -0,0 +1,274 @@
++#!/usr/bin/env python3
++"""Inspect arm and lettering crops, then assemble source-faithful revised comparisons."""
++
++import argparse
++import difflib
++import hashlib
++import importlib.util
++import json
++import math
++import subprocess
++import sys
++from pathlib import Path
++
++import numpy as np
++from PIL import Image, ImageDraw
++
++sys.dont_write_bytecode = True
++AUDIT = Path(__file__).resolve().parent
++ROOT = AUDIT.parent
++PREVIOUS = ROOT / "comparison_review_20261022/build_comparisons.py"
++spec = importlib.util.spec_from_file_location("previous_comparison_helpers", PREVIOUS)
++previous = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(previous)
++METHODS = previous.METHODS
++CANDIDATES = [
++    ("kodim05.png", "arm", [352, 64, 480, 192]),
++    ("kodim05.png", "sleeve lettering", [360, 88, 456, 184]),
++    ("kodim08.png", "left sign", [544, 296, 672, 424]),
++    ("kodim08.png", "right sign", [632, 280, 760, 408]),
++    ("kodim14.png", "raft lettering", [504, 368, 648, 448]),
++    ("kodim14.png", "raft square", [504, 320, 648, 464]),
++    ("kodim20.png", "aircraft lettering", [224, 232, 368, 376]),
++    ("kodim03.png", "hat lettering", [104, 112, 248, 256]),
++    ("kodim06.png", "boat name square", [264, 304, 408, 448]),
++    ("kodim06.png", "boat name tight", [280, 332, 408, 396]),
++    ("kodim14.png", "selected raft text square", [508, 352, 636, 480]),
++]
++SELECTIONS = {
++    "kodim05.png": {
++        "roi_xyxy": [352, 64, 480, 192],
++        "reason": "User-marked rider's arm, blue-white sleeve lettering, shoulder and glove.",
++    },
++    "kodim14.png": {
++        "roi_xyxy": [508, 352, 636, 480],
++        "reason": "User-selected raft lettering: SNOWMASS / WHITEWATER, emphasizing the fidelity of character edges.",
++    },
++}
++
++
++def write_json(path, value):
++    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
++
++
++def verify_snapshot(path):
++    records = json.loads(path.read_text(encoding="utf-8"))
++    changed = [record["path"] for record in records if previous.sha256(Path(record["path"])) != record["sha256"]]
++    if changed:
++        raise ValueError(f"Changed input or prior artifact: {changed}")
++    return len(records)
++
++
++def inspect():
++    for name in ("source_manifest.json", "previous_artifacts_manifest.json"):
++        if (AUDIT / name).exists():
++            verify_snapshot(AUDIT / name)
++    sources = []
++    inventories = {method: sorted(p.name for p in folder.glob("*.png"))
++                   for method, folder in previous.DIRECTORIES.items()}
++    if len(inventories["Original"]) != 24 or any(names != inventories["Original"] for names in inventories.values()):
++        raise ValueError("Expected 24 matching source images in all four directories")
++    for method, directory in previous.DIRECTORIES.items():
++        for name in inventories[method]:
++            path = directory / name
++            sources.append({"path": str(path), "sha256": previous.sha256(path)})
++    write_json(AUDIT / "source_manifest.json", sources)
++    write_json(AUDIT / "previous_artifacts_manifest.json", [
++        {"path": str(path), "sha256": previous.sha256(path)}
++        for path in sorted((ROOT / "comparison_review_20261022").rglob("*")) if path.is_file()
++    ] + [{"path": str(path), "sha256": previous.sha256(path)}
++         for path in sorted(ROOT.glob("kodim*_comparison_20261022.*"))])
++    records = []
++    for page_index in range(math.ceil(len(CANDIDATES) / 4)):
++        page_candidates = CANDIDATES[page_index * 4:(page_index + 1) * 4]
++        canvas = Image.new("RGB", (1600, 400 * len(page_candidates)), "white")
++        draw = ImageDraw.Draw(canvas)
++        for row_index, (name, label, roi) in enumerate(page_candidates):
++            images = previous.read_images(name)
++            metrics = {}
++            for column, method in enumerate(METHODS):
++                crop = images[method].crop(roi)
++                scale = min(384 / crop.width, 332 / crop.height)
++                scaled = crop.resize((round(crop.width * scale), round(crop.height * scale)), Image.Resampling.NEAREST)
++                left = column * 400 + (400 - scaled.width) // 2
++                top = row_index * 400 + 40 + (332 - scaled.height) // 2
++                previous.centered(draw, column * 400 + 200, row_index * 400 + 22, f"{name[:7]} | {method}", 22)
++                canvas.paste(scaled, (left, top))
++                if method != "Original":
++                    metrics[method] = previous.psnr(np.asarray(images["Original"].crop(roi)), np.asarray(crop))
++            previous.centered(draw, 800, row_index * 400 + 385, f"{label} {roi}", 19)
++            records.append({"image": name, "label": label, "roi_xyxy": roi, "roi_psnr_db": metrics,
++                            "minimum_MDRQ_advantage_db": metrics["MDRQ"] - max(metrics["JPEG"], metrics["RAQ-VAE"])})
++        path = AUDIT / f"candidate_details_{page_index + 1}.png"
++        canvas.save(path)
++        print(f"PREVIEW {path}", flush=True)
++    write_json(AUDIT / "candidate_regions.json", records)
++    for row in records:
++        print(json.dumps(row), flush=True)
++
++
++def render():
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++
++    source_count = verify_snapshot(AUDIT / "source_manifest.json")
++    prior_count = verify_snapshot(AUDIT / "previous_artifacts_manifest.json")
++    ms_ssim, metric_source = previous.metric_function()
++    selections, outputs = [], []
++    verified_panels = 0
++    for name, selection in SELECTIONS.items():
++        images = previous.read_images(name)
++        arrays = {method: np.asarray(image) for method, image in images.items()}
++        if any(image.size != (768, 512) for image in images.values()):
++            raise ValueError("Expected native 768 x 512 RGB images")
++        roi = selection["roi_xyxy"]
++        x1, y1, x2, y2 = roi
++        if x2 - x1 != 128 or y2 - y1 != 128:
++            raise ValueError("Both revisions use identical 128 x 128 crop dimensions")
++        metrics = {}
++        for method in METHODS[1:]:
++            score = float(ms_ssim(arrays["Original"] / 255.0, arrays[method] / 255.0))
++            if not 0 < score < 1:
++                raise ValueError(f"Invalid MS-SSIM: {score}")
++            metrics[method] = {
++                "psnr_db": previous.psnr(arrays["Original"], arrays[method]),
++                "ms_ssim": score,
++                "ms_ssim_db": -10 * math.log10(1 - score),
++                "roi_psnr_db": previous.psnr(arrays["Original"][y1:y2, x1:x2], arrays[method][y1:y2, x1:x2]),
++            }
++            print(f"METRIC {name} {method}: {json.dumps(metrics[method])}", flush=True)
++        for key in ("psnr_db", "ms_ssim", "roi_psnr_db"):
++            if any(metrics["MDRQ"][key] <= metrics[method][key] for method in ("JPEG", "RAQ-VAE")):
++                raise ValueError(f"MDRQ does not lead the selected example on {key}")
++        canvas = Image.new("RGB", (3272, 1580), "white")
++        draw = ImageDraw.Draw(canvas)
++        crop_checks = []
++        for column, method in enumerate(METHODS):
++            left, top = 40 + column * 808, 150
++            previous.centered(draw, left + 384, 103, method, 44)
++            canvas.paste(images[method], (left, top))
++            draw.rectangle((left, top, left + 767, top + 511), outline="#666666", width=2)
++            draw.rectangle((left + x1, top + y1, left + x2 - 1, top + y2 - 1), outline="#ff2020", width=4)
++            crop = images[method].crop(roi).resize((672, 672), Image.Resampling.NEAREST)
++            canvas.paste(crop, (left + 48, 770))
++            crop_checks.append((left + 48, np.asarray(crop)))
++            if method != "Original":
++                values = metrics[method]
++                text = f"PSNR={values['psnr_db']:.2f} dB | MS-SSIM={values['ms_ssim_db']:.2f} dB"
++                previous.centered(draw, left + 384, 1521, text, 31)
++        png = ROOT / f"{Path(name).stem}_comparison_20261022_v2.png"
++        pdf = png.with_suffix(".pdf")
++        canvas.save(png, dpi=(300, 300))
++        figure = Figure(figsize=(3272 / 300, 1580 / 300), dpi=300)
++        FigureCanvasAgg(figure)
++        axes = figure.add_axes((0, 0, 1, 1))
++        axes.imshow(np.asarray(canvas), interpolation="none")
++        axes.set_axis_off()
++        figure.savefig(pdf, dpi=300, metadata={"Title": f"Revised {name}: arm or lettering detail",
++                                              "Creator": "revise_comparisons.py"})
++        with Image.open(png) as saved:
++            assert saved.size == (3272, 1580)
++            for left, expected in crop_checks:
++                actual = np.asarray(saved.crop((left, 770, left + 672, 1442)))
++                if not np.array_equal(expected, actual):
++                    raise AssertionError("Zoom panel changed source-derived pixels")
++                verified_panels += 1
++            for column, method in enumerate(METHODS):
++                left = 40 + column * 808
++                actual = np.asarray(saved.crop((left, 150, left + 768, 662)))
++                mask = np.ones((512, 768), dtype=bool)
++                mask[:2] = mask[-2:] = False
++                mask[:, :2] = mask[:, -2:] = False
++                mask[y1:y2, x1:x2] = False
++                if not np.array_equal(actual[mask], arrays[method][mask]):
++                    raise AssertionError("Full-image pixels changed outside annotations")
++                verified_panels += 1
++        for path in (png, pdf):
++            outputs.append({"path": str(path), "bytes": path.stat().st_size, "sha256": previous.sha256(path)})
++        selections.append({"image": name, **selection, "metrics": metrics,
++                           "figure_png": str(png), "figure_pdf": str(pdf)})
++        print(f"SAVED {png}\nSAVED {pdf}", flush=True)
++    verify_snapshot(AUDIT / "source_manifest.json")
++    verify_snapshot(AUDIT / "previous_artifacts_manifest.json")
++    write_json(AUDIT / "selection_and_metrics.json", {
++        "revision": "v2, 2026-10-22; arm and user-selected raft lettering",
++        "metric_source": str(metric_source), "metric_source_sha256": previous.sha256(metric_source),
++        "helper_source": str(PREVIOUS), "helper_source_sha256": previous.sha256(PREVIOUS),
++        "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
++        "ms_ssim_definition": "Existing Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1], five scales",
++        "ms_ssim_db_definition": "-10*log10(1-MS-SSIM); untransformed score also retained",
++        "interpretation": "Selected illustrative examples; lettering comparison concerns edge and shape fidelity, not an OCR accuracy claim",
++        "selections": selections,
++    })
++    write_json(AUDIT / "verification.json", {
++        "source_images_verified_unchanged": source_count,
++        "previous_artifacts_verified_unchanged": prior_count,
++        "panels_verified_against_source_pixels": verified_panels,
++        "MDRQ_leads_selected_full_image_PSNR_MS_SSIM_and_ROI_PSNR": True,
++        "crop_size_wh": [128, 128], "zoom_size_wh": [672, 672],
++        "zoom_interpolation": "nearest neighbor, identical across all four methods",
++        "output_png_size_wh": [3272, 1580], "outputs": outputs,
++    })
++    print(f"VERIFIED {source_count} source images, {prior_count} prior artifacts unchanged; {verified_panels} panels.", flush=True)
++
++
++def review():
++    patch_path, status_path, manifest_path = (AUDIT / name for name in ("changes.patch", "git_status_after.txt", "artifacts_manifest.json"))
++    for path in (patch_path, status_path, manifest_path):
++        path.touch(exist_ok=True)
++    status = subprocess.run(["git", "-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
++                            cwd=ROOT, capture_output=True, text=True, check=True).stdout
++    status_path.write_text(status, encoding="utf-8")
++    outputs = [ROOT / f"{Path(name).stem}_comparison_20261022_v2{extension}"
++               for name in SELECTIONS for extension in (".png", ".pdf")]
++    paths = sorted([path for path in AUDIT.rglob("*") if path.is_file()] + outputs)
++    owned = {str(path.relative_to(ROOT)) for path in paths}
++    before = (AUDIT / "git_status_before.txt").read_text(encoding="utf-8").splitlines()
++    if any(line[3:] in owned for line in before):
++        raise ValueError("A revision output was present before this task")
++    missing = owned - {line[3:] for line in status.splitlines() if line.startswith("?? ")}
++    ignored = set()
++    if missing:
++        result = subprocess.run(["git", "check-ignore", "--stdin"], cwd=ROOT,
++                                input="\n".join(sorted(missing)) + "\n", capture_output=True, text=True)
++        if result.returncode not in (0, 1):
++            raise ValueError(result.stderr)
++        ignored = set(result.stdout.splitlines())
++        if missing - ignored:
++            raise ValueError(f"Missing new files from Git status: {missing - ignored}")
++    tracked_diff = subprocess.run(["git", "diff", "--", *sorted(owned)], cwd=ROOT,
++                                  capture_output=True, text=True, check=True).stdout
++    if tracked_diff:
++        raise ValueError("Unexpected tracked changes in revision outputs")
++    patch = []
++    for path in paths:
++        if path.suffix not in (".py", ".md", ".json") or path == manifest_path:
++            continue
++        relative = str(path.relative_to(ROOT))
++        patch.append(f"diff --git a/{relative} b/{relative}\nnew file mode 100644\n")
++        patch.extend(difflib.unified_diff([], path.read_text(encoding="utf-8").splitlines(keepends=True),
++                                           fromfile="/dev/null", tofile=f"b/{relative}"))
++    patch_path.write_text("".join(patch), encoding="utf-8")
++    outside_before = {line for line in before if line[3:] not in owned}
++    outside_after = {line for line in status.splitlines() if line[3:] not in owned}
++    write_json(manifest_path, {
++        "command": f"python -u {__file__} --stage review",
++        "scope": "New v2 outputs only; all previous figures and review records remain unchanged",
++        "new_untracked_outputs": sorted(owned - ignored), "new_outputs_ignored_by_git": sorted(ignored),
++        "outside_scope_status_added": sorted(outside_after - outside_before),
++        "outside_scope_status_removed": sorted(outside_before - outside_after),
++        "patch_covers": "Full new .py/.md/.json contents except this manifest; logs and images are separately linked",
++        "files": [{"path": str(path), "bytes": path.stat().st_size, "sha256": previous.sha256(path)}
++                  for path in paths if path != manifest_path], "manifest_self": str(manifest_path),
++    })
++    print(f"REVIEW {len(paths)} new files: {len(owned - ignored)} untracked, {len(ignored)} ignored logs.", flush=True)
++    print(f"OUTSIDE SCOPE status additions={len(outside_after - outside_before)}, removals={len(outside_before - outside_after)}", flush=True)
++    print(f"PATCH {patch_path}\nMANIFEST {manifest_path}", flush=True)
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--stage", choices=("inspect", "render", "review"), default="inspect")
++    args = parser.parse_args()
++    print(f"RUN python {__file__} --stage {args.stage}", flush=True)
++    {"inspect": inspect, "render": render, "review": review}[args.stage]()
+diff --git a/comparison_labels_text_20261022/before_manifest.json b/comparison_labels_text_20261022/before_manifest.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/before_manifest.json
+@@ -0,0 +1,52 @@
++[
++  {
++    "path": "/workspace/yi/work/comparison_review_20261022/build_comparisons.py",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py",
++    "sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571"
++  },
++  {
++    "path": "/workspace/yi/work/comparison_revision_20261022/revise_comparisons.py",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py",
++    "sha256": "e9e7da83f04af391e84155cd24f756ef95c9dfb276159a53458a73077754de7f"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.png",
++    "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.pdf",
++    "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
++  },
++  {
++    "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.png",
++    "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
++  },
++  {
++    "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.pdf",
++    "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.png",
++    "sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033"
++  },
++  {
++    "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.pdf",
++    "sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689"
++  },
++  {
++    "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.png",
++    "sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9"
++  },
++  {
++    "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
++    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.pdf",
++    "sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c"
++  }
++]
+diff --git a/comparison_labels_text_20261022/candidate_regions.json b/comparison_labels_text_20261022/candidate_regions.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/candidate_regions.json
+@@ -0,0 +1,130 @@
++[
++  {
++    "image": "kodim08.png",
++    "description": "full fine-print sign",
++    "roi_xyxy": [
++      544,
++      288,
++      656,
++      400
++    ],
++    "roi_psnr_db": {
++      "JPEG": 22.383011397034146,
++      "RAQ-VAE": 24.898715742341327,
++      "MDRQ": 27.893342894979973
++    },
++    "minimum_MDRQ_advantage_db": 2.994627152638646
++  },
++  {
++    "image": "kodim08.png",
++    "description": "red initial and fine strokes",
++    "roi_xyxy": [
++      536,
++      296,
++      632,
++      392
++    ],
++    "roi_psnr_db": {
++      "JPEG": 22.353499316567977,
++      "RAQ-VAE": 24.70116306190098,
++      "MDRQ": 27.77957942016755
++    },
++    "minimum_MDRQ_advantage_db": 3.078416358266569
++  },
++  {
++    "image": "kodim08.png",
++    "description": "Alfred sign",
++    "roi_xyxy": [
++      664,
++      288,
++      752,
++      376
++    ],
++    "roi_psnr_db": {
++      "JPEG": 21.318880027543234,
++      "RAQ-VAE": 25.603124524822,
++      "MDRQ": 28.102461145911878
++    },
++    "minimum_MDRQ_advantage_db": 2.4993366210898778
++  },
++  {
++    "image": "kodim08.png",
++    "description": "fabrikation strokes",
++    "roi_xyxy": [
++      584,
++      304,
++      664,
++      384
++    ],
++    "roi_psnr_db": {
++      "JPEG": 22.817234732352784,
++      "RAQ-VAE": 24.72227221915415,
++      "MDRQ": 27.910904235325617
++    },
++    "minimum_MDRQ_advantage_db": 3.188632016171468
++  },
++  {
++    "image": "kodim19.png",
++    "description": "warning sign",
++    "roi_xyxy": [
++      396,
++      440,
++      460,
++      504
++    ],
++    "roi_psnr_db": {
++      "JPEG": 26.721075328602822,
++      "RAQ-VAE": 25.48842049714829,
++      "MDRQ": 28.9864500323983
++    },
++    "minimum_MDRQ_advantage_db": 2.2653747037954766
++  },
++  {
++    "image": "kodim09.png",
++    "description": "sail digits",
++    "roi_xyxy": [
++      376,
++      376,
++      472,
++      472
++    ],
++    "roi_psnr_db": {
++      "JPEG": 31.12538322163558,
++      "RAQ-VAE": 25.586914557450523,
++      "MDRQ": 30.776212963322884
++    },
++    "minimum_MDRQ_advantage_db": -0.34917025831269655
++  },
++  {
++    "image": "kodim10.png",
++    "description": "sail digits",
++    "roi_xyxy": [
++      152,
++      28,
++      312,
++      188
++    ],
++    "roi_psnr_db": {
++      "JPEG": 32.3521681483793,
++      "RAQ-VAE": 32.28222845183489,
++      "MDRQ": 37.18415017245326
++    },
++    "minimum_MDRQ_advantage_db": 4.831982024073959
++  },
++  {
++    "image": "kodim24.png",
++    "description": "painted wall script",
++    "roi_xyxy": [
++      376,
++      272,
++      440,
++      336
++    ],
++    "roi_psnr_db": {
++      "JPEG": 26.761289648246617,
++      "RAQ-VAE": 32.32220139092569,
++      "MDRQ": 35.63412345282608
++    },
++    "minimum_MDRQ_advantage_db": 3.3119220619003897
++  }
++]
+diff --git a/comparison_labels_text_20261022/new_figure_metrics.json b/comparison_labels_text_20261022/new_figure_metrics.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/new_figure_metrics.json
+@@ -0,0 +1,71 @@
++{
++  "image": "kodim10.png",
++  "roi_xyxy": [
++    152,
++    28,
++    312,
++    188
++  ],
++  "display_labels": {
++    "Original": "Original",
++    "JPEG": "JPEG-2000",
++    "RAQ-VAE": "RAQJSCC",
++    "MDRQ": "MDRQ"
++  },
++  "metric_source": "/workspace/yi/work/Ours-RAQ/utils/metrics.py",
++  "metric_source_sha256": "2b76ae2b6f8aa022430a56eaad4a4d41396e0ece09f3f54a4e991e311a4c0875",
++  "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
++  "ms_ssim_definition": "Existing five-scale Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1]",
++  "ms_ssim_db_definition": "-10*log10(1-MS-SSIM), raw score retained",
++  "interpretation": "Selected lettering example; visual clarity and source fidelity, not an OCR accuracy measurement",
++  "metrics": {
++    "JPEG-2000": {
++      "source_method_key": "JPEG",
++      "psnr_db": 31.542379699388704,
++      "ms_ssim": 0.9690612272097757,
++      "ms_ssim_db": 15.09496916913443,
++      "roi_psnr_db": 32.3521681483793
++    },
++    "RAQJSCC": {
++      "source_method_key": "RAQ-VAE",
++      "psnr_db": 28.75775838321362,
++      "ms_ssim": 0.9690222840849496,
++      "ms_ssim_db": 15.089506073017738,
++      "roi_psnr_db": 32.28222845183489
++    },
++    "MDRQ": {
++      "source_method_key": "MDRQ",
++      "psnr_db": 34.12740945901202,
++      "ms_ssim": 0.9876016199877878,
++      "ms_ssim_db": 19.066350565892552,
++      "roi_psnr_db": 37.18415017245326
++    }
++  },
++  "source_images_verified_unchanged": 96,
++  "new_figure_panels_verified": 8,
++  "figure_size_wh": [
++    2248,
++    1612
++  ],
++  "roi_size_wh": [
++    160,
++    160
++  ],
++  "zoom_size_wh": [
++    448,
++    448
++  ],
++  "zoom_interpolation": "nearest neighbor, identical across methods",
++  "outputs": [
++    {
++      "path": "/workspace/yi/work/kodim10_comparison_20261022.png",
++      "bytes": 2271461,
++      "sha256": "49f4ae601d73d3a9822e42f1dc4618f453942292d1b8b7102f4ffc3aa6f49ab3"
++    },
++    {
++      "path": "/workspace/yi/work/kodim10_comparison_20261022.pdf",
++      "bytes": 2272653,
++      "sha256": "748330adecd1092093c43fb43889f118c0ab06099c2f505002bdfdb6668417c2"
++    }
++  ]
++}
+diff --git a/comparison_labels_text_20261022/renamed_existing_figures.json b/comparison_labels_text_20261022/renamed_existing_figures.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/renamed_existing_figures.json
+@@ -0,0 +1,76 @@
++{
++  "display_labels": {
++    "Original": "Original",
++    "JPEG": "JPEG-2000",
++    "RAQ-VAE": "RAQJSCC",
++    "MDRQ": "MDRQ"
++  },
++  "existing_png_figures_updated": 4,
++  "verification": "Every pixel outside the two method-title rectangles is identical to the before-operation snapshot",
++  "allowed_changed_rectangles_xyxy": [
++    [
++      848,
++      60,
++      1616,
++      141
++    ],
++    [
++      1656,
++      60,
++      2424,
++      141
++    ]
++  ],
++  "source_images_verified_unchanged": 96,
++  "historical_generator_scripts_unchanged": true,
++  "outputs": [
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
++      "before_sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9",
++      "after_sha256": "d13c9f50a70187dd7aa661caa7b59313866c4d347f12b4977968fe915b0709f1",
++      "bytes": 3249796
++    },
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
++      "before_sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843",
++      "after_sha256": "ddf52b95e242f197f8e38282a4e2d589884fca3b9bbfccb1a90419a8a3abc03a",
++      "bytes": 3236794
++    },
++    {
++      "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
++      "before_sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2",
++      "after_sha256": "d3f7641b4b200bc5c572db53fe13b1e6d25cf46010ca3fe867ef51fe4c9adeba",
++      "bytes": 2548057
++    },
++    {
++      "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
++      "before_sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d",
++      "after_sha256": "087398a5161ccc597874284f1be2b2a4dad7b2fc2a4a231100ff8b3f7cedbf88",
++      "bytes": 2547443
++    },
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
++      "before_sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033",
++      "after_sha256": "c160a609e8e0b82a49040837563ab4b9f9fb9aa36025ab6968d9c56ebea87932",
++      "bytes": 3217310
++    },
++    {
++      "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
++      "before_sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689",
++      "after_sha256": "bdeedd65f4b46c771c83276dbe4a6864c4a376d028a17be429cece9cec48b074",
++      "bytes": 3207507
++    },
++    {
++      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
++      "before_sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9",
++      "after_sha256": "c44a028ec96ecf6734ebe05b1abb3ef54502d20f939e78db26e5abf96fb7ea29",
++      "bytes": 2882906
++    },
++    {
++      "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
++      "before_sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c",
++      "after_sha256": "1d05be01638c07679832c1e645f9e3ce98162208c64df3cc3150dba261a5fc54",
++      "bytes": 2876071
++    }
++  ]
++}
+diff --git a/comparison_labels_text_20261022/source_manifest.json b/comparison_labels_text_20261022/source_manifest.json
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/source_manifest.json
+@@ -0,0 +1,386 @@
++[
++  {
++    "path": "/workspace/yi/work/Kodak/kodim01.png",
++    "sha256": "a56e27cbf5f843c048b6af1d6e090760e9c92fadba88b7dee0205918a37523bd"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim02.png",
++    "sha256": "4f4b74a79237e311d72cad958237b5f7088d8bce1c82305ebefe1a70e3022dfd"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim03.png",
++    "sha256": "e25ca1ff2f0c0cb5fdfd5f9b0a0bb21ac4c3de3c84a67f35b09a85d3306249db"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim04.png",
++    "sha256": "e3b946107c5d3441c022f678d0c3caf1e224d81b1604ba840a4f88e562de61aa"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim05.png",
++    "sha256": "10349e963c5c813d327852f82c1795fa4148d69fedffc4c589bee458e3ac3d53"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim06.png",
++    "sha256": "363510303b715d4cbc384e1ce227e466b613a09e1b71ae985882bf8e7fbd9b18"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim07.png",
++    "sha256": "b77d3f006f42414bb242222e0482e750c0fb9e5ee8d4bed2f6f11c5605fe54a4"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim08.png",
++    "sha256": "ba23983c76b4832ee0e8af0592664756841a16779acd69f792e268fb6d13d6e7"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim09.png",
++    "sha256": "6a4361c2fc194feb4edaa9f9a4a0620fb9943e460ac7fdf037fb0f6dd6607a7d"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim10.png",
++    "sha256": "9dfb70f5867c29ff9ed6313683f19b3d867849e40fbc0c4c54a4a89df341cf23"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim11.png",
++    "sha256": "7936814b58b5387fce2e4e2488b4ec830dadd95fa9520f358ddb30990b50f2b6"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim12.png",
++    "sha256": "d78c37c2f04f23761ed2367dd77e2db584ddd4c3950833fecf89f199a8126980"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim13.png",
++    "sha256": "bc34a3ce58dea09dce1704c997171602de90cb34d0c8503a988b77f473d39b08"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim14.png",
++    "sha256": "55a94550ff18f3246c4074fd32b77b0c74447c26b6ad274d564d999c0450ba6e"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim15.png",
++    "sha256": "7538cbb80cb9103606c48b806eae57d56c885c7f90b9b3be70a41160f9cbb683"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim16.png",
++    "sha256": "a89c7268ccd4718ba424a99fc4643c572cf692ca6eae887185ceb4e9f11d2e54"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim17.png",
++    "sha256": "37afcc89fbdcb76d9518e04b2fc011027e2f4cd14b3b2f83cefd721641a47c5b"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim18.png",
++    "sha256": "1a9258c365988961d87a0598725b609139c303ad48a5aad6c503c3b1a87849aa"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim19.png",
++    "sha256": "b7450b264b1b0a411390d8931b112c27905a992520fc90569dc4b920aa32bbdc"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim20.png",
++    "sha256": "3b46c71e3b92a563820ba32936be8330c586c41f938efd94be938386aae4328a"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim21.png",
++    "sha256": "ac958597c82073f6bb65129c68f72b651db5b9efd82e11547d07350214bc268b"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim22.png",
++    "sha256": "1cee58eb1f2d9c7ebb254d208a03c783ce6cf2c4d8c2cf45e235dd23b4ce1b29"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim23.png",
++    "sha256": "e3111a2fd4da24af15d6459ef9eacfe54106b38e27b4a21821b75c3f5d2d5baf"
++  },
++  {
++    "path": "/workspace/yi/work/Kodak/kodim24.png",
++    "sha256": "1071c68372cc5a01435c2c225a5cf7d4bb803846ec08bb6b3d6721b156d7cb96"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim01.png",
++    "sha256": "e9d508b0a783e0e885567a0b0273ee0b91baf8de0745179a3aca13a0e82b9feb"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim02.png",
++    "sha256": "9d1ba3bfe5455e9e07c57da1f5322d42c8769415aee9610e0c726f24dc6e976c"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim03.png",
++    "sha256": "e84f3e7249ebf66db387edc2c10cef77b5c85b0ed51f16fce1d0be128382535e"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim04.png",
++    "sha256": "fa46578612aa245cb4896987ee4557e694ab4f897124015473b000922687af7b"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim05.png",
++    "sha256": "35ef63f20d757dad46b8832ed8a5a431227e7db9ed9c2e24211414eb278545c9"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim06.png",
++    "sha256": "f90814d71f07c1364f6a9a6ec0b64e92080b6837e334bbfa0d5fceeb52abe367"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim07.png",
++    "sha256": "5510f72643867ddc4ddda95e7a051f96a933e869f1ee41eac2f8a09a737acb67"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim08.png",
++    "sha256": "d3e378c723e72e8936ad202574cd9fed985818ea6ae894101b3314ae08179901"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim09.png",
++    "sha256": "1246c5756bd99a5405a7f2cac7637f81caaacb7d7d63206624d9fc3210e2a6c0"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim10.png",
++    "sha256": "e37d3889f241ea13bf5c8b3a96a0b00bd35c28b472ade127e75394aba996f453"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim11.png",
++    "sha256": "64242056cd745c26ebae9f863d875e7a167c4999cc0a9290ad77e162e5e3e262"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim12.png",
++    "sha256": "e59a4cfdae1fb3aab164f8f982860fc6abd4d6c92905fad2c3864c084b86f0ec"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim13.png",
++    "sha256": "1614013257f72594f01b4bbc208ea0ed3189382a68f439933497c050557adbb4"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim14.png",
++    "sha256": "cb0662ca621ecd42cc7a3c798fcfa1f4d8e9cabf0613b7a81be7c0649fc39e0d"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim15.png",
++    "sha256": "b6bf46f41952bd2d7f7fc6a659557f95b6969bd8d5ad9a21a239936846e125a4"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim16.png",
++    "sha256": "030b85a856ecbc6be795fb73793b35e408402e8ca4ce1015db32351d6b2ebc88"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim17.png",
++    "sha256": "25500eba55bfaf4bca45ce9bc233694329e9ab7f1c0a5461f4b48ca8bb1ee6a6"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim18.png",
++    "sha256": "7e77b11f2d3175a003b69530c2927fc4f737920ae795f4dcf0c2624ae66dd216"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim19.png",
++    "sha256": "400d58311a68faef8785838677560b31c4e66f6d226ab4de66af8144c09c993b"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim20.png",
++    "sha256": "2f11ac53bea603e1e132b6c6a2166a73a52a41367cc078350eba03df24047af5"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim21.png",
++    "sha256": "4aa44d2b11777d599b79fef7b0c4cda9b568b3a593a171f0123914568b3b5ed8"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim22.png",
++    "sha256": "c753373ad2d6d23cc1665ca5a28c4211cd375ba94458ec27e0aa217c390ff350"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim23.png",
++    "sha256": "41c9c1306f7b75d43e79bb80dd2de28d5269b6169fef74f708ad10e66c34e4cf"
++  },
++  {
++    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim24.png",
++    "sha256": "eaf58317299f4c36c8aecfdb565ee7e14199342be274a7531d3a3b6ac3334cf0"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim01.png",
++    "sha256": "0d2a7873ddb460cdcbd65dc652bb4f805704ad0db5f766ab8c2e654e8b75cff3"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim02.png",
++    "sha256": "7f098adbbcd4054cd7dc3972fedd0e3537b05bec92be9afea28fd09d9acd9477"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim03.png",
++    "sha256": "4392a50aba00f6be2f50e60f021f71a752fe58f3a18d30695f6f7984757e1748"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim04.png",
++    "sha256": "8de03255487d794d6104aef8a54d685552cbfe977d9ab9636cd594574e9772a2"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim05.png",
++    "sha256": "02780a5679bde17c7c3ad84f8ea7d652757906fe28dc160b92964f6f4a446c81"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim06.png",
++    "sha256": "231ac3e08f2098d21b5f044b1a931a853bd0e4201cff61e5481e280f50b54456"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim07.png",
++    "sha256": "9fc2ab77134c0a83eeb6f8832170b804664af2d6c30c67c31f45b5f3125f6437"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim08.png",
++    "sha256": "71ab1e319836903bfe989868702a01440dd54dbf121b1439a14bb5df698660ca"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim09.png",
++    "sha256": "a8d9565b2a274c1e969e92d9fd23b4f45fb30afea062075d27b820b52d602a76"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim10.png",
++    "sha256": "afc2c745dcc931f69def8b44a4c73b7992bcf3d7e2f003d2b5847fd586416753"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim11.png",
++    "sha256": "372b02b450a2ccda8946ffb65d6fd74cfe0ecb82277d6ac0cefb81af7ff13065"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim12.png",
++    "sha256": "615da51fbc1f9354264cce7877a1b01e096a9fe66a250b0e84ea54e3e2d604be"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim13.png",
++    "sha256": "8c43150d6890c6330d41dab2a373d6b783b26e386f0a5ae3ea5fa4f29a3f3102"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim14.png",
++    "sha256": "ac9fc1c80174ca9339ccc577ccb0bdad52326f3367a3817fcc764a313b945ac9"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim15.png",
++    "sha256": "4d64f0ca0d66a2ded6a84eef9d3e316cc1059ef5e0e58033805aa21b5268d724"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim16.png",
++    "sha256": "283eefc30e850276880689a4782216387c3155e36f024910545e729f71d12ad0"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim17.png",
++    "sha256": "f66f3e8e9fc1c2184d3ec8393eb659410f34671160485bdb5327433f8ad1b166"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim18.png",
++    "sha256": "9ac73fcb9f5b04c56846f50e25f64b3168dddb96729b8411b89dcddf0a8e2708"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim19.png",
++    "sha256": "ac0b53c29cc0ce442fa22de16ff6d4b72069ce4675c03095fa2c8f56ba572548"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim20.png",
++    "sha256": "891dd16199994e22bc70052233a11d554baff229a4c0f4996613be4b215faddc"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim21.png",
++    "sha256": "f5bc465c0b4c75c66bd8d74fb02e7ca95fd3cd3651540b18d4da1b118cb65a67"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim22.png",
++    "sha256": "abeddb65511ace5b68a483444e165e0cde9a3ea3ee7a559ac49be11ddab43c4f"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim23.png",
++    "sha256": "0113aa942505875581274a2c2e5b75cd4a2e48ae3a4abcf06c82b9145a5056df"
++  },
++  {
++    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim24.png",
++    "sha256": "525a4e23001a30a70757211f17a60d7f300f0512e7c40022d8af340d5708c7ba"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim01.png",
++    "sha256": "e63f342efa7ec7147a7a32963e0a92e4d387167e75604360c8a8f28cb597fd13"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim02.png",
++    "sha256": "0a7670a4666f0be4a90f5d646a3767a775dcfb48709b4645bdb647e72d433cb9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim03.png",
++    "sha256": "edabff956ea578371b9897bb8779d9248e525b31b584f771179c8d1e2b85ab5b"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim04.png",
++    "sha256": "a9e805457e1a7d56683dee0a1c8e5235b86879cb1f13234d099e61fd2d96a975"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim05.png",
++    "sha256": "68b957fb29afa54b2bdf191573fd530803a4a19880e0eceb9d254d995739628f"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim06.png",
++    "sha256": "566720de5b54a173a322de691a5d7a6450f4ec1a8410ae0ed004aa5a0a6face5"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim07.png",
++    "sha256": "4778697782e5708657a2ab9bba03a669ad9c3c1f70e2249f1dec2f36211ad81e"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim08.png",
++    "sha256": "8918375340b508e1c3f8a1d66a9e030521fdbd097e9b3f90f3c7c009fb810ca9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim09.png",
++    "sha256": "a037a0b9e21b23b944f21dd773b5a94653d998fd75ab6fade20f3bc61eb37c66"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim10.png",
++    "sha256": "006785260dffe148d4ffecc36e03f2700ced9158fbec3a15d46a020e168079f9"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim11.png",
++    "sha256": "d8310b6f646397883ab633e023b865ffefb4dd739bbd7d3b9c014ad4ed6ef7e6"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim12.png",
++    "sha256": "a4211fd725ab0879cf4d3aff9659be5b1e0caeaa34c5ee0986ccb5f21782bd72"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim13.png",
++    "sha256": "5f068e987524029e9903cea524fbbd1bda3847143fc0bf338cb4caea10d52b53"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim14.png",
++    "sha256": "472c59a8d03440e5f1fe0438a76ac74f0c4382d37748bdbc5efeecefaa43eec6"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim15.png",
++    "sha256": "1a55de3ef2117c983406a47745da76e1c0776f227f4a7f60cba81f4c5d2a10ed"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim16.png",
++    "sha256": "8e92eafb98efef42bac737c215c540610ccab6d88df458f78340d1eb2d2953bf"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim17.png",
++    "sha256": "80e1bd280795ed114d5b47a1692a83e8359ef74c414e96bf6459f4e473311cab"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim18.png",
++    "sha256": "3fba189db0c126ecb25b92f00ac97b6f56a120fb37dc6a601682b97ccb573750"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim19.png",
++    "sha256": "8853c325a39b5b5d1c7ab2cbfcbb7b09941cb7eaa4b35d87af06a1a0664d931b"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim20.png",
++    "sha256": "ae4a949ab69f1fd770725fa769323e44e1db28d232997c1ed50639538980d75d"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim21.png",
++    "sha256": "9b358cc41c08f581b90e00e66e7d6c0917f2e5458d6221630284cf83f390eb4d"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim22.png",
++    "sha256": "7b3e0fa5a9280156992609c9e1c9aef332abc35acd859ce1edebe1ab2178b5f4"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim23.png",
++    "sha256": "4df88161f8d078828c084231904221131cf621bdb9ef6e0e37f04aa62d7125fd"
++  },
++  {
++    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim24.png",
++    "sha256": "f17398755984ae39a6926cecd4fb11334f15e111987a3d1fe21efd76e0ab8590"
++  }
++]
+diff --git a/comparison_labels_text_20261022/update_labels_and_text.py b/comparison_labels_text_20261022/update_labels_and_text.py
+new file mode 100644
+--- /dev/null
++++ b/comparison_labels_text_20261022/update_labels_and_text.py
+@@ -0,0 +1,337 @@
++#!/usr/bin/env python3
++"""Review lettering candidates and update comparison labels without source-image edits."""
++
++import argparse
++import difflib
++import importlib.util
++import json
++import math
++import shutil
++import subprocess
++import sys
++from pathlib import Path
++
++import numpy as np
++from PIL import Image, ImageDraw
++
++sys.dont_write_bytecode = True
++AUDIT = Path(__file__).resolve().parent
++ROOT = AUDIT.parent
++HELPERS = ROOT / "comparison_review_20261022/build_comparisons.py"
++spec = importlib.util.spec_from_file_location("comparison_helpers", HELPERS)
++base = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(base)
++DISPLAY = {"Original": "Original", "JPEG": "JPEG-2000", "RAQ-VAE": "RAQJSCC", "MDRQ": "MDRQ"}
++OLD_FIGURES = [ROOT / name for name in (
++    "kodim05_comparison_20261022.png", "kodim21_comparison_20261022.png",
++    "kodim05_comparison_20261022_v2.png", "kodim14_comparison_20261022_v2.png",
++)]
++OLD_SCRIPTS = [HELPERS, ROOT / "comparison_revision_20261022/revise_comparisons.py"]
++CANDIDATES = [
++    ("kodim08.png", "full fine-print sign", [544, 288, 656, 400]),
++    ("kodim08.png", "red initial and fine strokes", [536, 296, 632, 392]),
++    ("kodim08.png", "Alfred sign", [664, 288, 752, 376]),
++    ("kodim08.png", "fabrikation strokes", [584, 304, 664, 384]),
++    ("kodim19.png", "warning sign", [396, 440, 460, 504]),
++    ("kodim09.png", "sail digits", [376, 376, 472, 472]),
++    ("kodim10.png", "sail digits", [152, 28, 312, 188]),
++    ("kodim24.png", "painted wall script", [376, 272, 440, 336]),
++]
++
++
++def write_json(path, value):
++    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++
++
++def verify_sources():
++    entries = json.loads((AUDIT / "source_manifest.json").read_text(encoding="utf-8"))
++    for entry in entries:
++        if base.sha256(Path(entry["path"])) != entry["sha256"]:
++            raise ValueError(f"Changed source: {entry['path']}")
++    return len(entries)
++
++
++def prepare():
++    manifest_path = AUDIT / "before_manifest.json"
++    if manifest_path.exists():
++        raise ValueError("Before-operation snapshot already exists; refusing to replace it")
++    source_records = []
++    names = sorted(path.name for path in base.DIRECTORIES["Original"].glob("*.png"))
++    if len(names) != 24:
++        raise ValueError("Expected 24 Kodak images")
++    for method, folder in base.DIRECTORIES.items():
++        if sorted(path.name for path in folder.glob("*.png")) != names:
++            raise ValueError(f"Mismatched input inventory: {folder}")
++        for name in names:
++            path = folder / name
++            source_records.append({"path": str(path), "sha256": base.sha256(path)})
++    write_json(AUDIT / "source_manifest.json", source_records)
++    targets = OLD_SCRIPTS + [path for png in OLD_FIGURES for path in (png, png.with_suffix(".pdf"))]
++    previous = []
++    for path in targets:
++        snapshot = AUDIT / "before" / path.relative_to(ROOT)
++        snapshot.parent.mkdir(parents=True, exist_ok=True)
++        shutil.copy2(path, snapshot)
++        previous.append({"path": str(path), "snapshot": str(snapshot), "sha256": base.sha256(path)})
++    write_json(manifest_path, previous)
++    print(f"PREPARED {len(source_records)} source-image hashes, {len(previous)} before-operation snapshots.", flush=True)
++
++
++def inspect():
++    verify_sources()
++    records = []
++    for page_index in range(math.ceil(len(CANDIDATES) / 4)):
++        choices = CANDIDATES[page_index * 4:(page_index + 1) * 4]
++        canvas = Image.new("RGB", (1600, len(choices) * 400), "white")
++        draw = ImageDraw.Draw(canvas)
++        for row_index, (name, description, roi) in enumerate(choices):
++            images = base.read_images(name)
++            scores = {}
++            for column, method in enumerate(base.METHODS):
++                crop = images[method].crop(roi)
++                left, top = 400 * column + 34, 400 * row_index + 40
++                canvas.paste(crop.resize((332, 332), Image.Resampling.NEAREST), (left, top))
++                base.centered(draw, column * 400 + 200, row_index * 400 + 21,
++                              f"{name[:7]} | {DISPLAY[method]}", 21)
++                if method != "Original":
++                    scores[method] = base.psnr(np.asarray(images["Original"].crop(roi)), np.asarray(crop))
++            base.centered(draw, 800, row_index * 400 + 386, f"{description} {roi}", 18)
++            records.append({"image": name, "description": description, "roi_xyxy": roi, "roi_psnr_db": scores,
++                            "minimum_MDRQ_advantage_db": scores["MDRQ"] - max(scores["JPEG"], scores["RAQ-VAE"])})
++        path = AUDIT / f"lettering_candidates_{page_index + 1}.png"
++        canvas.save(path)
++        print(f"PREVIEW {path}", flush=True)
++    write_json(AUDIT / "candidate_regions.json", records)
++    for record in records:
++        print(json.dumps(record), flush=True)
++
++
++def save_pdf(canvas, path, title):
++    from matplotlib.figure import Figure
++    from matplotlib.backends.backend_agg import FigureCanvasAgg
++
++    width, height = canvas.size
++    figure = Figure(figsize=(width / 300, height / 300), dpi=300)
++    FigureCanvasAgg(figure)
++    axes = figure.add_axes((0, 0, 1, 1))
++    axes.imshow(np.asarray(canvas), interpolation="none")
++    axes.set_axis_off()
++    figure.savefig(path, dpi=300, metadata={"Title": title, "Creator": "update_labels_and_text.py"})
++
++
++def labels():
++    verify_sources()
++    before = {entry["path"]: entry for entry in json.loads((AUDIT / "before_manifest.json").read_text(encoding="utf-8"))}
++    outputs = []
++    for png in OLD_FIGURES:
++        entry = before[str(png)]
++        if base.sha256(png) != entry["sha256"]:
++            raise ValueError(f"Existing figure changed since the before-operation snapshot: {png}")
++        with Image.open(png) as original:
++            canvas = original.copy()
++        original_pixels = np.asarray(canvas).copy()
++        if canvas.size != (3272, 1580) or canvas.mode != "RGB":
++            raise ValueError(f"Unexpected figure format: {png}")
++        draw = ImageDraw.Draw(canvas)
++        allowed = np.zeros((1580, 3272), dtype=bool)
++        for column, method in ((1, "JPEG"), (2, "RAQ-VAE")):
++            left = 40 + column * 808
++            draw.rectangle((left, 60, left + 767, 140), fill="white")
++            base.centered(draw, left + 384, 103, DISPLAY[method], 44)
++            allowed[60:141, left:left + 768] = True
++        canvas.save(png, dpi=(300, 300))
++        with Image.open(png) as result:
++            after = np.asarray(result)
++        if not np.array_equal(original_pixels[~allowed], after[~allowed]):
++            raise AssertionError("An existing figure changed outside its two method titles")
++        changed = int(np.count_nonzero(np.any(original_pixels != after, axis=2)))
++        if changed == 0:
++            raise AssertionError("Expected updated title pixels")
++        pdf = png.with_suffix(".pdf")
++        save_pdf(canvas, pdf, "Original | JPEG-2000 | RAQJSCC | MDRQ")
++        for path in (png, pdf):
++            outputs.append({"path": str(path), "before_sha256": before[str(path)]["sha256"],
++                            "after_sha256": base.sha256(path), "bytes": path.stat().st_size})
++        print(f"RELABELLED {png.name}: {changed} changed pixels, all within method-title regions.", flush=True)
++    verify_sources()
++    for path in OLD_SCRIPTS:
++        if base.sha256(path) != before[str(path)]["sha256"]:
++            raise AssertionError("Historical generator script unexpectedly changed")
++    write_json(AUDIT / "renamed_existing_figures.json", {
++        "display_labels": DISPLAY, "existing_png_figures_updated": 4,
++        "verification": "Every pixel outside the two method-title rectangles is identical to the before-operation snapshot",
++        "allowed_changed_rectangles_xyxy": [[848, 60, 1616, 141], [1656, 60, 2424, 141]],
++        "source_images_verified_unchanged": 96, "historical_generator_scripts_unchanged": True,
++        "outputs": outputs,
++    })
++
++
++def new_figure(name, roi):
++    verify_sources()
++    images = base.read_images(name)
++    arrays = {method: np.asarray(image) for method, image in images.items()}
++    image_width, image_height = images["Original"].size
++    x1, y1, x2, y2 = roi
++    if not (0 <= x1 < x2 <= image_width and 0 <= y1 < y2 <= image_height and x2 - x1 == y2 - y1):
++        raise ValueError(f"Invalid square crop: {roi}")
++    metrics = {}
++    ms_ssim, metric_source = base.metric_function()
++    for method in base.METHODS[1:]:
++        score = float(ms_ssim(arrays["Original"] / 255.0, arrays[method] / 255.0))
++        if not 0 < score < 1:
++            raise ValueError(f"Unexpected MS-SSIM: {score}")
++        metrics[DISPLAY[method]] = {
++            "source_method_key": method,
++            "psnr_db": base.psnr(arrays["Original"], arrays[method]),
++            "ms_ssim": score, "ms_ssim_db": -10 * math.log10(1 - score),
++            "roi_psnr_db": base.psnr(arrays["Original"][y1:y2, x1:x2], arrays[method][y1:y2, x1:x2]),
++        }
++        print(f"METRIC {name} {DISPLAY[method]}: {json.dumps(metrics[DISPLAY[method]])}", flush=True)
++    for key in ("psnr_db", "ms_ssim", "roi_psnr_db"):
++        if not all(metrics["MDRQ"][key] > metrics[method][key] for method in ("JPEG-2000", "RAQJSCC")):
++            raise ValueError(f"MDRQ does not lead the selected example on {key}")
++    crop_side = round(image_width * 0.875)
++    crop_top = 150 + image_height + 108
++    metric_y = crop_top + crop_side + 79
++    width, height = 4 * image_width + 200, metric_y + 59
++    canvas = Image.new("RGB", (width, height), "white")
++    draw = ImageDraw.Draw(canvas)
++    crop_checks = []
++    for column, method in enumerate(base.METHODS):
++        left = 40 + column * (image_width + 40)
++        center = left + image_width / 2
++        base.centered(draw, center, 103, DISPLAY[method], 44)
++        canvas.paste(images[method], (left, 150))
++        draw.rectangle((left, 150, left + image_width - 1, 150 + image_height - 1), outline="#666666", width=2)
++        draw.rectangle((left + x1, 150 + y1, left + x2 - 1, 150 + y2 - 1), outline="#ff2020", width=4)
++        crop = images[method].crop(roi).resize((crop_side, crop_side), Image.Resampling.NEAREST)
++        crop_left = left + (image_width - crop_side) // 2
++        canvas.paste(crop, (crop_left, crop_top))
++        crop_checks.append((crop_left, np.asarray(crop)))
++        if method != "Original":
++            values = metrics[DISPLAY[method]]
++            text = f"PSNR={values['psnr_db']:.2f} dB | MS-SSIM={values['ms_ssim_db']:.2f} dB"
++            base.centered(draw, center, metric_y, text, round(31 * image_width / 768))
++    png = ROOT / f"{Path(name).stem}_comparison_20261022.png"
++    pdf = png.with_suffix(".pdf")
++    if png.exists() or pdf.exists():
++        raise ValueError(f"New figure path already exists: {png}")
++    canvas.save(png, dpi=(300, 300))
++    save_pdf(canvas, pdf, f"{name}: Original | JPEG-2000 | RAQJSCC | MDRQ")
++    with Image.open(png) as saved:
++        for left, expected in crop_checks:
++            actual = np.asarray(saved.crop((left, crop_top, left + crop_side, crop_top + crop_side)))
++            if not np.array_equal(expected, actual):
++                raise AssertionError("New zoom panel differs from source crop")
++        for column, method in enumerate(base.METHODS):
++            left = 40 + column * (image_width + 40)
++            actual = np.asarray(saved.crop((left, 150, left + image_width, 150 + image_height)))
++            mask = np.ones((image_height, image_width), dtype=bool)
++            mask[:2] = mask[-2:] = False
++            mask[:, :2] = mask[:, -2:] = False
++            mask[y1:y2, x1:x2] = False
++            if not np.array_equal(actual[mask], arrays[method][mask]):
++                raise AssertionError("New full-image panel differs from source outside annotations")
++    verify_sources()
++    write_json(AUDIT / "new_figure_metrics.json", {
++        "image": name, "roi_xyxy": roi, "display_labels": DISPLAY,
++        "metric_source": str(metric_source), "metric_source_sha256": base.sha256(metric_source),
++        "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
++        "ms_ssim_definition": "Existing five-scale Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1]",
++        "ms_ssim_db_definition": "-10*log10(1-MS-SSIM), raw score retained",
++        "interpretation": "Selected lettering example; visual clarity and source fidelity, not an OCR accuracy measurement",
++        "metrics": metrics, "source_images_verified_unchanged": 96,
++        "new_figure_panels_verified": 8, "figure_size_wh": [width, height],
++        "roi_size_wh": [x2 - x1, y2 - y1], "zoom_size_wh": [crop_side, crop_side],
++        "zoom_interpolation": "nearest neighbor, identical across methods",
++        "outputs": [{"path": str(path), "bytes": path.stat().st_size, "sha256": base.sha256(path)} for path in (png, pdf)],
++    })
++    print(f"SAVED {png}\nSAVED {pdf}\nVERIFIED 8 new figure panels, 96 unchanged source images.", flush=True)
++
++
++def review():
++    verify_sources()
++    before_entries = json.loads((AUDIT / "before_manifest.json").read_text(encoding="utf-8"))
++    for entry in before_entries:
++        if base.sha256(Path(entry["snapshot"])) != entry["sha256"]:
++            raise ValueError(f"Before-operation snapshot changed: {entry['snapshot']}")
++    relabelled = json.loads((AUDIT / "renamed_existing_figures.json").read_text(encoding="utf-8"))
++    new = json.loads((AUDIT / "new_figure_metrics.json").read_text(encoding="utf-8"))
++    existing_paths = [Path(entry["path"]) for entry in relabelled["outputs"]]
++    new_output_paths = [Path(entry["path"]) for entry in new["outputs"]]
++    for entry in relabelled["outputs"]:
++        if base.sha256(Path(entry["path"])) != entry["after_sha256"]:
++            raise ValueError(f"Updated figure changed: {entry['path']}")
++    for entry in new["outputs"]:
++        if base.sha256(Path(entry["path"])) != entry["sha256"]:
++            raise ValueError(f"New figure changed: {entry['path']}")
++    patch_path, status_path, manifest_path = (AUDIT / name for name in ("changes.patch", "git_status_after.txt", "artifacts_manifest.json"))
++    for path in (patch_path, status_path, manifest_path):
++        path.touch(exist_ok=True)
++    status = subprocess.run(["git", "-c", "core.quotepath=false", "status", "--short", "--untracked-files=all"],
++                            cwd=ROOT, check=True, capture_output=True, text=True).stdout
++    status_path.write_text(status, encoding="utf-8")
++    new_paths = sorted([path for path in AUDIT.rglob("*") if path.is_file()] + new_output_paths)
++    all_paths = sorted(new_paths + existing_paths)
++    owned = {str(path.relative_to(ROOT)) for path in all_paths}
++    new_relative = {str(path.relative_to(ROOT)) for path in new_paths}
++    before_status = (AUDIT / "git_status_before.txt").read_text(encoding="utf-8").splitlines()
++    if any(line[3:] in new_relative for line in before_status):
++        raise ValueError("A supposed new file existed before this task")
++    untracked = {line[3:] for line in status.splitlines() if line.startswith("?? ")}
++    missing = new_relative - untracked
++    ignored = set()
++    if missing:
++        result = subprocess.run(["git", "check-ignore", "--stdin"], cwd=ROOT,
++                                input="\n".join(sorted(missing)) + "\n", capture_output=True, text=True)
++        if result.returncode not in (0, 1):
++            raise ValueError(result.stderr)
++        ignored = set(result.stdout.splitlines())
++        if missing - ignored:
++            raise ValueError(f"New outputs missing from Git status: {missing - ignored}")
++    tracked_diff = subprocess.run(["git", "diff", "--", *sorted(owned)], cwd=ROOT,
++                                  check=True, capture_output=True, text=True).stdout
++    if tracked_diff:
++        raise ValueError("Unexpected tracked changes; before-operation review is required")
++    patch = []
++    for path in new_paths:
++        if path.suffix not in (".py", ".md", ".json") or path == manifest_path:
++            continue
++        relative = str(path.relative_to(ROOT))
++        patch.append(f"diff --git a/{relative} b/{relative}\nnew file mode 100644\n")
++        patch.extend(difflib.unified_diff([], path.read_text(encoding="utf-8").splitlines(keepends=True),
++                                           fromfile="/dev/null", tofile=f"b/{relative}"))
++    patch_path.write_text("".join(patch), encoding="utf-8")
++    outside_before = {line for line in before_status if line[3:] not in owned}
++    outside_after = {line for line in status.splitlines() if line[3:] not in owned}
++    write_json(manifest_path, {
++        "command": f"python -u {__file__} --stage review",
++        "existing_files_modified": relabelled["outputs"],
++        "new_untracked_outputs": sorted(new_relative - ignored), "new_outputs_ignored_by_git": sorted(ignored),
++        "outside_scope_status_added": sorted(outside_after - outside_before),
++        "outside_scope_status_removed": sorted(outside_before - outside_after),
++        "patch_covers": "Complete new .py/.md/.json contents except this manifest; binary before/after files and hashes are retained",
++        "files": [{"path": str(path), "action": "modified" if path in existing_paths else "new",
++                   "bytes": path.stat().st_size, "sha256": base.sha256(path)}
++                  for path in all_paths if path != manifest_path],
++        "manifest_self": str(manifest_path),
++    })
++    print(f"REVIEW {len(existing_paths)} existing files modified; {len(new_paths)} new files "
++          f"({len(new_relative - ignored)} untracked, {len(ignored)} ignored logs).", flush=True)
++    print(f"OUTSIDE SCOPE status additions={len(outside_after - outside_before)}, removals={len(outside_before - outside_after)}", flush=True)
++    print(f"PATCH {patch_path}\nMANIFEST {manifest_path}", flush=True)
++
++
++if __name__ == "__main__":
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--stage", required=True, choices=("prepare", "inspect", "labels", "new", "review"))
++    parser.add_argument("--image")
++    parser.add_argument("--roi", nargs=4, type=int)
++    arguments = parser.parse_args()
++    print(f"RUN python {__file__} --stage {arguments.stage}", flush=True)
++    if arguments.stage == "new":
++        if not arguments.image or not arguments.roi:
++            parser.error("--stage new requires --image and --roi")
++        new_figure(arguments.image, arguments.roi)
++    else:
++        {"prepare": prepare, "inspect": inspect, "labels": labels, "review": review}[arguments.stage]()

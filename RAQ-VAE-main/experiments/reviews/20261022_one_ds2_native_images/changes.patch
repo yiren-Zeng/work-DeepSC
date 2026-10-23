@@ -1,0 +1,797 @@
+diff --git a/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh b/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
+--- a/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
++++ b/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
+@@ -46,14 +46,12 @@
+ snr="${SNR:-10}"
+ seed="${SEED:-42}"
+ ratio_denominator="${RATIO_DENOMINATOR:-48}"
+-output_root="${OUTPUT_ROOT:-}"
++dataset="${DATASET:-/workspace/yi/work/Kodak}"
++output_root="${OUTPUT_ROOT:-$raq_root/generated_images}"
+ 
+ if [[ "$no_channel" != "0" && "$no_channel" != "1" ]]; then
+   echo "NO_CHANNEL must be 0 or 1, got: $no_channel" >&2
+   exit 2
+-fi
+-if [[ -n "$output_root" ]]; then
+-  mkdir -p -- "$output_root"
+ fi
+ 
+ export PYTHONDONTWRITEBYTECODE=1
+@@ -61,6 +59,15 @@
+ export TF_CPP_MIN_LOG_LEVEL="3"
+ export CUDA_VISIBLE_DEVICES="${GPU_ID:-0}"
+ cd -- "$raq_root"
++
++run_stamp="$("$raq_python" -B - <<'PY'
++import datetime
++import uuid
++from zoneinfo import ZoneInfo
++print(datetime.datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d_%H%M%S_%f") + "_" + uuid.uuid4().hex[:8])
++PY
++)"
++image_run="$output_root/$run_stamp"
+ 
+ for target in $targets; do
+   case " 32 64 128 256 512 1024 2048 " in
+@@ -82,19 +89,18 @@
+     --seed "$seed"
+     --model-seed 42
+     --ratio-denominator "$ratio_denominator"
++    --dataset "$dataset"
++    --images-only
+     --concise
+   )
+   if [[ "$no_channel" == "1" ]]; then
+     args+=(--no-channel)
+-    condition="no-channel"
++    condition="no_channel"
+   else
+-    condition="$channel SNR=${snr}dB"
++    condition="${channel}_snr${snr}"
+   fi
+-  if [[ -n "$output_root" ]]; then
+-    args+=(--output "$output_root/k${target}")
+-  fi
++  args+=(--output "$image_run/k${target}/$condition")
+ 
+-  echo "Testing target K=$target | $condition"
+   "$raq_python" -B \
+     eval_seq2seq_one_ds2_src256_k32_2048_channel.py \
+     "${args[@]}" \
+diff --git a/RAQ-VAE-main/eval_seq2seq_one_ds2_src256_k32_2048_channel.py b/RAQ-VAE-main/eval_seq2seq_one_ds2_src256_k32_2048_channel.py
+--- a/RAQ-VAE-main/eval_seq2seq_one_ds2_src256_k32_2048_channel.py
++++ b/RAQ-VAE-main/eval_seq2seq_one_ds2_src256_k32_2048_channel.py
+@@ -14,21 +14,68 @@
+ from fractions import Fraction
+ from pathlib import Path
+ from types import SimpleNamespace
+-
+-import numpy as np
+-import torch
+-from torchvision.utils import save_image
+-
+-import eval_seq2seq_channel as shared
+-from nets.model_one_ds2_src256_k32_2048 import (
+-    RAQVAE_ONE_DS2_SRC256_K32_2048,
+-)
+-from train_seq2seq_cars import load_file_module, load_shiyan_loader, local_path, write_json
++from zoneinfo import ZoneInfo
++
++sys.dont_write_bytecode = True
++
++from eval_seq2seq_ds8_dualk_console import quiet_evaluation
++
++with quiet_evaluation():
++    import numpy as np
++    import torch
++    from torchvision.utils import save_image
++
++    import eval_seq2seq_channel as shared
++    from nets.model_one_ds2_src256_k32_2048 import (
++        RAQVAE_ONE_DS2_SRC256_K32_2048,
++    )
++    from train_seq2seq_cars import load_file_module, load_shiyan_loader, local_path, write_json
+ 
+ 
+ ROOT = Path(__file__).resolve().parent
+-SOURCE_INDEX_COUNT = 128 * 128
+-SOURCE_VALUE_COUNT = 3 * 256 * 256
++
++
++def evaluation_geometry(image_shapes):
++    """Derive the x2 latent count from native portrait/landscape image headers."""
++    shapes = tuple(sorted(set(tuple(shape) for shape in image_shapes)))
++    if not shapes or any(h <= 0 or w <= 0 or h % 2 or w % 2 for h, w in shapes):
++        raise ValueError("Image height and width must be positive multiples of 2")
++    areas = {h * w for h, w in shapes}
++    if len(areas) != 1:
++        raise ValueError("Kodak images must have equal pixel counts")
++    pixels = areas.pop()
++    return {
++        "shapes": shapes,
++        "pixels": pixels,
++        "source_values": 3 * pixels,
++        "source_indices": pixels // 4,
++    }
++
++
++def format_image_result(report):
++    """Print exactly three lines for the image-only evaluation entry."""
++    meta, metrics = report["metadata"], report["metrics"]
++    sizes = "/".join(f"{w}x{h}" for h, w in meta["image_shapes"])
++    condition = "No channel"
++    cbr_text = "N/A"
++    if meta["channel_enabled"]:
++        rate = Fraction(meta["ldpc"]["rate"]).limit_denominator()
++        condition = (
++            f"{meta['channel_label']} | SNR={meta['snr_db']:g} dB | "
++            f"LDPC {rate} | {meta['modulation'].upper()}"
++        )
++        total = report["totals"]
++        cbr = Fraction(total["channel_symbols"], total["source_values"])
++        cbr_text = f"{cbr.numerator}/{cbr.denominator} ({float(cbr):.8f})"
++    displayed_ssim = f"{metrics['ms_ssim']:.4f}"
++    ssim_db = shared.ms_ssim_to_db(float(displayed_ssim))
++    return (
++        f"配置：K={meta['target_K']} | {sizes} | {report['num_images']} 张 | "
++        f"{condition} | seed={meta['seed']}\n"
++        f"指标：PSNR={metrics['psnr']:.4f} dB | MS-SSIM={displayed_ssim} "
++        f"({ssim_db:.4f} dB) | CBR={cbr_text}\n"
++        f"图片：{report['image_output_dir']}"
++    )
+ 
+ 
+ def format_result(report, results_path):
+@@ -58,15 +105,19 @@
+ 
+ 
+ @torch.no_grad()
+-def main():
++def evaluate(argv=None):
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--run-dir", required=True)
+     parser.add_argument(
+         "--checkpoint", help="Defaults to the recorded best validation checkpoint"
+     )
+     parser.add_argument("--output")
++    parser.add_argument(
++        "--images-only", action="store_true",
++        help="Save only final reconstruction PNGs; print a three-line summary",
++    )
+     parser.add_argument("--shiyan-root", default="/workspace/yi/work/shiyan")
+-    parser.add_argument("--dataset", default="/workspace/yi/work/Kodak-256-transform-resize")
++    parser.add_argument("--dataset", default="/workspace/yi/work/Kodak")
+     parser.add_argument("--snr", type=float, default=0.0)
+     parser.add_argument("--seed", type=int, default=42)
+     parser.add_argument("--model-seed", type=int, default=42)
+@@ -97,7 +148,7 @@
+     )
+     parser.add_argument("--dry-run", action="store_true")
+     parser.add_argument("--concise", action="store_true")
+-    args = parser.parse_args()
++    args = parser.parse_args(argv)
+ 
+     if args.no_channel and args.target_k is None:
+         parser.error("--no-channel requires an explicit --target-k")
+@@ -130,9 +181,10 @@
+     modulation_bits = {"bpsk": 1, "qpsk": 2, "16qam": 4}[args.modulation]
+     ldpc_k, ldpc_n = int(256 * args.ldpc_rate), 256
+     try:
++        geometry = evaluation_geometry(shared.dataset_image_shapes(args.dataset))
+         plan = shared.transmission_plan(
+-            SOURCE_INDEX_COUNT,
+-            SOURCE_VALUE_COUNT,
++            geometry["source_indices"],
++            geometry["source_values"],
+             ldpc_k,
+             ldpc_n,
+             modulation_bits,
+@@ -146,17 +198,16 @@
+         parser.error(str(error))
+     target_k = int(plan["selected"]["K"])
+ 
+-    stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
++    stamp = datetime.datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d_%H%M%S_%f")
+     condition_tag = (
+         "no_channel"
+         if args.no_channel
+         else f"{args.channel}_snr{args.snr:g}"
+     )
+-    output = local_path(
+-        args.output
+-        or ROOT
+-        / "runs"
+-        / (
++    if args.images_only:
++        default_output = ROOT / "generated_images" / stamp / f"k{target_k}" / condition_tag
++    else:
++        default_output = ROOT / "runs" / (
+             f"eval_seq2seq_one_ds2_src256_k{target_k}_"
+             + (
+                 f"{condition_tag}_{stamp}"
+@@ -167,7 +218,7 @@
+                 )
+             )
+         )
+-    )
++    output = local_path(args.output or default_output)
+     if not args.concise or args.dry_run:
+         if args.no_channel:
+             print(
+@@ -197,17 +248,19 @@
+                 // modulation_bits
+             )
+             print(
+-                f"预计实际传输比：{symbols / SOURCE_VALUE_COUNT:.8f}"
+-                f"（约 1/{SOURCE_VALUE_COUNT / symbols:.4f}）",
++                f"预计实际传输比：{symbols / geometry['source_values']:.8f}"
++                f"（约 1/{geometry['source_values'] / symbols:.4f}）",
+                 flush=True,
+             )
+         print(f"CHECKPOINT {source_checkpoint}\nOUTPUT {output}", flush=True)
+     if args.dry_run:
+         return
+ 
+-    output.mkdir(parents=True, exist_ok=False)
+-    snapshot = output / "checkpoint_snapshot.ckpt"
+-    shutil.copy2(source_checkpoint, snapshot)
++    snapshot = source_checkpoint
++    if not args.images_only:
++        output.mkdir(parents=True, exist_ok=False)
++        snapshot = output / "checkpoint_snapshot.ckpt"
++        shutil.copy2(source_checkpoint, snapshot)
+     checkpoint = torch.load(snapshot, map_location="cpu", weights_only=False)
+ 
+     reference = Path(args.shiyan_root)
+@@ -234,11 +287,12 @@
+             qpsk_llr as ours_qpsk_llr,
+             qpsk_modulate,
+         )
+-        from communications.ldpc_coding import (
+-            get_ldpc_code,
+-            ldpc_decode,
+-            ldpc_encode,
+-        )
++        if not args.no_channel:
++            from communications.ldpc_coding import (
++                get_ldpc_code,
++                ldpc_decode,
++                ldpc_encode,
++            )
+         setup_seed(args.model_seed)
+ 
+     torch.set_num_threads(4)
+@@ -284,7 +338,8 @@
+         raise ValueError(f"unexpected generated codebook shape: {codebook.shape}")
+     if not torch.isfinite(codebook).all():
+         raise ValueError("generated target codebook contains nonfinite values")
+-    torch.save(codebook.cpu(), output / f"target_codebook_k{target_k}.pt")
++    if not args.images_only:
++        torch.save(codebook.cpu(), output / f"target_codebook_k{target_k}.pt")
+ 
+     os.environ["SIMVQ_TEST_NO_RESIZE"] = "1"
+     loader = get_dataloader(
+@@ -308,8 +363,8 @@
+     metadata = {
+         "variant": config["variant"],
+         "source_checkpoint": str(source_checkpoint),
+-        "snapshot": str(snapshot),
+-        "checkpoint_sha256": shared.digest(snapshot),
++        "snapshot": None if args.images_only else str(snapshot),
++        "checkpoint_sha256": None if args.images_only else shared.digest(snapshot),
+         "checkpoint_epoch_index": checkpoint["epoch"],
+         "checkpoint_epoch_number": checkpoint["epoch"] + 1,
+         "checkpoint_global_step": checkpoint["global_step"],
+@@ -322,7 +377,8 @@
+         "target_K": target_k,
+         "requested_target_K": args.target_k,
+         "embedding_dim": int(model_args.embedding_dim),
+-        "source_index_count": SOURCE_INDEX_COUNT,
++        "source_index_count": geometry["source_indices"],
++        "image_shapes": geometry["shapes"],
+         "spatial_scales": {"single": "1/2"},
+         "dataset": args.dataset,
+         "dataset_order": filenames,
+@@ -331,6 +387,7 @@
+         "quality": (
+             "shiyan.evaluation.quality._image_quality; arithmetic mean over images; "
+             "aggregate MS-SSIM dB is converted after averaging raw MS-SSIM"
++            + (" and rounding its terminal display to four decimals" if args.images_only else "")
+         ),
+         "seed": args.seed,
+         "channel_seed": None if args.no_channel else args.seed,
+@@ -400,7 +457,8 @@
+         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
+         "created_at": datetime.datetime.now().astimezone().isoformat(),
+     }
+-    write_json(output / "metadata.json", metadata)
++    if not args.images_only:
++        write_json(output / "metadata.json", metadata)
+ 
+     channel_folder = None
+     if not args.no_channel:
+@@ -410,9 +468,11 @@
+             else "awgn"
+         )
+         channel_folder = f"channel_{channel_suffix}_{args.snr:g}db"
+-    folders = ["reference", "no_channel"]
+-    if channel_folder is not None:
++    folders = [] if args.images_only else ["reference", "no_channel"]
++    if channel_folder is not None and not args.images_only:
+         folders.append(channel_folder)
++    if args.images_only:
++        output.mkdir(parents=True, exist_ok=False)
+     for name in folders:
+         (output / name).mkdir()
+ 
+@@ -420,12 +480,13 @@
+     rows = []
+     for image_index, image in enumerate(loader):
+         image = image.to(device)
+-        if tuple(image.shape) != (1, 3, 256, 256):
++        height, width = image.shape[-2:]
++        if tuple(image.shape[:2]) != (1, 3) or (height, width) not in geometry["shapes"]:
+             raise ValueError(f"Unexpected image size: {image.shape}")
+         result = model(image, target)
+         forward_clean = result[3]
+         sent_indices = result[5]
+-        if tuple(sent_indices.shape) != (1, 128, 128):
++        if tuple(sent_indices.shape) != (1, height // 2, width // 2):
+             raise ValueError(f"Unexpected index shape: {sent_indices.shape}")
+         clean = model.decode_latent(sent_indices, target)
+ 
+@@ -488,6 +549,8 @@
+             "ms_ssim": channel_ssim,
+             "ms_ssim_db": shared.ms_ssim_to_db(channel_ssim),
+             "source_payload_bits": int(payload.size),
++            "source_pixels": height * width,
++            "source_values": int(image.numel()),
+             "budget_padding_bits": padding_bits,
+             "ldpc_input_bits": stats["ldpc_input_bits"],
+             "ldpc_padding_bits": stats["ldpc_padding_bits"],
+@@ -499,11 +562,11 @@
+                 if args.no_channel
+                 else stats["channel_symbols"] / image.numel()
+             ),
+-            "source_payload_bpp": payload.size / (256 * 256),
++            "source_payload_bpp": payload.size / (height * width),
+             "padded_payload_bpp": (
+                 None
+                 if args.no_channel
+-                else stats["ldpc_input_bits"] / (256 * 256)
++                else stats["ldpc_input_bits"] / (height * width)
+             ),
+             "source_bit_errors": source_errors,
+             "source_ber": (
+@@ -521,26 +584,27 @@
+             ).tolist(),
+         }
+         rows.append(row)
+-        image_outputs = [
++        image_outputs = [("", reconstructed)] if args.images_only else [
+             ("reference", image),
+             ("no_channel", clean),
+         ]
+-        if channel_folder is not None:
++        if channel_folder is not None and not args.images_only:
+             image_outputs.append((channel_folder, reconstructed))
+         for folder, tensor in image_outputs:
+             save_image(
+                 ((tensor + 1) / 2).clamp(0, 1),
+-                output / folder / filenames[image_index],
+-            )
+-        write_json(
+-            output / "progress.json",
+-            {
+-                "finished_images": len(rows),
+-                "total_images": 24,
+-                "last_image": row,
+-            },
+-        )
+-        if not args.concise:
++                output / folder / Path(filenames[image_index]).with_suffix(".png").name,
++            )
++        if not args.images_only:
++            write_json(
++                output / "progress.json",
++                {
++                    "finished_images": len(rows),
++                    "total_images": 24,
++                    "last_image": row,
++                },
++            )
++        if not args.concise and not args.images_only:
+             print(
+                 f"IMAGE {image_index + 1}/24 {filenames[image_index]} "
+                 f"PSNR={channel_psnr:.4f} "
+@@ -552,6 +616,8 @@
+         key: sum(row[key] for row in rows)
+         for key in (
+             "source_payload_bits",
++            "source_pixels",
++            "source_values",
+             "budget_padding_bits",
+             "ldpc_input_bits",
+             "ldpc_padding_bits",
+@@ -571,27 +637,26 @@
+             "ms_ssim",
+         )
+     }
+-    metrics["no_channel_ms_ssim_db"] = shared.ms_ssim_to_db(
+-        metrics["no_channel_ms_ssim"]
+-    )
+-    metrics["ms_ssim_db"] = shared.ms_ssim_to_db(metrics["ms_ssim"])
++    for name in ("no_channel_ms_ssim", "ms_ssim"):
++        value = float(f"{metrics[name]:.4f}") if args.images_only else metrics[name]
++        metrics[name + "_db"] = shared.ms_ssim_to_db(value)
+     report = {
+         "metadata": metadata,
+         "num_images": len(rows),
+         "metrics": metrics,
+         "totals": totals,
+         "source_payload_bpp": (
+-            totals["source_payload_bits"] / (len(rows) * 256 * 256)
++            totals["source_payload_bits"] / totals["source_pixels"]
+         ),
+         "padded_payload_bpp": (
+             None
+             if args.no_channel
+-            else totals["ldpc_input_bits"] / (len(rows) * 256 * 256)
++            else totals["ldpc_input_bits"] / totals["source_pixels"]
+         ),
+         "transmission_ratio": (
+             None
+             if args.no_channel
+-            else totals["channel_symbols"] / (len(rows) * SOURCE_VALUE_COUNT)
++            else totals["channel_symbols"] / totals["source_values"]
+         ),
+         "source_ber": (
+             None
+@@ -605,14 +670,27 @@
+         ),
+         "elapsed_seconds": time.time() - started,
+         "per_image": rows,
++        "image_output_dir": str(output) if args.images_only else None,
+     }
+-    results_path = output / "results.json"
+-    write_json(results_path, report)
+-    with (output / "per_image.csv").open("w", newline="") as handle:
+-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+-        writer.writeheader()
+-        writer.writerows(rows)
+-    print(format_result(report, results_path), flush=True)
++    if not args.images_only:
++        results_path = output / "results.json"
++        write_json(results_path, report)
++        with (output / "per_image.csv").open("w", newline="") as handle:
++            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
++            writer.writeheader()
++            writer.writerows(rows)
++        print(format_result(report, results_path), flush=True)
++    return report
++
++
++def main(argv=None):
++    argv = list(sys.argv[1:] if argv is None else argv)
++    if "--images-only" in argv and not any(arg in argv for arg in ("-h", "--help", "--dry-run")):
++        with quiet_evaluation():
++            report = evaluate(argv)
++        print(format_image_result(report), flush=True)
++        return report
++    return evaluate(argv)
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/RAQ-VAE-main/tests/test_one_ds2_native_images.py b/RAQ-VAE-main/tests/test_one_ds2_native_images.py
+new file mode 100644
+index 00000000..124ad01a
+--- /dev/null
++++ b/RAQ-VAE-main/tests/test_one_ds2_native_images.py
+@@ -0,0 +1,174 @@
++"""Check native ds2 geometry, PNG-only writes, and three-line summaries."""
++
++import contextlib
++import io
++import json
++import math
++from pathlib import Path
++import sys
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest import mock
++
++sys.dont_write_bytecode = True
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++import numpy as np
++from PIL import Image
++import torch
++
++import eval_seq2seq_one_ds2_src256_k32_2048_channel as evaluator
++
++
++class ToyModel(torch.nn.Module):
++    def __init__(self, _args):
++        super().__init__()
++        self.src = torch.zeros(256, 64)
++
++    def load_state_dict(self, state, strict=True):
++        pass
++
++    def cbk2cbk(self, source, target):
++        return torch.zeros(len(target), 1, 64)
++
++    def forward(self, image, target):
++        self.image = image
++        h, w = image.shape[-2:]
++        return (None, None, None, image * 0.5, None, torch.zeros(1, h // 2, w // 2, dtype=torch.long))
++
++    def decode_latent(self, indices, target):
++        return self.image * 0.5
++
++    def decode(self, quantized):
++        return self.image * 0.25
++
++
++class NamedLoader(list):
++    def __init__(self):
++        super().__init__([
++            torch.ones(1, 3, *( (4, 6) if i % 2 == 0 else (6, 4) ))
++            for i in range(24)
++        ])
++        self.dataset = self
++        self.image_files = [f"kodim{i + 1:02}.png" for i in range(24)]
++
++
++class NativeImageEvaluationTests(unittest.TestCase):
++    def test_geometry_uses_original_kodak_area_and_both_orientations(self):
++        geometry = evaluator.evaluation_geometry([(512, 768)] * 18 + [(768, 512)] * 6)
++        self.assertEqual(geometry["shapes"], ((512, 768), (768, 512)))
++        self.assertEqual(geometry["pixels"], 393216)
++        self.assertEqual(geometry["source_indices"], 98304)
++        self.assertEqual(geometry["source_values"], 1179648)
++        plan = evaluator.shared.transmission_plan(
++            geometry["source_indices"], geometry["source_values"],
++            112, 256, 4, 48, "fixed", 32, 2048, 32,
++        )["selected"]
++        self.assertEqual(plan["source_payload_bits"], 491520)
++        self.assertEqual(plan["ldpc_padding_bits"], math.ceil(491520 / 112) * 112 - 491520)
++
++    def test_geometry_rejects_incompatible_dimensions(self):
++        for shapes in ([], [(513, 768)], [(512, 768), (256, 256)]):
++            with self.subTest(shapes=shapes), self.assertRaises(ValueError):
++                evaluator.evaluation_geometry(shapes)
++
++    def test_summary_has_three_lines_exact_cbr_and_matching_db(self):
++        report = {
++            "metadata": {
++                "image_shapes": [(512, 768), (768, 512)], "target_K": 32,
++                "channel_enabled": True, "channel_label": "AWGN", "snr_db": 10,
++                "ldpc": {"rate": 0.5}, "modulation": "bpsk", "seed": 42,
++            },
++            "metrics": {"psnr": 35.7371, "ms_ssim": 0.993566460081},
++            "totals": {"channel_symbols": 983040, "source_values": 1179648},
++            "num_images": 24, "image_output_dir": "/unused/generated_images/k32/awgn_snr10",
++        }
++        lines = evaluator.format_image_result(report).splitlines()
++        self.assertEqual(len(lines), 3)
++        self.assertIn("768x512/512x768", lines[0])
++        self.assertIn("seed=42", lines[0])
++        self.assertIn("MS-SSIM=0.9936 (21.9382 dB)", lines[1])
++        self.assertIn("CBR=5/6 (0.83333333)", lines[1])
++        self.assertTrue(lines[2].startswith("图片："))
++
++    def _evaluate_png_only(self, no_channel):
++        loader = NamedLoader()
++        bit_utils = SimpleNamespace(
++            index_tensor_to_bits=lambda indices, k: (
++                np.zeros(indices.numel() * int(math.log2(k)), dtype=np.uint8), tuple(indices.shape), k,
++            ),
++            bits_to_index_tensor=lambda bits, shape, k: torch.zeros(shape, dtype=torch.long),
++        )
++        modulation = SimpleNamespace(**{name: mock.Mock() for name in (
++            "bpsk_llr", "bpsk_modulate", "qam16_llr", "qam16_modulate", "qpsk_llr", "qpsk_modulate",
++        )})
++        ldpc = SimpleNamespace(
++            get_ldpc_code=lambda k, rate: {"k": k, "n": 256},
++            ldpc_encode=mock.Mock(), ldpc_decode=mock.Mock(),
++        )
++        modules = {
++            "utils.bit_utils": bit_utils,
++            "utils.reproducibility": SimpleNamespace(_reset_eval_seed=mock.Mock()),
++            "communications.modulation": modulation,
++            "communications.ldpc_coding": ldpc,
++        }
++        quality = SimpleNamespace(_image_quality=lambda image, reconstruction: (0.993566460081, 35.7371))
++        with tempfile.TemporaryDirectory() as folder, contextlib.ExitStack() as stack:
++            root = Path(folder)
++            checkpoint = root / "weights.ckpt"
++            checkpoint.write_bytes(b"read-only fixture")
++            (root / "config.json").write_text(json.dumps({
++                "variant": "RAQVAE_ONE_DS2_SRC256_K32_2048_ORIGINAL",
++                "model_args": {"num_embeddings": 256, "num_embeddings_min": 32,
++                               "num_embeddings_max": 2048, "embedding_dim": 64},
++            }))
++            (root / "status.json").write_text(json.dumps({"best_model_path": str(checkpoint)}))
++            stack.enter_context(mock.patch.dict(sys.modules, modules))
++            stack.enter_context(mock.patch.object(evaluator, "local_path", side_effect=Path))
++            stack.enter_context(mock.patch.object(evaluator.shared, "dataset_image_shapes", return_value=[(4, 6), (6, 4)]))
++            stack.enter_context(mock.patch.object(evaluator, "load_shiyan_loader", return_value=(lambda *a, **k: loader, mock.Mock())))
++            stack.enter_context(mock.patch.object(evaluator, "load_file_module", return_value=quality))
++            stack.enter_context(mock.patch.object(evaluator, "RAQVAE_ONE_DS2_SRC256_K32_2048", ToyModel))
++            real_device = torch.device
++            stack.enter_context(mock.patch.object(evaluator.torch, "device", return_value=real_device("cpu")))
++            stack.enter_context(mock.patch.object(evaluator.torch.cuda, "get_device_name", return_value="CPU fixture"))
++            load = stack.enter_context(mock.patch.object(evaluator.torch, "load", return_value={"state_dict": {}, "epoch": 0, "global_step": 1}))
++            writers = [stack.enter_context(mock.patch.object(owner, name)) for owner, name in (
++                (evaluator, "write_json"), (evaluator.torch, "save"), (evaluator.shutil, "copy2"),
++            )]
++            stack.enter_context(mock.patch.object(evaluator.shared, "transmit_ldpc_stream_exact", side_effect=lambda bits, *a, **k: (bits, {
++                "ldpc_input_bits": 128, "ldpc_padding_bits": 98, "coded_bits": 256,
++                "transmitted_bits": 256, "channel_symbols": 256, "bit_errors": 0,
++            })))
++            output = io.StringIO()
++            args = ["--run-dir", str(root), "--output", str(root / "images"),
++                    "--target-k", "32", "--images-only", "--concise"]
++            if no_channel:
++                args.append("--no-channel")
++            with contextlib.redirect_stdout(output):
++                report = evaluator.main(args)
++            self.assertEqual(len(output.getvalue().splitlines()), 3)
++            self.assertEqual(len(list((root / "images").iterdir())), 24)
++            self.assertEqual({p.suffix for p in (root / "images").iterdir()}, {".png"})
++            self.assertEqual(report["totals"]["source_pixels"], 24 * 24)
++            self.assertEqual(report["totals"]["source_values"], 24 * 72)
++            self.assertAlmostEqual(report["metrics"]["ms_ssim_db"], -10 * math.log10(1 - 0.9936))
++            with Image.open(root / "images/kodim01.png") as image:
++                self.assertEqual(image.size, (6, 4))
++                self.assertEqual(image.getpixel((0, 0)), (191, 191, 191) if no_channel else (159, 159, 159))
++            for writer in writers:
++                writer.assert_not_called()
++            load.assert_called_once_with(checkpoint, map_location="cpu", weights_only=False)
++            self.assertEqual(checkpoint.read_bytes(), b"read-only fixture")
++            self.assertIn("CBR=N/A" if no_channel else "CBR=32/9", output.getvalue())
++
++    def test_no_channel_writes_only_final_pngs(self):
++        self._evaluate_png_only(no_channel=True)
++
++    def test_channel_writes_only_received_reconstructions(self):
++        self._evaluate_png_only(no_channel=False)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/README.md b/RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/README.md
+new file mode 100644
+index 00000000..d96466cb
+--- /dev/null
++++ b/RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/README.md
+@@ -0,0 +1,126 @@
++# 单尺度 ds2 原始 Kodak 评测修改记录
++
++## 已确认的行为
++
++- `scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh` 默认读取 `/workspace/yi/work/Kodak`，不缩放、不裁剪。
++- 输入包括 18 张 768×512 和 6 张 512×768 图片，共 24 张。
++- 每次脚本运行创建独立目录，多个目标 K 共用该次运行目录，分别按 K 和测试条件保存最终重建图。
++- 保存位置为 `generated_images/<北京时间与唯一标识>/k<K>/<条件>/<原图名>.png`。
++- 脚本运行仅写最终重建 PNG，不复制原图，不保存无关重建版本、权重快照、目标码本、JSON、CSV、进度或日志文件。
++- 每个 K 仅输出三行：配置、指标、图片目录。依赖库启动信息在内存中捕获；失败时恢复并显示诊断与异常。
++- 指标为 PSNR、四位小数 MS-SSIM 及据该显示值计算的 dB、实际整数计数约分得到的 CBR 及小数。无信道时 CBR 为 N/A。
++
++## 使用
++
++从任何工作目录调用：
++
++```bash
++bash /workspace/yi/work/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
++```
++
++原有默认目标 K=32、无信道测试不变。需要真实信道时：
++
++```bash
++NO_CHANNEL=0 CHANNEL=awgn SNR=10 \
++  bash /workspace/yi/work/RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
++```
++
++`TARGETS="32 64"` 可在同次运行测试多个 K；`DATASET` 可指定其他 24 张、像素面积相同且高宽为偶数的图片目录；`OUTPUT_ROOT` 可在项目内指定其他图片根目录。
++
++脚本会传入 `--images-only --concise`；直接调用 Python 并省略 `--images-only` 时，保留原有完整报告模式。未修改模型结构、权重、量化方法、调制、LLR 或 LDPC 算法。
++
++## 本次文件清单
++
++| 文件 | 本次操作 | 用途 |
++| --- | --- | --- |
++| `scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh` | 修改已有文件 | 原图目录、图片输出根目录、每次运行独立路径、仅图片模式。 |
++| `eval_seq2seq_one_ds2_src256_k32_2048_channel.py` | 修改已有文件 | 原始尺寸校验与码率规划、动态像素分母、仅写最终 PNG、三行汇总。 |
++| `tests/test_one_ds2_native_images.py` | 新增 | 原始尺寸、舍入、CBR、仅图片写入及最终信道结果的回归测试。 |
++| `experiments/reviews/20261022_one_ds2_native_images/README.md` | 新增 | 此次使用和审阅记录。 |
++
++前两个文件开始时已含用户既有改动。`before.json` 保存本次操作前的完整内容、SHA-256 和项目 Git 状态。`changes.patch` 基于该快照生成，仅包含本次修改及上述两个新增文本文件；不把已有的共享评测器、训练文档等改动归入本次变更。未暂存、提交或推送。
++
++## 验证
++
++工作目录为 `/workspace/yi/work/RAQ-VAE-main`。
++
++```bash
++bash -n scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
++PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 TF_CPP_MIN_LOG_LEVEL=3 \
++  python -m unittest discover -s tests -p 'test_one_ds2*.py' -v
++```
++
++9 项相关检查全部通过，包括原有 4 项模型检查；本次新增检查验证了横竖图的码率规划、四位 MS-SSIM 与 dB 一致、实际 CBR、两种信道模式仅写最终重建 PNG、直接读取原权重且不保存权重或 JSON。
++
++完整真实模型验证命令：
++
++```bash
++TARGETS="32 64" NO_CHANNEL=1 GPU_ID=0 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 \
++PYTHONDONTWRITEBYTECODE=1 \
++  bash scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
++```
++
++实际使用自动选出的完整训练权重：
++
++```text
++runs/seq2seq_one_ds2_src256_k32_2048_original_20261005_101308_427404/checkpoints/epoch=163-step=88560.ckpt
++```
++
++实际图片目录：
++
++```text
++generated_images/20261022_203744_494182_1749d603/k32/no_channel/
++generated_images/20261022_203744_494182_1749d603/k64/no_channel/
++```
++
++| K | 图片数 | PSNR (dB) | MS-SSIM | MS-SSIM (dB) |
++| --- | --- | --- | --- | --- |
++| 32 | 24 | 26.8361 | 0.9570 | 13.6653 |
++| 64 | 24 | 29.1392 | 0.9697 | 15.1856 |
++
++对脚本运行前后整个项目的文件集合进行比较，新增文件恰为以上 48 张 PNG，无其他新增项目文件；终端共 6 行。全部 PNG 通过完整性检查、RGB 模式检查及对应原图尺寸检查。
++
++另执行真实信道单包检查：一张原始尺寸图片对应 98,304 个索引，K=32 时载荷为 491,520 bit；LDPC 1/2、BPSK、AWGN 10 dB 实际发送 983,040 个符号，CBR=5/6，解码误比特为 0。此检查验证真实信道数据包，没有重新运行有信道模式的全部 24 张图像指标。
++
++检查命令为 `PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=1 TF_CPP_MIN_LOG_LEVEL=3 python -u -`，标准输入程序如下；输出单独保存在 `native_channel_payload.log`。
++
++```python
++import sys
++from fractions import Fraction
++from pathlib import Path
++import eval_seq2seq_one_ds2_src256_k32_2048_channel as entry
++
++with entry.quiet_evaluation():
++    import numpy as np
++    import torch
++    reference = Path('/workspace/yi/work/shiyan')
++    _, setup_seed = entry.load_shiyan_loader(reference)
++    sys.path.append(str(reference))
++    from communications.ldpc_coding import get_ldpc_code, ldpc_encode, ldpc_decode
++    from communications.modulation import bpsk_modulate, bpsk_llr
++    setup_seed(42)
++    geometry = entry.evaluation_geometry([(512, 768), (768, 512)])
++    payload = np.random.default_rng(42).integers(
++        0, 2, geometry['source_indices'] * 5, dtype=np.uint8
++    )
++    code = get_ldpc_code(128, rate=0.5)
++    def llr(received, snr, device, **ignored):
++        return bpsk_llr(received, snr, device)
++    decoded, stats = entry.shared.transmit_ldpc_stream_exact(
++        payload, 10, code, torch.device('cuda:0'), bpsk_modulate, llr,
++        1, ldpc_encode, ldpc_decode, 'awgn', 1, use_actual_noise_variance=False,
++    )
++assert len(decoded) == len(payload) == 491520
++assert stats['channel_symbols'] == 983040
++assert Fraction(stats['channel_symbols'], geometry['source_values']) == Fraction(5, 6)
++assert np.array_equal(decoded, payload)
++print('Native channel payload check passed.')
++```
++
++## 审阅与验证产物
++
++本目录中的 `before.json`、`changes.patch`、`unit_tests.log`、`native_no_channel.log`、`native_no_channel_audit.json`、`native_channel_payload.log` 是本次开发验证与审阅记录，由代理单独保存，不是测试脚本自动生成的输出。
++
++完整模型运行由外部验证包装器捕获终端输出，并在运行结束后写入本目录；审计 JSON 保存生成命令、环境参数、退出码、终端行数、脚本新增文件清单、所有 PNG 的尺寸和 SHA-256。图片根目录中只保存 PNG。
++
++本次沿用现有 `eval_seq2seq_ds8_dualk_console.py` 的内存日志捕获函数，未修改该文件。补丁包括新增测试和本文档的完整内容，并使用 `git apply --reverse --check` 验证与当前文件一致。

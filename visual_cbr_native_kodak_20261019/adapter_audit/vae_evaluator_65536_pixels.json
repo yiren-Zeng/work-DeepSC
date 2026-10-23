@@ -1,0 +1,27 @@
+{
+  "source_file": "/workspace/yi/work/RAQ-VAE-main/eval_seq2seq_channel.py",
+  "source_sha256": "955e562ce537b54e3ef3c2b942c6f96f2ee8c02dc66228fe9a9538cf7fde1d57",
+  "adapted_source_sha256": "648e5a35d6a0db2e492a203e5e6dbacb147c8539ad90465264382276a51c33b0",
+  "pixel_count": 65536,
+  "bottom_index_count": 1024,
+  "top_index_count": 256,
+  "changes": [
+    {
+      "old": "3 * 256 * 256",
+      "new": "3 * NATIVE_PIXELS",
+      "occurrences": 5
+    },
+    {
+      "old": "256 * 256",
+      "new": "NATIVE_PIXELS",
+      "occurrences": 4
+    },
+    {
+      "old": "(1, 3, 256, 256)",
+      "new": "NATIVE_SHAPES[filenames[image_index]]",
+      "occurrences": 1
+    }
+  ],
+  "original_source_modified": false,
+  "model_and_communication_functions_modified": false
+}

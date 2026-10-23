@@ -22,5 +22,6 @@ for target in $TARGETS; do
     SIMVQ_RAQ_TARGET_LIST="$target" \
     NO_CHANNEL="$NO_CHANNEL" \
     JSON_OUTPUT= \
+    SAVE_IMAGES=0 \
     bash "$SCRIPT_DIR/test_src256_raq32_2048_curriculum_ch256_res6_unet1_ds2.sh" "$@"
 done

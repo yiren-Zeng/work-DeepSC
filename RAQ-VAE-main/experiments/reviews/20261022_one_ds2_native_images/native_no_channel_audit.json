@@ -1,0 +1,454 @@
+{
+  "command": [
+    "bash",
+    "scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh"
+  ],
+  "env": {
+    "TARGETS": "32 64",
+    "NO_CHANNEL": "1",
+    "GPU_ID": "0",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 293.0072557926178,
+  "stdout_line_count": 6,
+  "new_files": [
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim01.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim02.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim03.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim04.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim05.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim06.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim07.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim08.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim09.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim10.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim11.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim12.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim13.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim14.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim15.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim16.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim17.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim18.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim19.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim20.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim21.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim22.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim23.png",
+    "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim24.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim01.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim02.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim03.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim04.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim05.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim06.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim07.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim08.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim09.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim10.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim11.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim12.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim13.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim14.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim15.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim16.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim17.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim18.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim19.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim20.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim21.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim22.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim23.png",
+    "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim24.png"
+  ],
+  "unexpected_non_image_files": [],
+  "images": [
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim01.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "0d2a7873ddb460cdcbd65dc652bb4f805704ad0db5f766ab8c2e654e8b75cff3"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim02.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "7f098adbbcd4054cd7dc3972fedd0e3537b05bec92be9afea28fd09d9acd9477"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim03.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "4392a50aba00f6be2f50e60f021f71a752fe58f3a18d30695f6f7984757e1748"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim04.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "8de03255487d794d6104aef8a54d685552cbfe977d9ab9636cd594574e9772a2"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim05.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "02780a5679bde17c7c3ad84f8ea7d652757906fe28dc160b92964f6f4a446c81"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim06.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "231ac3e08f2098d21b5f044b1a931a853bd0e4201cff61e5481e280f50b54456"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim07.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "9fc2ab77134c0a83eeb6f8832170b804664af2d6c30c67c31f45b5f3125f6437"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim08.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "71ab1e319836903bfe989868702a01440dd54dbf121b1439a14bb5df698660ca"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim09.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "a8d9565b2a274c1e969e92d9fd23b4f45fb30afea062075d27b820b52d602a76"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim10.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "afc2c745dcc931f69def8b44a4c73b7992bcf3d7e2f003d2b5847fd586416753"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim11.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "372b02b450a2ccda8946ffb65d6fd74cfe0ecb82277d6ac0cefb81af7ff13065"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim12.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "615da51fbc1f9354264cce7877a1b01e096a9fe66a250b0e84ea54e3e2d604be"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim13.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "8c43150d6890c6330d41dab2a373d6b783b26e386f0a5ae3ea5fa4f29a3f3102"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim14.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "ac9fc1c80174ca9339ccc577ccb0bdad52326f3367a3817fcc764a313b945ac9"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim15.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "4d64f0ca0d66a2ded6a84eef9d3e316cc1059ef5e0e58033805aa21b5268d724"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim16.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "283eefc30e850276880689a4782216387c3155e36f024910545e729f71d12ad0"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim17.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "f66f3e8e9fc1c2184d3ec8393eb659410f34671160485bdb5327433f8ad1b166"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim18.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "9ac73fcb9f5b04c56846f50e25f64b3168dddb96729b8411b89dcddf0a8e2708"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim19.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "ac0b53c29cc0ce442fa22de16ff6d4b72069ce4675c03095fa2c8f56ba572548"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim20.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "891dd16199994e22bc70052233a11d554baff229a4c0f4996613be4b215faddc"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim21.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "f5bc465c0b4c75c66bd8d74fb02e7ca95fd3cd3651540b18d4da1b118cb65a67"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim22.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "abeddb65511ace5b68a483444e165e0cde9a3ea3ee7a559ac49be11ddab43c4f"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim23.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "0113aa942505875581274a2c2e5b75cd4a2e48ae3a4abcf06c82b9145a5056df"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k32/no_channel/kodim24.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "525a4e23001a30a70757211f17a60d7f300f0512e7c40022d8af340d5708c7ba"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim01.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "04cd85360e665b8aaed779f4f2539bfe8e0bd48cd51a0c6b7e9c3e41c151a0fd"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim02.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "4552c8d60128b55728c41c125b7c51878e2ae0ae2d75e0a9d58ab3b3990c7c48"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim03.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "5b81de5b8803514881d438e6498715199a2fa513af6506c01ef450df171d7ab5"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim04.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "353fa5ca6ded5a0f33e50ded2e5d25d4e2e8da1e0970cfe90b245059bdc90603"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim05.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "04e0f597e85c4b2b50025ef152157feb279054afeabf628650c4b5da7c107b0a"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim06.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "4081fb0c579b444b7597aec322e07e33c0c7df064333c6254e16d8609a799f6c"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim07.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "e7b9cebee12e8b0c13d9725d74e509bc6a1eff63146234f52b776c6606327210"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim08.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "ef8ff4f0c3455f4f06d48aeee14e22bcf418f4c953a255a5d10b959fa970d985"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim09.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "c0efc22f15ad5ac839c3dfcdfa391cf39a5153b4562cc0e0ae9ae7aa3471d85a"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim10.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "37420fc338b04061966e82c9b69476c0d02c41819e32d5287af0a62088305329"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim11.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "f9196c526d3012bdb993ec590600a5c74da248395e4ae8178b7341e29629ae0c"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim12.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "97d07986b0f1c661bd72a57996a6dc028f8e444c638cb021fe94f88951904993"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim13.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "437ae0c5573e03f29176daf6167ee54726c75e2d8d624aa5b5e71f976f7e800e"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim14.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "17bd139692253b35381e672ab0f4bf87dec8243270c75e26a1dcb8f5f46babac"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim15.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "b9511f29598cd92efe459672ec710b91816eb14a1525d95831a6ba0933333917"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim16.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "d39861042fff925f85e41bc73d5f09500c129ad14ddc90011b0de41c9b078422"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim17.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "64445939b3d8ccef8c1c93b8c2e542ad1092bb98682418a42f0d0071022c8cb4"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim18.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "2f473c8f8df78751788f0f9f5acd8987c1d68adf4bc8c607b39ca111118a25af"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim19.png",
+      "size": [
+        512,
+        768
+      ],
+      "sha256": "1f54972b0d69b532bbc06972116c3617c9d6856016c515b5908e9d8b8cdf54c9"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim20.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "787bf4935299dd77f1f7cf419bcaab1dc5c12dfa5a91ff526533f9b4eb1a50c7"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim21.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "011add03f834ce05ed168d175d597c17f2e7e0da72ad424d7489b3f2d1348a86"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim22.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "d1b3f15af7264e1c45d7eb1c63e7b5ef91802712797187ea0d9a79698a41394d"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim23.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "449b8c3c1b99b80f251a48aa786a076ee9bdcfc70ce0d0c86a724b2b2f1f6440"
+    },
+    {
+      "path": "generated_images/20261022_203744_494182_1749d603/k64/no_channel/kodim24.png",
+      "size": [
+        768,
+        512
+      ],
+      "sha256": "98f746a672d7d5a2cbfa24da6028291070c0ff7b31677a9595f73c3701d46627"
+    }
+  ]
+}

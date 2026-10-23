@@ -1,0 +1,301 @@
+{
+  "status": "complete",
+  "num_images": 24,
+  "source_directory": "/workspace/yi/work/JPEG/output_jpeg",
+  "output_directory": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2",
+  "cbr_supplied_by_user": "1/32",
+  "operation": "Decode existing JP2 as RGB and save lossless PNG; no new compression or channel simulation",
+  "evaluator": "/workspace/yi/work/JPEG/test_jpeg.py",
+  "evaluator_sha256_unchanged": "512a58278c843f1b89acf02d8d91ea037bebe329ec4c8c32343b55f25f1fc555",
+  "existing_jp2_files_unchanged": true,
+  "images": [
+    {
+      "source_file": "val_000001.jp2",
+      "image": "kodim01.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "38a23bebd0aa1f2c9ac52699352f247eefac5bb2f4f984a9e3c2355c55f7fb89",
+      "png_sha256": "e9d508b0a783e0e885567a0b0273ee0b91baf8de0745179a3aca13a0e82b9feb",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000002.jp2",
+      "image": "kodim02.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "628d94ce8e675e270d6b69e11b6d9150aa14ce3daae6e41a11071a355d63b531",
+      "png_sha256": "9d1ba3bfe5455e9e07c57da1f5322d42c8769415aee9610e0c726f24dc6e976c",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000003.jp2",
+      "image": "kodim03.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "84274befd9dcdabda9b97e96f856008f09f2e84094d7fe54cf536a506a0a1ab7",
+      "png_sha256": "e84f3e7249ebf66db387edc2c10cef77b5c85b0ed51f16fce1d0be128382535e",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000004.jp2",
+      "image": "kodim04.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "26bb6b8646a3e3367bfdd1f1bb06804ddfa23e02d725e764137d908af658c65e",
+      "png_sha256": "fa46578612aa245cb4896987ee4557e694ab4f897124015473b000922687af7b",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000005.jp2",
+      "image": "kodim05.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "cceb42414c9ad2b83012457bd686785d8f476a6c6798a43713fdec0a9ba0e6ab",
+      "png_sha256": "35ef63f20d757dad46b8832ed8a5a431227e7db9ed9c2e24211414eb278545c9",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000006.jp2",
+      "image": "kodim06.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "855a35c2b86dd4eae36022d7c9fe22b005c2003a5aea71f33d66e1d3b3f26e1b",
+      "png_sha256": "f90814d71f07c1364f6a9a6ec0b64e92080b6837e334bbfa0d5fceeb52abe367",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000007.jp2",
+      "image": "kodim07.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "d3ce831e91d434c82258ab080124bb1fd5e31e527bf743952c56eebb3055e47b",
+      "png_sha256": "5510f72643867ddc4ddda95e7a051f96a933e869f1ee41eac2f8a09a737acb67",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000008.jp2",
+      "image": "kodim08.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "d7cb793ef57f1b689213672952ac5637fef8e937c33e9fe25b6f7e6b5620ebef",
+      "png_sha256": "d3e378c723e72e8936ad202574cd9fed985818ea6ae894101b3314ae08179901",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000009.jp2",
+      "image": "kodim09.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "aa49fba4e543ed1763ba19f927a335128bc29eefc4a3dff224b71646b6787d67",
+      "png_sha256": "1246c5756bd99a5405a7f2cac7637f81caaacb7d7d63206624d9fc3210e2a6c0",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000010.jp2",
+      "image": "kodim10.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "71180e351b255b9d94bba9f8447936a3400d54f2815f7c304b1a83a426393aa3",
+      "png_sha256": "e37d3889f241ea13bf5c8b3a96a0b00bd35c28b472ade127e75394aba996f453",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000011.jp2",
+      "image": "kodim11.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "3a619d9f6f76a7df30eaeafabce4eb70cbd9e042824f5d6da52561d771d00a24",
+      "png_sha256": "64242056cd745c26ebae9f863d875e7a167c4999cc0a9290ad77e162e5e3e262",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000012.jp2",
+      "image": "kodim12.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "398cfe88de23f0ba6697de87622c55cb350f457898c3575e0557cf6f5eb2b5b4",
+      "png_sha256": "e59a4cfdae1fb3aab164f8f982860fc6abd4d6c92905fad2c3864c084b86f0ec",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000013.jp2",
+      "image": "kodim13.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "1227ea63cfee7b68423cbcdcd3ee34d9814eac04b59979fef020fd4518a0f7d9",
+      "png_sha256": "1614013257f72594f01b4bbc208ea0ed3189382a68f439933497c050557adbb4",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000014.jp2",
+      "image": "kodim14.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "821e4667731d16d55d22a4082969e3781b342d4e403182763b3b9d94f33c5abf",
+      "png_sha256": "cb0662ca621ecd42cc7a3c798fcfa1f4d8e9cabf0613b7a81be7c0649fc39e0d",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000015.jp2",
+      "image": "kodim15.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "7104f2cf4c337a55fd59c50a97f00506153666af5279735ab8bd9e16b7fedced",
+      "png_sha256": "b6bf46f41952bd2d7f7fc6a659557f95b6969bd8d5ad9a21a239936846e125a4",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000016.jp2",
+      "image": "kodim16.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "16b0f9e082ca8c0637dccc691e309a973ca36a90ebcb37cac4307b4991fd3b32",
+      "png_sha256": "030b85a856ecbc6be795fb73793b35e408402e8ca4ce1015db32351d6b2ebc88",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000017.jp2",
+      "image": "kodim17.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "875ab14d81620ed2b6c16cd86a1aaa7559ce7024897e4c1baaf8f534b6b8333b",
+      "png_sha256": "25500eba55bfaf4bca45ce9bc233694329e9ab7f1c0a5461f4b48ca8bb1ee6a6",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000018.jp2",
+      "image": "kodim18.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "4e1779382a82592966ee415e0f9f862679762345653a2a540c61494dd4f16b50",
+      "png_sha256": "7e77b11f2d3175a003b69530c2927fc4f737920ae795f4dcf0c2624ae66dd216",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000019.jp2",
+      "image": "kodim19.png",
+      "size": [
+        512,
+        768
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "015b1ea9192fe929bc6d95f51814d4a7c56054de7e7683377edc381863d46a3a",
+      "png_sha256": "400d58311a68faef8785838677560b31c4e66f6d226ab4de66af8144c09c993b",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000020.jp2",
+      "image": "kodim20.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "245b0e7e13a3c712fc78c17a9584d52ae57f13d7790b9364486a5efa857a51e9",
+      "png_sha256": "2f11ac53bea603e1e132b6c6a2166a73a52a41367cc078350eba03df24047af5",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000021.jp2",
+      "image": "kodim21.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "368e6dfb321860b6afc34fc88107ee86b8d7940b53442b39dd91f20cff39a8fd",
+      "png_sha256": "4aa44d2b11777d599b79fef7b0c4cda9b568b3a593a171f0123914568b3b5ed8",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000022.jp2",
+      "image": "kodim22.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "d3faec8ef2f0f29d729c5c2e65eeea426665109157888f6c684b19bd5e6ff31c",
+      "png_sha256": "c753373ad2d6d23cc1665ca5a28c4211cd375ba94458ec27e0aa217c390ff350",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000023.jp2",
+      "image": "kodim23.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "c60ef9a540d1cb8a8ff60a7d816c39c41622245222465742a0d3732b47a7a17e",
+      "png_sha256": "41c9c1306f7b75d43e79bb80dd2de28d5269b6169fef74f708ad10e66c34e4cf",
+      "decoded_rgb_pixels_identical": true
+    },
+    {
+      "source_file": "val_000024.jp2",
+      "image": "kodim24.png",
+      "size": [
+        768,
+        512
+      ],
+      "mode": "RGB",
+      "jp2_sha256": "b52247b4c837ea1e7d744d33d33862dd6eae3c87a550e540857f0478387690e0",
+      "png_sha256": "eaf58317299f4c36c8aecfdb565ee7e14199342be274a7531d3a3b6ac3334cf0",
+      "decoded_rgb_pixels_identical": true
+    }
+  ]
+}

@@ -10,6 +10,7 @@ from data.datasets import get_dataloader
 from evaluation.quality import evaluate_ldpc_channel, evaluate_no_channel
 from utils.checkpoint_utils import build_model_from_checkpoint
 from utils.reproducibility import setup_seed
+from utils.joint_cscr import CSCR_MODES, resolve_cscr_mode
 
 
 # LDPC_N = 256
@@ -233,7 +234,12 @@ def test_real(
     modulation="bpsk", LDPC_N=256, LDPC_R=0.5,
     stream_packing="per_stage", concise=False, channel_types=("awgn",),
     rician_k_factor=10.0, channel_seeds=(42,),
+    cscr_mode="off",
 ):
+    mode = resolve_cscr_mode(cscr_mode)
+    cscr_enabled = mode == "joint-cscr"
+    if cscr_enabled and not no_channel and stream_packing != "combined":
+        raise ValueError("Joint CSCR requires --stream-packing combined")
     cfg = Config()
     cfg.validate()
     setup_seed(42)
@@ -278,13 +284,15 @@ def test_real(
             f"RVQ K={rvq_k_lists} | LDPC={LDPC_N}x{LDPC_R:g} | "
             f"{modulation.upper()} | channels="
             f"{','.join(_channel_label(c, rician_k_factor) for c in channel_types)} | "
-            f"SNRs={test_snrs} dB | channel_seeds={channel_seeds}"
+            f"SNRs={test_snrs} dB | channel_seeds={channel_seeds} | "
+            f"CSCR={'ON' if cscr_enabled else 'OFF'} | CSCR_MODE={mode}"
         )
     else:
         print(f"源码本大小: {num_embeddings_list} (inferred from checkpoint)")
         if not no_channel:
             print(f"测试 SNR: {test_snrs} dB")
         print(f"[Test RAQ-RVQ] enabled=True, depth={rvq_depth}")
+        print(f"[Test RAQ-RVQ] CSCR={'ON' if cscr_enabled else 'OFF'} | CSCR_MODE={mode}")
         for scale_index, stage_k_list in enumerate(rvq_k_lists):
             print(
                 f"[Test RAQ-RVQ] scale {scale_index}: "
@@ -307,9 +315,11 @@ def test_real(
     )
 
     results = {}
+    cscr_kwargs = {"cscr_mode": mode}
     if no_channel:
         mean_ms_ssim, mean_psnr, diagnostics = evaluate_no_channel(
-            deepsc_model, test_dataloader, device, return_diagnostics=True
+            deepsc_model, test_dataloader, device, return_diagnostics=True,
+            **cscr_kwargs,
         )
         results["no_channel"] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
         results["no_channel"]["ms_ssim_db"] = ms_ssim_to_db(mean_ms_ssim)
@@ -350,6 +360,7 @@ def test_real(
                         channel_type=channel_type,
                         rician_k_factor=rician_k_factor,
                         channel_seed=channel_seed,
+                        **cscr_kwargs,
                     )
                     trial = {
                         "channel_seed": channel_seed,
@@ -457,6 +468,10 @@ def test_real(
             "rvq_training_mode": "trained_independent_codebook_residual",
             "independent_raq_rvq_enabled": True,
         })
+        payload["cscr"] = {
+            "enabled": cscr_enabled, "mode": mode,
+            "method": "cosine_greedy_gray_v1" if cscr_enabled else None,
+        }
         with open(json_output, "w", encoding="utf-8") as handle:
             json.dump(payload, handle, indent=2)
         print(f"JSON results saved to {json_output}")
@@ -465,13 +480,19 @@ def test_real(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Evaluate a SimVQ checkpoint on Kodak.")
+    parser = argparse.ArgumentParser(
+        description="Evaluate a SimVQ checkpoint on Kodak.", allow_abbrev=False,
+    )
     parser.add_argument("--checkpoint", default=None, help="Checkpoint path; defaults to the best model.")
     parser.add_argument(
         "--snrs", type=float, nargs="+", default=[0, 3, 6, 9, 12]
     )
     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
+    parser.add_argument(
+        "--cscr-mode", choices=CSCR_MODES, default="off",
+        help="Select original per-stage indices (off) or joint cosine/Gray labels (joint-cscr).",
+    )
     parser.add_argument(
         "--modulation",
         choices=["bpsk", "qpsk", "16qam"],
@@ -523,4 +544,5 @@ if __name__ == "__main__":
         args.channels,
         args.rician_k_factor,
         args.channel_seeds,
+        cscr_mode=args.cscr_mode,
     )

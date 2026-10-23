@@ -1,0 +1,77 @@
+{
+  "image": "kodim10.png",
+  "old_roi_xyxy": [
+    152,
+    28,
+    312,
+    188
+  ],
+  "new_roi_xyxy": [
+    224,
+    624,
+    304,
+    704
+  ],
+  "request": "User-marked hull lettering, replacing the sail-number detail",
+  "display_labels": {
+    "Original": "Original",
+    "JPEG": "JPEG-2000",
+    "RAQ-VAE": "RAQJSCC",
+    "MDRQ": "MDRQ"
+  },
+  "roi_size_wh": [
+    80,
+    80
+  ],
+  "zoom_size_wh": [
+    448,
+    448
+  ],
+  "zoom_interpolation": "nearest neighbor, identical across all methods",
+  "figure_size_wh": [
+    2248,
+    1612
+  ],
+  "unchanged_pixels": "Every pixel outside the old/new red-box rectangles and four zoom panels",
+  "unchanged_whole_image_metrics": true,
+  "metrics": {
+    "JPEG-2000": {
+      "source_method_key": "JPEG",
+      "psnr_db": 31.542379699388704,
+      "ms_ssim": 0.9690612272097757,
+      "ms_ssim_db": 15.09496916913443,
+      "roi_psnr_db": 29.87743174919714
+    },
+    "RAQJSCC": {
+      "source_method_key": "RAQ-VAE",
+      "psnr_db": 28.75775838321362,
+      "ms_ssim": 0.9690222840849496,
+      "ms_ssim_db": 15.089506073017738,
+      "roi_psnr_db": 29.96862199000667
+    },
+    "MDRQ": {
+      "source_method_key": "MDRQ",
+      "psnr_db": 34.12740945901202,
+      "ms_ssim": 0.9876016199877878,
+      "ms_ssim_db": 19.066350565892552,
+      "roi_psnr_db": 34.43565912672693
+    }
+  },
+  "verified_zoom_panels": 4,
+  "source_images_verified_unchanged": 96,
+  "other_comparison_files_verified_unchanged": 8,
+  "outputs": [
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.png",
+      "before_sha256": "49f4ae601d73d3a9822e42f1dc4618f453942292d1b8b7102f4ffc3aa6f49ab3",
+      "after_sha256": "0f8005eeebdac491d9256149eaa35061047f39be06cd09fc0b8638923c9c41ff",
+      "bytes": 2148092
+    },
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.pdf",
+      "before_sha256": "748330adecd1092093c43fb43889f118c0ab06099c2f505002bdfdb6668417c2",
+      "after_sha256": "dc4747c3ec1062b52f13534fcb43ac7f9cd24f105bcae7c4f16d028ff9ffd6cc",
+      "bytes": 2144530
+    }
+  ]
+}

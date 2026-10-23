@@ -575,7 +575,9 @@ def _transmit_ldpc_stream(
 
 
 @torch.no_grad()
-def evaluate_no_channel(model, loader, device, return_diagnostics=False):
+def evaluate_no_channel(
+    model, loader, device, return_diagnostics=False, image_callback=None
+):
     model.eval()
     ms_ssim_scores = []
     psnr_scores = []
@@ -603,6 +605,8 @@ def evaluate_no_channel(model, loader, device, return_diagnostics=False):
         ms_ssim, psnr = _image_quality(real_image, reconstructed_images)
         ms_ssim_scores.append(ms_ssim)
         psnr_scores.append(psnr)
+        if image_callback is not None:
+            image_callback(reconstructed_images)
 
         num_images, pixels, values = _source_sizes(real_image)
         total_images += num_images
@@ -653,6 +657,7 @@ def evaluate_ldpc_channel(
     modulation="bpsk",
     return_diagnostics=False,
     stream_packing="per_stage",
+    image_callback=None,
 ):
     from communications.ldpc_coding import ldpc_decode, ldpc_encode
 
@@ -881,6 +886,8 @@ def evaluate_ldpc_channel(
         ms_ssim, psnr = _image_quality(real_image, reconstructed_images)
         ms_ssim_scores.append(ms_ssim)
         psnr_scores.append(psnr)
+        if image_callback is not None:
+            image_callback(reconstructed_images)
         num_images, pixels, values = _source_sizes(real_image)
         total_images += num_images
         total_pixels += pixels

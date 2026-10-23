@@ -39,8 +39,8 @@ in particular, the original `CdBk2CdBk` allocates 64-dimensional outputs.
 
 ## Channel evaluation
 
-The shell script finds the latest normal training run.  An explicit run can be
-selected with `ONE_DS2_RUN_DIR`.
+The shell script finds the latest completed normal training run. An explicit
+run can be selected with `ONE_DS2_RUN_DIR`.
 
 ```bash
 cd /workspace/yi/work/RAQ-VAE-main
@@ -49,13 +49,20 @@ GPU_ID=0 \
 bash scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
 ```
 
-Its defaults match the Ours-RAQ evaluation script: target K=256, LDPC 1/2,
-BPSK, AWGN, and SNR 0 dB.  Trailing CLI arguments override these defaults:
+Like the Ours-RAQ sweep, the default mode evaluates all seven target sizes
+`32 64 128 256 512 1024 2048` without a physical channel. Set `TARGETS` to
+select a subset. Every run records a JSON report in addition to console output.
+
+To enable the channel explicitly, set `NO_CHANNEL=0`. AWGN then uses the same
+modulation and LLR functions as Ours-RAQ, including theoretical
+normalized-symbol `N0=10^(-SNR/10)` derived from the configured SNR. Explicit
+Rician tests retain the corrected perfect-CSI receiver because the Ours-RAQ
+sweep does not define a coherent Rician comparison mode.
 
 ```bash
-bash scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh \
-  --target-k 32 --ldpc-rate 3/4 --modulation qpsk \
-  --channel rician --rician-k-factor 10 --snr 6 --seed 42
+TARGETS=32 NO_CHANNEL=0 CHANNEL=rician RICIAN_K_FACTOR=10 \
+LDPC_RATE=3/4 MODULATION=qpsk SNR=6 SEED=42 \
+bash scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
 ```
 
 Aggregate MS-SSIM dB is computed by averaging the 24 raw Kodak MS-SSIM values

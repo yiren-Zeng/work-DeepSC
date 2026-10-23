@@ -1,0 +1,866 @@
+[
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim01.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "a56e27cbf5f843c048b6af1d6e090760e9c92fadba88b7dee0205918a37523bd"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim01.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e9d508b0a783e0e885567a0b0273ee0b91baf8de0745179a3aca13a0e82b9feb"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim01.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "0d2a7873ddb460cdcbd65dc652bb4f805704ad0db5f766ab8c2e654e8b75cff3"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim01.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e63f342efa7ec7147a7a32963e0a92e4d387167e75604360c8a8f28cb597fd13"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim02.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4f4b74a79237e311d72cad958237b5f7088d8bce1c82305ebefe1a70e3022dfd"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim02.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "9d1ba3bfe5455e9e07c57da1f5322d42c8769415aee9610e0c726f24dc6e976c"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim02.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "7f098adbbcd4054cd7dc3972fedd0e3537b05bec92be9afea28fd09d9acd9477"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim02.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "0a7670a4666f0be4a90f5d646a3767a775dcfb48709b4645bdb647e72d433cb9"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim03.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e25ca1ff2f0c0cb5fdfd5f9b0a0bb21ac4c3de3c84a67f35b09a85d3306249db"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim03.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e84f3e7249ebf66db387edc2c10cef77b5c85b0ed51f16fce1d0be128382535e"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim03.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4392a50aba00f6be2f50e60f021f71a752fe58f3a18d30695f6f7984757e1748"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim03.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "edabff956ea578371b9897bb8779d9248e525b31b584f771179c8d1e2b85ab5b"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim04.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "e3b946107c5d3441c022f678d0c3caf1e224d81b1604ba840a4f88e562de61aa"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim04.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "fa46578612aa245cb4896987ee4557e694ab4f897124015473b000922687af7b"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim04.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "8de03255487d794d6104aef8a54d685552cbfe977d9ab9636cd594574e9772a2"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim04.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "a9e805457e1a7d56683dee0a1c8e5235b86879cb1f13234d099e61fd2d96a975"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim05.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "10349e963c5c813d327852f82c1795fa4148d69fedffc4c589bee458e3ac3d53"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim05.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "35ef63f20d757dad46b8832ed8a5a431227e7db9ed9c2e24211414eb278545c9"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim05.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "02780a5679bde17c7c3ad84f8ea7d652757906fe28dc160b92964f6f4a446c81"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim05.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "68b957fb29afa54b2bdf191573fd530803a4a19880e0eceb9d254d995739628f"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim06.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "363510303b715d4cbc384e1ce227e466b613a09e1b71ae985882bf8e7fbd9b18"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim06.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "f90814d71f07c1364f6a9a6ec0b64e92080b6837e334bbfa0d5fceeb52abe367"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim06.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "231ac3e08f2098d21b5f044b1a931a853bd0e4201cff61e5481e280f50b54456"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim06.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "566720de5b54a173a322de691a5d7a6450f4ec1a8410ae0ed004aa5a0a6face5"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim07.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "b77d3f006f42414bb242222e0482e750c0fb9e5ee8d4bed2f6f11c5605fe54a4"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim07.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "5510f72643867ddc4ddda95e7a051f96a933e869f1ee41eac2f8a09a737acb67"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim07.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "9fc2ab77134c0a83eeb6f8832170b804664af2d6c30c67c31f45b5f3125f6437"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim07.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4778697782e5708657a2ab9bba03a669ad9c3c1f70e2249f1dec2f36211ad81e"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim08.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "ba23983c76b4832ee0e8af0592664756841a16779acd69f792e268fb6d13d6e7"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim08.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "d3e378c723e72e8936ad202574cd9fed985818ea6ae894101b3314ae08179901"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim08.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "71ab1e319836903bfe989868702a01440dd54dbf121b1439a14bb5df698660ca"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim08.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "8918375340b508e1c3f8a1d66a9e030521fdbd097e9b3f90f3c7c009fb810ca9"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim09.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "6a4361c2fc194feb4edaa9f9a4a0620fb9943e460ac7fdf037fb0f6dd6607a7d"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim09.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "1246c5756bd99a5405a7f2cac7637f81caaacb7d7d63206624d9fc3210e2a6c0"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim09.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "a8d9565b2a274c1e969e92d9fd23b4f45fb30afea062075d27b820b52d602a76"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim09.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "a037a0b9e21b23b944f21dd773b5a94653d998fd75ab6fade20f3bc61eb37c66"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim10.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "9dfb70f5867c29ff9ed6313683f19b3d867849e40fbc0c4c54a4a89df341cf23"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim10.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "e37d3889f241ea13bf5c8b3a96a0b00bd35c28b472ade127e75394aba996f453"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim10.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "afc2c745dcc931f69def8b44a4c73b7992bcf3d7e2f003d2b5847fd586416753"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim10.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "006785260dffe148d4ffecc36e03f2700ced9158fbec3a15d46a020e168079f9"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim11.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "7936814b58b5387fce2e4e2488b4ec830dadd95fa9520f358ddb30990b50f2b6"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim11.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "64242056cd745c26ebae9f863d875e7a167c4999cc0a9290ad77e162e5e3e262"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim11.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "372b02b450a2ccda8946ffb65d6fd74cfe0ecb82277d6ac0cefb81af7ff13065"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim11.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "d8310b6f646397883ab633e023b865ffefb4dd739bbd7d3b9c014ad4ed6ef7e6"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim12.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "d78c37c2f04f23761ed2367dd77e2db584ddd4c3950833fecf89f199a8126980"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim12.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e59a4cfdae1fb3aab164f8f982860fc6abd4d6c92905fad2c3864c084b86f0ec"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim12.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "615da51fbc1f9354264cce7877a1b01e096a9fe66a250b0e84ea54e3e2d604be"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim12.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "a4211fd725ab0879cf4d3aff9659be5b1e0caeaa34c5ee0986ccb5f21782bd72"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim13.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "bc34a3ce58dea09dce1704c997171602de90cb34d0c8503a988b77f473d39b08"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim13.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "1614013257f72594f01b4bbc208ea0ed3189382a68f439933497c050557adbb4"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim13.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "8c43150d6890c6330d41dab2a373d6b783b26e386f0a5ae3ea5fa4f29a3f3102"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim13.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "5f068e987524029e9903cea524fbbd1bda3847143fc0bf338cb4caea10d52b53"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim14.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "55a94550ff18f3246c4074fd32b77b0c74447c26b6ad274d564d999c0450ba6e"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim14.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "cb0662ca621ecd42cc7a3c798fcfa1f4d8e9cabf0613b7a81be7c0649fc39e0d"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim14.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "ac9fc1c80174ca9339ccc577ccb0bdad52326f3367a3817fcc764a313b945ac9"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim14.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "472c59a8d03440e5f1fe0438a76ac74f0c4382d37748bdbc5efeecefaa43eec6"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim15.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "7538cbb80cb9103606c48b806eae57d56c885c7f90b9b3be70a41160f9cbb683"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim15.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "b6bf46f41952bd2d7f7fc6a659557f95b6969bd8d5ad9a21a239936846e125a4"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim15.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4d64f0ca0d66a2ded6a84eef9d3e316cc1059ef5e0e58033805aa21b5268d724"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim15.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "1a55de3ef2117c983406a47745da76e1c0776f227f4a7f60cba81f4c5d2a10ed"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim16.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "a89c7268ccd4718ba424a99fc4643c572cf692ca6eae887185ceb4e9f11d2e54"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim16.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "030b85a856ecbc6be795fb73793b35e408402e8ca4ce1015db32351d6b2ebc88"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim16.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "283eefc30e850276880689a4782216387c3155e36f024910545e729f71d12ad0"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim16.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "8e92eafb98efef42bac737c215c540610ccab6d88df458f78340d1eb2d2953bf"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim17.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "37afcc89fbdcb76d9518e04b2fc011027e2f4cd14b3b2f83cefd721641a47c5b"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim17.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "25500eba55bfaf4bca45ce9bc233694329e9ab7f1c0a5461f4b48ca8bb1ee6a6"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim17.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "f66f3e8e9fc1c2184d3ec8393eb659410f34671160485bdb5327433f8ad1b166"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim17.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "80e1bd280795ed114d5b47a1692a83e8359ef74c414e96bf6459f4e473311cab"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim18.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "1a9258c365988961d87a0598725b609139c303ad48a5aad6c503c3b1a87849aa"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim18.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "7e77b11f2d3175a003b69530c2927fc4f737920ae795f4dcf0c2624ae66dd216"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim18.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "9ac73fcb9f5b04c56846f50e25f64b3168dddb96729b8411b89dcddf0a8e2708"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim18.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "3fba189db0c126ecb25b92f00ac97b6f56a120fb37dc6a601682b97ccb573750"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim19.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "b7450b264b1b0a411390d8931b112c27905a992520fc90569dc4b920aa32bbdc"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim19.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "400d58311a68faef8785838677560b31c4e66f6d226ab4de66af8144c09c993b"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim19.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "ac0b53c29cc0ce442fa22de16ff6d4b72069ce4675c03095fa2c8f56ba572548"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim19.png",
+    "size_wh": [
+      512,
+      768
+    ],
+    "sha256": "8853c325a39b5b5d1c7ab2cbfcbb7b09941cb7eaa4b35d87af06a1a0664d931b"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim20.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "3b46c71e3b92a563820ba32936be8330c586c41f938efd94be938386aae4328a"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim20.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "2f11ac53bea603e1e132b6c6a2166a73a52a41367cc078350eba03df24047af5"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim20.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "891dd16199994e22bc70052233a11d554baff229a4c0f4996613be4b215faddc"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim20.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "ae4a949ab69f1fd770725fa769323e44e1db28d232997c1ed50639538980d75d"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim21.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "ac958597c82073f6bb65129c68f72b651db5b9efd82e11547d07350214bc268b"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim21.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4aa44d2b11777d599b79fef7b0c4cda9b568b3a593a171f0123914568b3b5ed8"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim21.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "f5bc465c0b4c75c66bd8d74fb02e7ca95fd3cd3651540b18d4da1b118cb65a67"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim21.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "9b358cc41c08f581b90e00e66e7d6c0917f2e5458d6221630284cf83f390eb4d"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim22.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "1cee58eb1f2d9c7ebb254d208a03c783ce6cf2c4d8c2cf45e235dd23b4ce1b29"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim22.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "c753373ad2d6d23cc1665ca5a28c4211cd375ba94458ec27e0aa217c390ff350"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim22.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "abeddb65511ace5b68a483444e165e0cde9a3ea3ee7a559ac49be11ddab43c4f"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim22.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "7b3e0fa5a9280156992609c9e1c9aef332abc35acd859ce1edebe1ab2178b5f4"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim23.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "e3111a2fd4da24af15d6459ef9eacfe54106b38e27b4a21821b75c3f5d2d5baf"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim23.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "41c9c1306f7b75d43e79bb80dd2de28d5269b6169fef74f708ad10e66c34e4cf"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim23.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "0113aa942505875581274a2c2e5b75cd4a2e48ae3a4abcf06c82b9145a5056df"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim23.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "4df88161f8d078828c084231904221131cf621bdb9ef6e0e37f04aa62d7125fd"
+  },
+  {
+    "method": "Original",
+    "path": "/workspace/yi/work/Kodak/kodim24.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "1071c68372cc5a01435c2c225a5cf7d4bb803846ec08bb6b3d6721b156d7cb96"
+  },
+  {
+    "method": "JPEG",
+    "path": "/workspace/yi/work/JPEG/generated_images/cbr1over1.2/kodim24.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "eaf58317299f4c36c8aecfdb565ee7e14199342be274a7531d3a3b6ac3334cf0"
+  },
+  {
+    "method": "RAQ-VAE",
+    "path": "/workspace/yi/work/RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim24.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "525a4e23001a30a70757211f17a60d7f300f0512e7c40022d8af340d5708c7ba"
+  },
+  {
+    "method": "MDRQ",
+    "path": "/workspace/yi/work/Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim24.png",
+    "size_wh": [
+      768,
+      512
+    ],
+    "sha256": "f17398755984ae39a6926cecd4fb11334f15e111987a3d1fe21efd76e0ab8590"
+  }
+]

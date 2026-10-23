@@ -1,0 +1,29 @@
+{
+  "case_id": "k32_16_qpsk_r12",
+  "method": "raq_rvq",
+  "display_name": "MDRQ",
+  "actual_cbr": "1/32",
+  "effective_k": [
+    32,
+    16
+  ],
+  "rvq_k_lists": [
+    [
+      16,
+      2
+    ],
+    [
+      8,
+      2
+    ]
+  ],
+  "symbols_per_image": 36864,
+  "payload_bits_per_image": 36864,
+  "images": 24,
+  "psnr": 24.84705959757169,
+  "ms_ssim": 0.9135232472721947,
+  "ber": 0.0,
+  "native_resolution_preserved": true,
+  "seed": 42,
+  "output": "/workspace/yi/work/visual_cbr_native_kodak_20261019/cases/k32_16_qpsk_r12/raq_rvq"
+}

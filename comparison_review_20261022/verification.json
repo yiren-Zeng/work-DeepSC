@@ -1,0 +1,46 @@
+{
+  "matching_image_counts": {
+    "Original": 24,
+    "JPEG": 24,
+    "RAQ-VAE": 24,
+    "MDRQ": 24
+  },
+  "source_images_verified_unchanged": 96,
+  "panels_verified_against_source_pixels": 16,
+  "MDRQ_leads_selected_full_image_PSNR_MS_SSIM_and_ROI_PSNR": true,
+  "zoom_interpolation": "nearest neighbor, identical for all methods",
+  "roi_shape": [
+    144,
+    144
+  ],
+  "displayed_zoom_shape": [
+    672,
+    672
+  ],
+  "output_png_size_wh": [
+    3272,
+    1580
+  ],
+  "outputs": [
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
+      "bytes": 3247260,
+      "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
+    },
+    {
+      "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
+      "bytes": 3234167,
+      "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
+      "bytes": 2545149,
+      "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
+    },
+    {
+      "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
+      "bytes": 2544818,
+      "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
+    }
+  ]
+}

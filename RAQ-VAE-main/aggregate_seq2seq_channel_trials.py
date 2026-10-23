@@ -83,6 +83,7 @@ def _compatibility_signature(report):
         "modulation": metadata["modulation"],
         "ldpc": metadata["ldpc"],
         "rate_plan": metadata["rate_plan"],
+        "cscr": metadata.get("cscr", {"enabled": False}),
     }
 
 

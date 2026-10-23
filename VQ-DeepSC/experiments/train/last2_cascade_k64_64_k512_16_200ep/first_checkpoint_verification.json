@@ -1,0 +1,30 @@
+[
+  {
+    "experiment": "k64_64_last2_copy_200ep",
+    "gpu_id": 3,
+    "codebooks": [
+      64,
+      64
+    ],
+    "completed_epoch": 1,
+    "checkpoint": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k64_64_last2_copy_200ep/last_checkpoint.pth",
+    "checkpoint_bytes": 1336115475,
+    "best_checkpoint": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k64_64_last2_copy_200ep/best_vq_deepsc.pth",
+    "best_validation_loss": 0.07792972580150322,
+    "optimizer_scheduler_rng_verified": true
+  },
+  {
+    "experiment": "k512_16_last2_copy_200ep",
+    "gpu_id": 4,
+    "codebooks": [
+      512,
+      16
+    ],
+    "completed_epoch": 1,
+    "checkpoint": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k512_16_last2_copy_200ep/last_checkpoint.pth",
+    "checkpoint_bytes": 1338278163,
+    "best_checkpoint": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k512_16_last2_copy_200ep/best_vq_deepsc.pth",
+    "best_validation_loss": 0.0701746249364482,
+    "optimizer_scheduler_rng_verified": true
+  }
+]

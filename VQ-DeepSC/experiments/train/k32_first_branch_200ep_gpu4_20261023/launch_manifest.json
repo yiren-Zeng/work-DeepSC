@@ -1,0 +1,49 @@
+{
+  "started_at": "2026-10-23T01:08:57.318598+08:00",
+  "timezone": "Asia/Shanghai",
+  "working_directory": "/workspace/yi/work/VQ-DeepSC",
+  "command": [
+    "nohup",
+    "bash",
+    "scripts/train/train_k32_first_branch.sh"
+  ],
+  "environment": {
+    "GPU_ID": "4",
+    "VQ_DEEPSC_NUM_EPOCHS": "200",
+    "VQ_DEEPSC_RESUME": "1",
+    "VQ_DEEPSC_CHECKPOINT_DIR": "/workspace/yi/work/VQ-DeepSC/checkpoints/k32_first_branch",
+    "VQ_DEEPSC_LOG_DIR": "/workspace/yi/work/VQ-DeepSC/logs/k32_first_branch",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "launcher_pid": 878176,
+  "session_id": 878176,
+  "gpu_index": 4,
+  "gpu_uuid": "GPU-5f174e61-459c-e68c-b9fd-afb7d3d3b9ad",
+  "experiment": "k32_first_branch",
+  "epochs": 200,
+  "resume_checkpoint_existed_at_launch": false,
+  "outputs": {
+    "launcher_log": "/workspace/yi/work/VQ-DeepSC/experiments/train/k32_first_branch_200ep_gpu4_20261023/launcher.log",
+    "training_log": "/workspace/yi/work/VQ-DeepSC/experiments/logs/train_k32_first_branch.log",
+    "checkpoint_dir": "/workspace/yi/work/VQ-DeepSC/checkpoints/k32_first_branch",
+    "tensorboard_dir": "/workspace/yi/work/VQ-DeepSC/logs/k32_first_branch"
+  },
+  "state_at_recording": "running; initial training steps verified on physical GPU 4",
+  "verified_at": "2026-10-23T01:09:44.331600+08:00",
+  "training_pid": 878223,
+  "observed_process_environment": {
+    "GPU_ID": "4",
+    "CUDA_VISIBLE_DEVICES": "4",
+    "VQ_DEEPSC_DEVICE": "cuda:0",
+    "VQ_DEEPSC_NUM_EPOCHS": "200",
+    "VQ_DEEPSC_NUM_EMBEDDINGS_LIST": "32",
+    "VQ_DEEPSC_CHECKPOINT_DIR": "/workspace/yi/work/VQ-DeepSC/checkpoints/k32_first_branch"
+  },
+  "observed_gpu_process": {
+    "gpu_uuid": "GPU-5f174e61-459c-e68c-b9fd-afb7d3d3b9ad",
+    "pid": 878223,
+    "process_name": "python",
+    "memory_mib": 10864
+  },
+  "latest_training_step_at_verification": "Epoch [1/200] Step [211/540] Recon: 0.128275 VQ: 0.640477"
+}

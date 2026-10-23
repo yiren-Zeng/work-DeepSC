@@ -1,0 +1,30 @@
+{
+  "case01_k2-4_k2-4": {
+    "state": "completed",
+    "shell_pid": 3896854,
+    "gpu_id": 1,
+    "k_lists": "2,4;2,4",
+    "exit_code": 0
+  },
+  "case02_k8-2_k8-2": {
+    "state": "completed",
+    "shell_pid": 3896855,
+    "gpu_id": 2,
+    "k_lists": "8,2;8,2",
+    "exit_code": 0
+  },
+  "case03_k32-2_k8-8": {
+    "state": "completed",
+    "shell_pid": 3896856,
+    "gpu_id": 3,
+    "k_lists": "32,2;8,8",
+    "exit_code": 0
+  },
+  "case04_k8-64_k8-2": {
+    "state": "completed",
+    "shell_pid": 3896857,
+    "gpu_id": 4,
+    "k_lists": "8,64;8,2",
+    "exit_code": 0
+  }
+}

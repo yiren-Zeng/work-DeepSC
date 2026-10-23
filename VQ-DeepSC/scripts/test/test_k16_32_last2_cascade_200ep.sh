@@ -11,7 +11,7 @@ export VQ_DEEPSC_DEVICE="cuda:0"
 export PYTHONUNBUFFERED=1
 mkdir -p /home/yi/vq_deepsc_runs_20260919/eval
 CHECKPOINT="${CHECKPOINT:-/home/yi/vq_deepsc_runs_20260919/checkpoints/k16_32_last2_copy_200ep/best_vq_deepsc.pth}"
-SNRS="${SNRS:-8}"
+SNRS="${SNRS:--10 0 2 4 6 8 10}"
 MODULATION="${MODULATION:-16qam}"
 LDPC_RATE="${LDPC_RATE:-0.4375}"
 LDPC_N="${LDPC_N:-256}"

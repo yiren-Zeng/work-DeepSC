@@ -1,0 +1,29 @@
+{
+  "case_id": "k64_16_qpsk_r12",
+  "method": "vq_deepsc",
+  "display_name": "vq_deepsc",
+  "actual_cbr": "7/192",
+  "effective_k": [
+    64,
+    16
+  ],
+  "rvq_k_lists": [
+    [
+      2,
+      32
+    ],
+    [
+      8,
+      2
+    ]
+  ],
+  "symbols_per_image": 43008,
+  "payload_bits_per_image": 43008,
+  "images": 24,
+  "psnr": 25.12139360109965,
+  "ms_ssim": 0.9175807410835678,
+  "ber": 0.0,
+  "native_resolution_preserved": true,
+  "seed": 42,
+  "output": "/workspace/yi/work/visual_cbr_native_kodak_20261019/cases/k64_16_qpsk_r12/vq_deepsc"
+}

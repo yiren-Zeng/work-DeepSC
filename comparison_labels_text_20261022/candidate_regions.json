@@ -1,0 +1,130 @@
+[
+  {
+    "image": "kodim08.png",
+    "description": "full fine-print sign",
+    "roi_xyxy": [
+      544,
+      288,
+      656,
+      400
+    ],
+    "roi_psnr_db": {
+      "JPEG": 22.383011397034146,
+      "RAQ-VAE": 24.898715742341327,
+      "MDRQ": 27.893342894979973
+    },
+    "minimum_MDRQ_advantage_db": 2.994627152638646
+  },
+  {
+    "image": "kodim08.png",
+    "description": "red initial and fine strokes",
+    "roi_xyxy": [
+      536,
+      296,
+      632,
+      392
+    ],
+    "roi_psnr_db": {
+      "JPEG": 22.353499316567977,
+      "RAQ-VAE": 24.70116306190098,
+      "MDRQ": 27.77957942016755
+    },
+    "minimum_MDRQ_advantage_db": 3.078416358266569
+  },
+  {
+    "image": "kodim08.png",
+    "description": "Alfred sign",
+    "roi_xyxy": [
+      664,
+      288,
+      752,
+      376
+    ],
+    "roi_psnr_db": {
+      "JPEG": 21.318880027543234,
+      "RAQ-VAE": 25.603124524822,
+      "MDRQ": 28.102461145911878
+    },
+    "minimum_MDRQ_advantage_db": 2.4993366210898778
+  },
+  {
+    "image": "kodim08.png",
+    "description": "fabrikation strokes",
+    "roi_xyxy": [
+      584,
+      304,
+      664,
+      384
+    ],
+    "roi_psnr_db": {
+      "JPEG": 22.817234732352784,
+      "RAQ-VAE": 24.72227221915415,
+      "MDRQ": 27.910904235325617
+    },
+    "minimum_MDRQ_advantage_db": 3.188632016171468
+  },
+  {
+    "image": "kodim19.png",
+    "description": "warning sign",
+    "roi_xyxy": [
+      396,
+      440,
+      460,
+      504
+    ],
+    "roi_psnr_db": {
+      "JPEG": 26.721075328602822,
+      "RAQ-VAE": 25.48842049714829,
+      "MDRQ": 28.9864500323983
+    },
+    "minimum_MDRQ_advantage_db": 2.2653747037954766
+  },
+  {
+    "image": "kodim09.png",
+    "description": "sail digits",
+    "roi_xyxy": [
+      376,
+      376,
+      472,
+      472
+    ],
+    "roi_psnr_db": {
+      "JPEG": 31.12538322163558,
+      "RAQ-VAE": 25.586914557450523,
+      "MDRQ": 30.776212963322884
+    },
+    "minimum_MDRQ_advantage_db": -0.34917025831269655
+  },
+  {
+    "image": "kodim10.png",
+    "description": "sail digits",
+    "roi_xyxy": [
+      152,
+      28,
+      312,
+      188
+    ],
+    "roi_psnr_db": {
+      "JPEG": 32.3521681483793,
+      "RAQ-VAE": 32.28222845183489,
+      "MDRQ": 37.18415017245326
+    },
+    "minimum_MDRQ_advantage_db": 4.831982024073959
+  },
+  {
+    "image": "kodim24.png",
+    "description": "painted wall script",
+    "roi_xyxy": [
+      376,
+      272,
+      440,
+      336
+    ],
+    "roi_psnr_db": {
+      "JPEG": 26.761289648246617,
+      "RAQ-VAE": 32.32220139092569,
+      "MDRQ": 35.63412345282608
+    },
+    "minimum_MDRQ_advantage_db": 3.3119220619003897
+  }
+]

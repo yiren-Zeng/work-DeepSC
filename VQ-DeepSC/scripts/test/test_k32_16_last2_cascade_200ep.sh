@@ -11,9 +11,9 @@ export VQ_DEEPSC_DEVICE="cuda:0"
 export PYTHONUNBUFFERED=1
 mkdir -p /home/yi/vq_deepsc_runs_20260919/eval
 CHECKPOINT="${CHECKPOINT:-/home/yi/vq_deepsc_runs_20260919/checkpoints/k32_16_last2_copy_200ep/best_vq_deepsc.pth}"
-SNRS="${SNRS:-6}"
+SNRS="${SNRS:-4.5}"
 MODULATION="${MODULATION:-qpsk}"
-LDPC_RATE="${LDPC_RATE:-0.75}"
+LDPC_RATE="${LDPC_RATE:-0.625}"
 LDPC_N="${LDPC_N:-256}"
 JSON_OUTPUT="${JSON_OUTPUT:-/home/yi/vq_deepsc_runs_20260919/eval/${VQ_DEEPSC_EXPERIMENT_NAME}_ldpc12_16qam_combined.json}"
 NO_CHANNEL="${NO_CHANNEL:-0}"

@@ -1,0 +1,71 @@
+{
+  "image": "kodim10.png",
+  "roi_xyxy": [
+    152,
+    28,
+    312,
+    188
+  ],
+  "display_labels": {
+    "Original": "Original",
+    "JPEG": "JPEG-2000",
+    "RAQ-VAE": "RAQJSCC",
+    "MDRQ": "MDRQ"
+  },
+  "metric_source": "/workspace/yi/work/Ours-RAQ/utils/metrics.py",
+  "metric_source_sha256": "2b76ae2b6f8aa022430a56eaad4a4d41396e0ece09f3f54a4e991e311a4c0875",
+  "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE)",
+  "ms_ssim_definition": "Existing five-scale Ours-RAQ/utils/metrics.py::ms_ssim on RGB in [0,1]",
+  "ms_ssim_db_definition": "-10*log10(1-MS-SSIM), raw score retained",
+  "interpretation": "Selected lettering example; visual clarity and source fidelity, not an OCR accuracy measurement",
+  "metrics": {
+    "JPEG-2000": {
+      "source_method_key": "JPEG",
+      "psnr_db": 31.542379699388704,
+      "ms_ssim": 0.9690612272097757,
+      "ms_ssim_db": 15.09496916913443,
+      "roi_psnr_db": 32.3521681483793
+    },
+    "RAQJSCC": {
+      "source_method_key": "RAQ-VAE",
+      "psnr_db": 28.75775838321362,
+      "ms_ssim": 0.9690222840849496,
+      "ms_ssim_db": 15.089506073017738,
+      "roi_psnr_db": 32.28222845183489
+    },
+    "MDRQ": {
+      "source_method_key": "MDRQ",
+      "psnr_db": 34.12740945901202,
+      "ms_ssim": 0.9876016199877878,
+      "ms_ssim_db": 19.066350565892552,
+      "roi_psnr_db": 37.18415017245326
+    }
+  },
+  "source_images_verified_unchanged": 96,
+  "new_figure_panels_verified": 8,
+  "figure_size_wh": [
+    2248,
+    1612
+  ],
+  "roi_size_wh": [
+    160,
+    160
+  ],
+  "zoom_size_wh": [
+    448,
+    448
+  ],
+  "zoom_interpolation": "nearest neighbor, identical across methods",
+  "outputs": [
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.png",
+      "bytes": 2271461,
+      "sha256": "49f4ae601d73d3a9822e42f1dc4618f453942292d1b8b7102f4ffc3aa6f49ab3"
+    },
+    {
+      "path": "/workspace/yi/work/kodim10_comparison_20261022.pdf",
+      "bytes": 2272653,
+      "sha256": "748330adecd1092093c43fb43889f118c0ab06099c2f505002bdfdb6668417c2"
+    }
+  ]
+}

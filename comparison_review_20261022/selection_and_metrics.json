@@ -1,0 +1,76 @@
+{
+  "created_at": "2026-10-22T23:01:55.677320+08:00",
+  "metric_source": "/workspace/yi/work/Ours-RAQ/utils/metrics.py",
+  "metric_source_sha256": "2b76ae2b6f8aa022430a56eaad4a4d41396e0ece09f3f54a4e991e311a4c0875",
+  "psnr_definition": "RGB full-image MSE; 10*log10(255^2/MSE), unrounded source PNG pixels",
+  "ms_ssim_definition": "Existing Ours-RAQ/utils/metrics.py::ms_ssim on RGB float64 in [0,1], five scales",
+  "ms_ssim_db_definition": "-10*log10(1-MS-SSIM); raw MS-SSIM also retained",
+  "image_operations": "Lossless PNG input, native-size full images, identical ROI coordinates, nearest-neighbor zoom; no enhancement",
+  "selection_scope": "Two deliberately selected illustrative examples; not an average over all 24 images",
+  "selections": [
+    {
+      "image": "kodim05.png",
+      "roi_xyxy": [
+        320,
+        224,
+        464,
+        368
+      ],
+      "reason": "Motorcycle front fork, wheel spokes and fender edges: thin structures and strong color boundaries.",
+      "metrics": {
+        "JPEG": {
+          "psnr_db": 23.02479517258046,
+          "ms_ssim": 0.9177778711640294,
+          "ms_ssim_db": 10.850112829710666,
+          "roi_psnr_db": 22.66994103476886
+        },
+        "RAQ-VAE": {
+          "psnr_db": 25.638485015365138,
+          "ms_ssim": 0.9634724448150147,
+          "ms_ssim_db": 14.37379394451151,
+          "roi_psnr_db": 23.090557897003087
+        },
+        "MDRQ": {
+          "psnr_db": 29.78358727375123,
+          "ms_ssim": 0.9849277943732435,
+          "ms_ssim_db": 18.218231895275444,
+          "roi_psnr_db": 29.276290110576856
+        }
+      },
+      "figure_png": "/workspace/yi/work/kodim05_comparison_20261022.png",
+      "figure_pdf": "/workspace/yi/work/kodim05_comparison_20261022.pdf"
+    },
+    {
+      "image": "kodim21.png",
+      "roi_xyxy": [
+        112,
+        136,
+        256,
+        280
+      ],
+      "reason": "Lighthouse keeper's house: roof edges, windows and facade; a different scene from motorcycles.",
+      "metrics": {
+        "JPEG": {
+          "psnr_db": 27.290160820587733,
+          "ms_ssim": 0.9591163770139142,
+          "ms_ssim_db": 13.884506252719223,
+          "roi_psnr_db": 27.46922439359669
+        },
+        "RAQ-VAE": {
+          "psnr_db": 25.509421232586647,
+          "ms_ssim": 0.9627640996946477,
+          "ms_ssim_db": 14.290381411379308,
+          "roi_psnr_db": 27.357582601876544
+        },
+        "MDRQ": {
+          "psnr_db": 31.08356828715396,
+          "ms_ssim": 0.9855403444864353,
+          "ms_ssim_db": 18.39842053538036,
+          "roi_psnr_db": 32.80011792459457
+        }
+      },
+      "figure_png": "/workspace/yi/work/kodim21_comparison_20261022.png",
+      "figure_pdf": "/workspace/yi/work/kodim21_comparison_20261022.pdf"
+    }
+  ]
+}

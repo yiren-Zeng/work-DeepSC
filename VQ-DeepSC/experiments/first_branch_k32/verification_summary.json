@@ -1,0 +1,118 @@
+{
+  "scheme": "k32_first_branch",
+  "default_training_epochs": 200,
+  "model": {
+    "encoder_stages": 1,
+    "decoder_upsampling_stages": 1,
+    "codebooks": [
+      32
+    ],
+    "embedding_dims": [
+      128
+    ]
+  },
+  "checks": {
+    "unittest_tests": 12,
+    "unittest_failures": 0,
+    "python_syntax": "passed",
+    "shell_syntax": "passed",
+    "smoke_training_epochs": 1,
+    "smoke_train_images": 1,
+    "smoke_val_images": 1,
+    "smoke_eval_images": 24
+  },
+  "link": {
+    "snr_db": 6,
+    "channel": "awgn",
+    "modulation": "bpsk",
+    "ldpc_k": 128,
+    "ldpc_n": 256,
+    "ldpc_rate": 0.5
+  },
+  "per_image": {
+    "indices": 16384,
+    "payload_bits": 81920,
+    "coded_bits": 163840,
+    "channel_symbols": 163840,
+    "source_values": 196608,
+    "ldpc_padding_bits": 0,
+    "modulation_padding_bits": 0
+  },
+  "measured_totals": {
+    "payload_bits": 1966080,
+    "ldpc_input_bits": 1966080,
+    "ldpc_padding_bits": 0,
+    "coded_bits": 3932160,
+    "modulation_padding_bits": 0,
+    "transmitted_bits": 3932160,
+    "channel_symbols": 3932160,
+    "bit_errors": 0,
+    "index_errors": 0,
+    "source_pixels": 1572864,
+    "source_values": 4718592,
+    "payload_bpp": 1.25,
+    "coded_bpp": 2.5,
+    "transmitted_bpp": 2.5,
+    "channel_uses_per_pixel": 2.5,
+    "transmission_ratio": 0.8333333333333334,
+    "ber": 0.0,
+    "index_error_rate": 0.0
+  },
+  "cbr_fraction": "5/6",
+  "cbr": 0.8333333333333334,
+  "performance_note": "Smoke checkpoint trained on one Cars196 image for one epoch; image quality is not a trained-model benchmark.",
+  "changed_preexisting_files": [
+    "VQ-DeepSC/test_real.py",
+    "VQ-DeepSC/train.py"
+  ],
+  "preexisting_files_other_than_the_two_optional_config_parameters": "unchanged by SHA-256 comparison",
+  "new_git_status_entries_before_summary_creation": [
+    " M VQ-DeepSC/test_real.py",
+    " M VQ-DeepSC/train.py",
+    "?? VQ-DeepSC/config_first_branch.py",
+    "?? VQ-DeepSC/experiments/first_branch_k32/README.md",
+    "?? VQ-DeepSC/experiments/first_branch_k32/ldpc_bpsk_smoke.json",
+    "?? VQ-DeepSC/scripts/test/test_k32_first_branch.sh",
+    "?? VQ-DeepSC/scripts/train/train_k32_first_branch.sh",
+    "?? VQ-DeepSC/test_real_first_branch.py",
+    "?? VQ-DeepSC/tests/test_first_branch.py",
+    "?? VQ-DeepSC/train_first_branch.py"
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/first_branch_k32/evaluation_smoke.log",
+      "bytes": 1687,
+      "sha256": "fe6124dc4bd612eb492ac191d142f687848cce86fe2897d959393e143f37ffd8"
+    },
+    {
+      "path": "experiments/first_branch_k32/ldpc_bpsk_smoke.json",
+      "bytes": 2714,
+      "sha256": "e0a1e4366c936a8fc0b1f629f0627b754dae15033083e1e61416487df55df7ed"
+    },
+    {
+      "path": "experiments/first_branch_k32/smoke_checkpoints/best_vq_deepsc.pth",
+      "bytes": 4791537,
+      "sha256": "e23e9f29a0b0e58aa111b054cccf8bf3c119370d00f7c2c8282b2b7c21b4dc62"
+    },
+    {
+      "path": "experiments/first_branch_k32/smoke_checkpoints/last_checkpoint.pth",
+      "bytes": 14372485,
+      "sha256": "43cdda6e18a1e53ff1b5bcbc00485e4190cf0264e281eff1c6f2a368d3129dd8"
+    },
+    {
+      "path": "experiments/first_branch_k32/smoke_tensorboard/20261023-010142/events.out.tfevents.1792688502.kaisa.875230.0",
+      "bytes": 342,
+      "sha256": "7779b3b518ad1531b15c0d04ee1580d4623677b994b8d8fcfde9f31674781170"
+    },
+    {
+      "path": "experiments/first_branch_k32/training_smoke.log",
+      "bytes": 1592,
+      "sha256": "1d17f9e87f1ad8ec687f0ca4a2452cb9eb6584e913fce6ecd5755ba619611bfc"
+    },
+    {
+      "path": "experiments/first_branch_k32/verification.log",
+      "bytes": 1643,
+      "sha256": "cd889cb47e2a71d0b64aa7a4654a015d0e9aa8d3580350c7943cc062cd3a9ae0"
+    }
+  ]
+}

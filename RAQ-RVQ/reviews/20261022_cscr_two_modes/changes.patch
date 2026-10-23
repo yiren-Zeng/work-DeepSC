@@ -1,0 +1,973 @@
+diff --git a/RAQ-RVQ/utils/joint_cscr.py b/RAQ-RVQ/utils/joint_cscr.py
+--- a/RAQ-RVQ/utils/joint_cscr.py
++++ b/RAQ-RVQ/utils/joint_cscr.py
+@@ -11,16 +11,15 @@
+ from utils.cscr import build_cscr_mapping
+ 
+ 
+-CSCR_MODES = ("off", "stage", "joint-pack", "joint-cscr")
++CSCR_MODES = ("off", "joint-cscr")
+ MAX_JOINT_CSCR_SIZE = 4096
+ 
+ 
+-def resolve_cscr_mode(use_cscr=False, cscr_mode=None):
+-    """An explicit four-way mode takes precedence over the legacy boolean."""
+-    mode = cscr_mode if cscr_mode is not None else ("stage" if use_cscr else "off")
+-    if mode not in CSCR_MODES:
+-        raise ValueError(f"cscr_mode must be one of {CSCR_MODES}, got {mode!r}")
+-    return mode
++def resolve_cscr_mode(cscr_mode="off"):
++    """Validate the single control for original indices or joint CSCR."""
++    if cscr_mode not in CSCR_MODES:
++        raise ValueError(f"cscr_mode must be one of {CSCR_MODES}, got {cscr_mode!r}")
++    return cscr_mode
+ 
+ 
+ def _stage_sizes(sizes):
+@@ -80,8 +79,7 @@
+         raise ValueError("Joint codebook stage count does not match stage sizes")
+     if math.prod(sizes) > MAX_JOINT_CSCR_SIZE:
+         raise ValueError(
+-            f"Joint CSCR supports at most {MAX_JOINT_CSCR_SIZE} combinations per scale; "
+-            "joint-pack does not require a Cartesian codebook"
++            f"Joint CSCR supports at most {MAX_JOINT_CSCR_SIZE} combinations per scale"
+         )
+     first = stage_codebooks[0]
+     for codebook, size in zip(stage_codebooks, sizes):
+diff --git a/RAQ-RVQ/utils/cscr.py b/RAQ-RVQ/utils/cscr.py
+--- a/RAQ-RVQ/utils/cscr.py
++++ b/RAQ-RVQ/utils/cscr.py
+@@ -1,4 +1,4 @@
+-"""Training-free cosine/Gray labels for each independent target RVQ codebook.
++"""Training-free cosine/Gray labels used by joint CSCR.
+ 
+ For greedy position t, E_star[gray(t)] = E[greedy_order[t]]. Keep the original
+ codebook and residual quantizer, map indices before transmission, and invert
+@@ -50,27 +50,3 @@
+         "index_to_label": index_to_label.to(codebook.device),
+         "label_to_index": label_to_index.to(codebook.device),
+     }
+-
+-
+-def build_rvq_cscr_mappings(codebooks, k_lists):
+-    """Build a separate map for every active scale/stage, including equal K.
+-
+-    Use the exact target codebooks returned by forward_test. Do not reorder
+-    source codebooks, combine residual stages, or assume equal K means equal
+-    codewords. Ragged nonempty stage prefixes retain their existing layout.
+-    """
+-    if not isinstance(codebooks, (list, tuple)) or len(codebooks) != len(k_lists):
+-        raise ValueError("CSCR requires matching nested target codebooks for every RVQ scale")
+-    mappings = []
+-    for scale_index, (stage_codebooks, stage_sizes) in enumerate(zip(codebooks, k_lists)):
+-        if not isinstance(stage_codebooks, (list, tuple)) or len(stage_codebooks) != len(stage_sizes):
+-            raise ValueError(f"CSCR codebook/stage count mismatch at scale {scale_index}")
+-        scale_mappings = []
+-        for stage_index, (codebook, size) in enumerate(zip(stage_codebooks, stage_sizes)):
+-            if not isinstance(codebook, torch.Tensor) or codebook.ndim != 2 or codebook.shape[0] != size:
+-                raise ValueError(
+-                    f"CSCR target codebook at scale {scale_index}, stage {stage_index} must have K={size} rows"
+-                )
+-            scale_mappings.append(build_cscr_mapping(codebook))
+-        mappings.append(scale_mappings)
+-    return mappings
+diff --git a/RAQ-RVQ/evaluation/quality.py b/RAQ-RVQ/evaluation/quality.py
+--- a/RAQ-RVQ/evaluation/quality.py
++++ b/RAQ-RVQ/evaluation/quality.py
+@@ -15,7 +15,6 @@
+ )
+ from utils.metrics import calculate_ms_ssim
+ from utils.reproducibility import _reset_eval_seed
+-from utils.cscr import build_rvq_cscr_mappings
+ from utils.joint_cscr import resolve_cscr_mode
+ 
+ 
+@@ -581,15 +580,14 @@
+ 
+ @torch.no_grad()
+ def evaluate_no_channel(
+-    model, loader, device, return_diagnostics=False, use_cscr=False, cscr_mode=None,
++    model, loader, device, return_diagnostics=False, cscr_mode="off",
+ ):
+-    mode = resolve_cscr_mode(use_cscr, cscr_mode)
+-    if mode in ("joint-pack", "joint-cscr"):
++    mode = resolve_cscr_mode(cscr_mode)
++    if mode == "joint-cscr":
+         from evaluation.joint_cscr import evaluate_joint
+         return evaluate_joint(
+-            model, loader, device, cscr_mode=mode, return_diagnostics=return_diagnostics,
+-        )
+-    use_cscr = mode == "stage"
++            model, loader, device, return_diagnostics=return_diagnostics,
++        )
+     model.eval()
+     ms_ssim_scores = []
+     psnr_scores = []
+@@ -602,16 +600,8 @@
+         rvq_k_lists = _rvq_layout(out)
+         _accumulate_rvq_quantization(rvq_quantization_records, out, real_image)
+ 
+-        reconstruction_indices = out["indices"]
+-        if use_cscr:
+-            mappings = build_rvq_cscr_mappings(out.get("codebooks"), rvq_k_lists)
+-            reconstruction_indices = [
+-                [mapping["label_to_index"][mapping["index_to_label"][indices]]
+-                 for indices, mapping in zip(stage_indices, stage_mappings)]
+-                for stage_indices, stage_mappings in zip(out["indices"], mappings)
+-            ]
+         reconstructed_images = model.reconstruct_from_indices(
+-            reconstruction_indices,
++            out["indices"],
+             feature_shapes=out.get("feature_shapes"),
+             codebooks=out.get("codebooks"),
+         )
+@@ -641,8 +631,6 @@
+         (total_images, total_pixels, total_values),
+         rvq_quantization_records=rvq_quantization_records,
+     )
+-    if use_cscr:
+-        diagnostics["cscr"] = {"enabled": True, "method": "cosine_greedy_gray_v1"}
+     result = (np.mean(ms_ssim_scores), np.mean(psnr_scores))
+     return (*result, diagnostics) if return_diagnostics else result
+ 
+@@ -660,8 +648,7 @@
+     channel_type="awgn",
+     rician_k_factor=10.0,
+     channel_seed=42,
+-    use_cscr=False,
+-    cscr_mode=None,
++    cscr_mode="off",
+ ):
+     from communications.ldpc_coding import ldpc_decode, ldpc_encode
+ 
+@@ -690,10 +677,10 @@
+     modulate, calculate_llr = modulators[modulation]
+     modulation_bits = _MODULATION_BITS[modulation]
+ 
+-    mode = resolve_cscr_mode(use_cscr, cscr_mode)
+-    if mode in ("joint-pack", "joint-cscr"):
++    mode = resolve_cscr_mode(cscr_mode)
++    if mode == "joint-cscr":
+         if stream_packing != "combined":
+-            raise ValueError("Joint CSCR modes require stream_packing='combined'")
++            raise ValueError("Joint CSCR requires stream_packing='combined'")
+         from evaluation.joint_cscr import evaluate_joint
+ 
+         def transport(bits):
+@@ -704,13 +691,11 @@
+             )
+ 
+         return evaluate_joint(
+-            model, loader, device, cscr_mode=mode, return_diagnostics=return_diagnostics,
++            model, loader, device, return_diagnostics=return_diagnostics,
+             target_snr=target_snr, ldpc_code=ldpc_code, modulation=modulation,
+             channel_type=channel_type, rician_k_factor=rician_k_factor,
+             channel_seed=int(channel_seed), transport=transport,
+         )
+-    use_cscr = mode == "stage"
+-
+     channel_seed = int(channel_seed)
+     _reset_eval_seed(channel_seed)
+     model.eval()
+@@ -734,8 +719,6 @@
+         real_image = real_image.to(device)
+         out = model.forward_test(real_image)
+         rvq_k_lists = _rvq_layout(out)
+-        cscr_mappings = (build_rvq_cscr_mappings(out.get("codebooks"), rvq_k_lists)
+-                         if use_cscr else None)
+         _accumulate_rvq_quantization(rvq_quantization_records, out, real_image)
+         payload_bits = sum(
+             int(indices.numel()) * int(np.log2(num_embeddings))
+@@ -756,10 +739,8 @@
+                 for stage_idx, (indices, num_embeddings) in enumerate(
+                     zip(stage_indices, stage_ks)
+                 ):
+-                    mapping = cscr_mappings[scale_idx][stage_idx] if use_cscr else None
+-                    wire_indices = mapping["index_to_label"][indices] if use_cscr else indices
+                     flat_bits, original_shape, _ = index_tensor_to_bits(
+-                        wire_indices, num_embeddings
++                        indices, num_embeddings
+                     )
+                     flat_bits = np.asarray(
+                         flat_bits, dtype=np.uint8
+@@ -771,7 +752,6 @@
+                             indices,
+                             num_embeddings,
+                             original_shape,
+-                            mapping,
+                             flat_bits,
+                         )
+                     )
+@@ -804,7 +784,6 @@
+                 indices,
+                 num_embeddings,
+                 original_shape,
+-                mapping,
+                 sent_bits,
+             ) in segments:
+                 end = offset + len(sent_bits)
+@@ -813,8 +792,6 @@
+                 recovered = bits_to_index_tensor(
+                     recovered_bits, original_shape, num_embeddings
+                 ).to(device)
+-                if use_cscr:
+-                    recovered = mapping["label_to_index"][recovered]
+                 recovered_indices_list[scale_idx].append(recovered)
+ 
+                 key = (scale_idx, stage_idx)
+@@ -844,10 +821,8 @@
+                 for stage_idx, (indices, num_embeddings) in enumerate(
+                     zip(stage_indices, stage_ks)
+                 ):
+-                    mapping = cscr_mappings[scale_idx][stage_idx] if use_cscr else None
+-                    wire_indices = mapping["index_to_label"][indices] if use_cscr else indices
+                     flat_bits, original_shape, _ = index_tensor_to_bits(
+-                        wire_indices, num_embeddings
++                        indices, num_embeddings
+                     )
+                     decoded_bits, channel_stats = _transmit_ldpc_stream(
+                         flat_bits,
+@@ -865,8 +840,6 @@
+                     recovered = bits_to_index_tensor(
+                         decoded_bits, original_shape, num_embeddings
+                     ).to(device)
+-                    if use_cscr:
+-                        recovered = mapping["label_to_index"][recovered]
+                     recovered_stages.append(recovered)
+ 
+                     key = (scale_idx, stage_idx)
+@@ -914,8 +887,6 @@
+     )
+     diagnostics["channel_type"] = channel_type
+     diagnostics["channel_seed"] = channel_seed
+-    if use_cscr:
+-        diagnostics["cscr"] = {"enabled": True, "method": "cosine_greedy_gray_v1"}
+     if channel_type == "rician":
+         diagnostics["rician_k_factor"] = float(rician_k_factor)
+         diagnostics["receiver_csi"] = "perfect_per_symbol"
+diff --git a/RAQ-RVQ/evaluation/joint_cscr.py b/RAQ-RVQ/evaluation/joint_cscr.py
+--- a/RAQ-RVQ/evaluation/joint_cscr.py
++++ b/RAQ-RVQ/evaluation/joint_cscr.py
+@@ -1,8 +1,8 @@
+-"""Evaluate joint packing and joint CSCR using the unchanged RVQ reconstruction.
++"""Evaluate joint CSCR using the unchanged RVQ reconstruction.
+ 
+-The legacy evaluators dispatch here only for the two new joint modes. Transport
+-records are per scale (stage=None): BER counts wire labels and index errors count
+-restored joint tuples. Original per-stage quantizer diagnostics remain separate.
++Transport records are per scale (stage=None): BER counts wire labels and index
++errors count restored joint tuples. Original per-stage quantizer diagnostics
++remain separate.
+ """
+ 
+ import math
+@@ -19,12 +19,11 @@
+ 
+ @torch.no_grad()
+ def evaluate_joint(
+-    model, loader, device, *, cscr_mode, return_diagnostics=False,
++    model, loader, device, *, return_diagnostics=False,
+     target_snr=None, ldpc_code=None, modulation=None, channel_type="awgn",
+     rician_k_factor=10.0, channel_seed=42, transport=None,
+ ):
+     channel_enabled = transport is not None
+-    use_cscr = cscr_mode == "joint-cscr"
+     if channel_enabled:
+         quality._reset_eval_seed(channel_seed)
+     model.eval()
+@@ -40,13 +39,12 @@
+             raise ValueError("Joint evaluation requires a fixed RVQ stage layout")
+         layout = sizes
+         quality._accumulate_rvq_quantization(quantization, out, image)
+-        mappings = (build_joint_cscr_mappings(out.get("codebooks"), sizes)
+-                    if use_cscr else [None] * len(sizes))
++        mappings = build_joint_cscr_mappings(out.get("codebooks"), sizes)
+         segments = []
+         for indices, stage_sizes, mapping in zip(out["indices"], sizes, mappings):
+             joint = pack_joint_indices(indices, stage_sizes)
+             joint_k = math.prod(stage_sizes)
+-            wire = mapping["index_to_label"][joint] if mapping is not None else joint
++            wire = mapping["index_to_label"][joint]
+             bits, shape, _ = index_tensor_to_bits(wire, joint_k)
+             segments.append((joint, joint_k, bits, shape, mapping, stage_sizes))
+         payload = np.concatenate([segment[2] for segment in segments])
+@@ -64,8 +62,7 @@
+             received_bits = decoded[offset:offset + len(bits)]
+             offset += len(bits)
+             recovered = bits_to_index_tensor(received_bits, shape, joint_k).to(device)
+-            if mapping is not None:
+-                recovered = mapping["label_to_index"][recovered]
++            recovered = mapping["label_to_index"][recovered]
+             recovered_stages.append(unpack_joint_indices(recovered, stage_sizes))
+             key = (scale, None)
+             record = records.setdefault(key, quality._new_stage_record(scale, None, joint_k))
+@@ -89,8 +86,8 @@
+         packed_stream_totals=packed if channel_enabled and packed else None,
+     )
+     diagnostics["cscr"] = {
+-        "enabled": use_cscr, "mode": cscr_mode, "scope": "joint_per_scale",
+-        "method": "cosine_greedy_gray_v1" if use_cscr else None,
++        "enabled": True, "mode": "joint-cscr", "scope": "joint_per_scale",
++        "method": "cosine_greedy_gray_v1",
+     }
+     diagnostics["joint_packing"] = {
+         "enabled": True, "stage_k_lists": layout,
+diff --git a/RAQ-RVQ/test_real.py b/RAQ-RVQ/test_real.py
+--- a/RAQ-RVQ/test_real.py
++++ b/RAQ-RVQ/test_real.py
+@@ -234,13 +234,12 @@
+     modulation="bpsk", LDPC_N=256, LDPC_R=0.5,
+     stream_packing="per_stage", concise=False, channel_types=("awgn",),
+     rician_k_factor=10.0, channel_seeds=(42,),
+-    use_cscr=False,
+-    cscr_mode=None,
++    cscr_mode="off",
+ ):
+-    mode = resolve_cscr_mode(use_cscr, cscr_mode)
+-    cscr_enabled = mode in ("stage", "joint-cscr")
+-    if mode in ("joint-pack", "joint-cscr") and not no_channel and stream_packing != "combined":
+-        raise ValueError("Joint CSCR modes require --stream-packing combined")
++    mode = resolve_cscr_mode(cscr_mode)
++    cscr_enabled = mode == "joint-cscr"
++    if cscr_enabled and not no_channel and stream_packing != "combined":
++        raise ValueError("Joint CSCR requires --stream-packing combined")
+     cfg = Config()
+     cfg.validate()
+     setup_seed(42)
+@@ -316,9 +315,7 @@
+     )
+ 
+     results = {}
+-    cscr_kwargs = {"use_cscr": True} if use_cscr else {}
+-    if cscr_mode is not None:
+-        cscr_kwargs = {"cscr_mode": mode}
++    cscr_kwargs = {"cscr_mode": mode}
+     if no_channel:
+         mean_ms_ssim, mean_psnr, diagnostics = evaluate_no_channel(
+             deepsc_model, test_dataloader, device, return_diagnostics=True,
+@@ -471,13 +468,10 @@
+             "rvq_training_mode": "trained_independent_codebook_residual",
+             "independent_raq_rvq_enabled": True,
+         })
+-        if cscr_mode is not None:
+-            payload["cscr"] = {
+-                "enabled": cscr_enabled, "mode": mode,
+-                "method": "cosine_greedy_gray_v1" if cscr_enabled else None,
+-            }
+-        elif use_cscr:
+-            payload["cscr"] = {"enabled": True, "method": "cosine_greedy_gray_v1"}
++        payload["cscr"] = {
++            "enabled": cscr_enabled, "mode": mode,
++            "method": "cosine_greedy_gray_v1" if cscr_enabled else None,
++        }
+         with open(json_output, "w", encoding="utf-8") as handle:
+             json.dump(payload, handle, indent=2)
+         print(f"JSON results saved to {json_output}")
+@@ -486,7 +480,9 @@
+ 
+ 
+ if __name__ == "__main__":
+-    parser = argparse.ArgumentParser(description="Evaluate a SimVQ checkpoint on Kodak.")
++    parser = argparse.ArgumentParser(
++        description="Evaluate a SimVQ checkpoint on Kodak.", allow_abbrev=False,
++    )
+     parser.add_argument("--checkpoint", default=None, help="Checkpoint path; defaults to the best model.")
+     parser.add_argument(
+         "--snrs", type=float, nargs="+", default=[0, 3, 6, 9, 12]
+@@ -494,12 +490,8 @@
+     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
+     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
+     parser.add_argument(
+-        "--cscr", action=argparse.BooleanOptionalAction, default=False,
+-        help="Apply training-free cosine-greedy/Gray labels independently to each target RVQ codebook (default: off).",
+-    )
+-    parser.add_argument(
+-        "--cscr-mode", choices=CSCR_MODES, default=None,
+-        help="Run one control: off, stage, joint-pack, joint-cscr. Overrides --cscr/--no-cscr.",
++        "--cscr-mode", choices=CSCR_MODES, default="off",
++        help="Select original per-stage indices (off) or joint cosine/Gray labels (joint-cscr).",
+     )
+     parser.add_argument(
+         "--modulation",
+@@ -552,6 +544,5 @@
+         args.channels,
+         args.rician_k_factor,
+         args.channel_seeds,
+-        use_cscr=args.cscr,
+         cscr_mode=args.cscr_mode,
+     )
+diff --git a/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh b/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh
+--- a/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh
++++ b/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh
+@@ -1,7 +1,6 @@
+ #!/bin/bash
+ # Evaluate the per-K-mixture checkpoint over AWGN and Rician channels.
+-# USE_CSCR=0 keeps the original scheme; USE_CSCR=1 applies CSCR to every target scale/stage.
+-# CSCR_MODE=off|stage|joint-pack|joint-cscr selects exactly one control and overrides USE_CSCR.
++# CSCR_MODE=off|joint-cscr selects original indices or joint cosine/Gray labels.
+ set -euo pipefail
+ 
+ eval "$(/usr/local/miniconda3/bin/conda shell.bash hook)"
+@@ -15,7 +14,7 @@
+ export SIMVQ_ENCODER_RES_BLOCKS="6"
+ export SIMVQ_DECODER_RES_BLOCKS="6"
+ export SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH="2"
+-export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-32,8;64,4}"
++export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-8,2;8,2}"
+ 
+ export SIMVQ_RAQ_MIN_TRG="2"
+ export SIMVQ_RAQ_MAX_TRG="64"
+@@ -30,11 +29,10 @@
+ 
+ CHECKPOINT="${CHECKPOINT:-/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_mixture_per_k_unet2_ds8x2_k64/best_vq_deepsc.pth}"
+ SNRS="${SNRS:-12}"
+-MODULATION="${MODULATION:-16qam}"
+-LDPC_RATE="${LDPC_RATE:-0.5}"
++MODULATION="${MODULATION:-qpsk}"
++LDPC_RATE="${LDPC_RATE:-0.625}"
+ LDPC_N="${LDPC_N:-256}"
+ NO_CHANNEL="${NO_CHANNEL:-0}"
+-USE_CSCR="${USE_CSCR:-0}"
+ CSCR_MODE="${CSCR_MODE:-joint-cscr}"
+ CHANNEL_TYPES="${CHANNEL_TYPES:-awgn rician}"
+ RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-1}"
+@@ -58,17 +56,9 @@
+ if [[ "$NO_CHANNEL" == "1" ]]; then
+   ARGS+=(--no-channel)
+ fi
+-case "$USE_CSCR" in
+-  0) ;;
+-  1) ;;
+-  *) printf 'USE_CSCR must be 0 or 1, got: %s\n' "$USE_CSCR" >&2; exit 2 ;;
+-esac
+ case "$CSCR_MODE" in
+-  "")
+-    if [[ "$USE_CSCR" == "1" ]]; then ARGS+=(--cscr); fi
+-    ;;
+-  off|stage|joint-pack|joint-cscr) ARGS+=(--cscr-mode "$CSCR_MODE") ;;
+-  *) printf 'CSCR_MODE must be off, stage, joint-pack or joint-cscr, got: %s\n' "$CSCR_MODE" >&2; exit 2 ;;
++  off|joint-cscr) ARGS+=(--cscr-mode "$CSCR_MODE") ;;
++  *) printf 'CSCR_MODE must be off or joint-cscr, got: %s\n' "$CSCR_MODE" >&2; exit 2 ;;
+ esac
+ 
+ echo "Output: terminal only (no JSON file)"
+diff --git a/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh b/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh
+--- a/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh
++++ b/RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # Evaluate the global-uniform/ChannelProb=1 checkpoint over AWGN and Rician channels.
+ # Keep the per-K mixture evaluation settings and select the new experiment's weights.
+-# USE_CSCR=0 keeps the original scheme; USE_CSCR=1 applies CSCR to every target scale/stage.
++# CSCR_MODE=off|joint-cscr selects original indices or joint cosine/Gray labels.
+ set -euo pipefail
+ 
+ eval "$(/usr/local/miniconda3/bin/conda shell.bash hook)"
+@@ -34,7 +34,7 @@
+ LDPC_RATE="${LDPC_RATE:-0.5}"
+ LDPC_N="${LDPC_N:-256}"
+ NO_CHANNEL="${NO_CHANNEL:-0}"
+-USE_CSCR="${USE_CSCR:-1}"
++CSCR_MODE="${CSCR_MODE:-joint-cscr}"
+ CHANNEL_TYPES="${CHANNEL_TYPES:-awgn rician}"
+ RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-0}"
+ CHANNEL_SEEDS="${CHANNEL_SEEDS:-42 43 44 45 46 47 48 49 50 51}"
+@@ -57,10 +57,9 @@
+ if [[ "$NO_CHANNEL" == "1" ]]; then
+   ARGS+=(--no-channel)
+ fi
+-case "$USE_CSCR" in
+-  0) ;;
+-  1) ARGS+=(--cscr) ;;
+-  *) printf 'USE_CSCR must be 0 or 1, got: %s\n' "$USE_CSCR" >&2; exit 2 ;;
++case "$CSCR_MODE" in
++  off|joint-cscr) ARGS+=(--cscr-mode "$CSCR_MODE") ;;
++  *) printf 'CSCR_MODE must be off or joint-cscr, got: %s\n' "$CSCR_MODE" >&2; exit 2 ;;
+ esac
+ 
+ echo "Output: terminal only (no JSON file)"
+diff --git a/RAQ-RVQ/tests/test_cscr.py b/RAQ-RVQ/tests/test_cscr.py
+--- a/RAQ-RVQ/tests/test_cscr.py
++++ b/RAQ-RVQ/tests/test_cscr.py
+@@ -1,17 +1,10 @@
+-"""CSCR contracts for independent multi-scale residual-codebook transmission."""
++"""Cosine/Gray mapping contracts used by joint CSCR."""
+ 
+-import sys
+-from types import SimpleNamespace
+ import unittest
+-from unittest.mock import patch
+ 
+-import numpy as np
+ import torch
+ 
+-from evaluation import quality
+-from models.deepsc import DeepSC
+-from utils.bit_utils import bits_to_index_tensor, index_tensor_to_bits
+-from utils.cscr import build_cscr_mapping, build_rvq_cscr_mappings
++from utils.cscr import build_cscr_mapping
+ 
+ 
+ class CSCRMappingTests(unittest.TestCase):
+@@ -36,15 +29,6 @@
+             codebook[mapping["label_to_index"]], reordered, rtol=0, atol=0,
+         )
+ 
+-    def test_same_k_uses_distinct_stage_codebooks_and_accepts_ragged_prefixes(self):
+-        first = torch.tensor([[1.0, 0.0], [3.0, 0.0]])
+-        second = torch.tensor([[4.0, 0.0], [1.0, 0.0]])
+-        mappings = build_rvq_cscr_mappings([[first], [first, second]], [[2], [2, 2]])
+-        self.assertEqual([len(stages) for stages in mappings], [1, 2])
+-        self.assertEqual(mappings[0][0]["index_to_label"].tolist(), [1, 0])
+-        self.assertEqual(mappings[1][1]["index_to_label"].tolist(), [0, 1])
+-        self.assertIsNot(mappings[0][0], mappings[1][0])
+-
+     def test_zero_vectors_are_deterministic_and_invalid_codebooks_are_rejected(self):
+         mapping = build_cscr_mapping(torch.zeros(4, 3))
+         torch.testing.assert_close(mapping["greedy_order"], torch.arange(4))
+@@ -53,149 +37,6 @@
+             with self.subTest(shape=tuple(invalid.shape)):
+                 with self.assertRaises(ValueError):
+                     build_cscr_mapping(invalid)
+-        for books, sizes in ((None, [[2]]), ([[torch.ones(4, 2)]], [[2]]),
+-                             ([[torch.ones(2, 2)]], [[2, 2]])):
+-            with self.assertRaises(ValueError):
+-                build_rvq_cscr_mappings(books, sizes)
+-
+-
+-class CSCRTransmissionTests(unittest.TestCase):
+-    @classmethod
+-    def setUpClass(cls):
+-        cls.previous_threads = torch.get_num_threads()
+-        torch.set_num_threads(2)
+-        torch.manual_seed(123)
+-        cls.device = torch.device("cpu")
+-        cls.model = DeepSC(
+-            in_channels=3, out_channels=3, num_downsample_blocks=2,
+-            base_channels=4, num_embeddings_list=[8, 8], embedding_dim_list=[8, 16],
+-            commitment_cost=0.25, device=cls.device, strides=[2, 2],
+-            norm_type="group", norm_groups=1, activation="silu",
+-            encoder_res_blocks=1, decoder_res_blocks=1,
+-            raq_min_trg=2, raq_max_trg=8,
+-            independent_raq_rvq_depth=2,
+-            independent_raq_rvq_k_lists=[[2, 4], [8, 2]],
+-        ).eval()
+-        cls.image = torch.linspace(-1, 1, 3 * 192 * 192).reshape(1, 3, 192, 192)
+-        cls.code = {"k": 128, "n": 256, "rate": 0.5}
+-        # The transport is replaced below; avoid loading TensorFlow in CPU tests.
+-        cls.ldpc_module = SimpleNamespace(ldpc_encode=lambda *a, **kw: None,
+-                                         ldpc_decode=lambda *a, **kw: None)
+-
+-    @classmethod
+-    def tearDownClass(cls):
+-        torch.set_num_threads(cls.previous_threads)
+-
+-    def evaluate(self, packing, *, use_cscr=False, flip=False):
+-        streams = []
+-        reconstructions = []
+-
+-        def transmit(bits, _snr, code, _device, _modulate, _llr, modulation_bits,
+-                     _encode, _decode, **_kwargs):
+-            sent = np.asarray(bits, dtype=np.uint8).copy()
+-            received = sent.copy()
+-            if flip:
+-                received[0] ^= 1
+-            streams.append((sent, received))
+-            lengths = quality._stream_length_reference(len(sent), code, modulation_bits)
+-            return received, {name: value for name, value in lengths.items() if name != "payload_bits"} | {
+-                "bit_errors": int(np.count_nonzero(sent != received)),
+-            }
+-
+-        hook = self.model.semantic_decoder.register_forward_hook(
+-            lambda _module, _inputs, output: reconstructions.append(output.detach().clone())
+-        )
+-        try:
+-            with patch.dict(sys.modules, {"communications.ldpc_coding": self.ldpc_module}):
+-                with patch("evaluation.quality._transmit_ldpc_stream", side_effect=transmit):
+-                    result = quality.evaluate_ldpc_channel(
+-                        self.model, [self.image], 3.0, self.code, self.device,
+-                        modulation="qpsk", stream_packing=packing,
+-                        return_diagnostics=True, use_cscr=use_cscr,
+-                    )
+-        finally:
+-            hook.remove()
+-        return result, streams, reconstructions[-1]
+-
+-    def test_noiseless_both_packings_preserve_images_residuals_and_physical_lengths(self):
+-        before = {name: tensor.clone() for name, tensor in self.model.state_dict().items()}
+-        for packing in ("combined", "per_stage"):
+-            with self.subTest(packing=packing):
+-                off, off_streams, off_image = self.evaluate(packing)
+-                on, on_streams, on_image = self.evaluate(packing, use_cscr=True)
+-                self.assertEqual(off[:2], on[:2])
+-                torch.testing.assert_close(off_image, on_image, rtol=0, atol=0)
+-                self.assertEqual(off[2]["rvq_quantization"], on[2]["rvq_quantization"])
+-                self.assertEqual(off[2]["total"], on[2]["total"])
+-                self.assertEqual([len(sent) for sent, _ in off_streams],
+-                                 [len(sent) for sent, _ in on_streams])
+-                self.assertEqual(len(on_streams), 1 if packing == "combined" else 4)
+-                self.assertEqual(on[2]["total"]["index_errors"], 0)
+-                self.assertTrue(on[2]["cscr"]["enabled"])
+-        for name, value in self.model.state_dict().items():
+-            torch.testing.assert_close(value, before[name], rtol=0, atol=0)
+-
+-    def test_corrupted_labels_match_physical_reordering_for_all_scales_and_stages(self):
+-        with torch.no_grad():
+-            out = self.model.forward_test(self.image)
+-        mappings = build_rvq_cscr_mappings(out["codebooks"], out["rvq_k_lists"])
+-        expected_wire_bits = np.concatenate([
+-            index_tensor_to_bits(mapping["index_to_label"][indices], size)[0]
+-            for stage_indices, stage_maps, stage_sizes in zip(
+-                out["indices"], mappings, out["rvq_k_lists"],
+-            )
+-            for indices, mapping, size in zip(stage_indices, stage_maps, stage_sizes)
+-        ])
+-        for packing in ("combined", "per_stage"):
+-            with self.subTest(packing=packing):
+-                result, streams, actual = self.evaluate(packing, use_cscr=True, flip=True)
+-                np.testing.assert_array_equal(
+-                    np.concatenate([sent for sent, _ in streams]), expected_wire_bits,
+-                )
+-                decoded = np.concatenate([received for _, received in streams])
+-                physical_books = []
+-                received_labels = []
+-                offset = 0
+-                for stage_books, stage_indices, stage_maps in zip(
+-                    out["codebooks"], out["indices"], mappings,
+-                ):
+-                    physical_stages, label_stages = [], []
+-                    for codebook, indices, mapping in zip(stage_books, stage_indices, stage_maps):
+-                        size = codebook.shape[0]
+-                        count = indices.numel() * (size.bit_length() - 1)
+-                        label_stages.append(bits_to_index_tensor(
+-                            decoded[offset:offset + count], indices.shape, size,
+-                        ))
+-                        offset += count
+-                        gray = torch.tensor([i ^ (i >> 1) for i in range(size)])
+-                        physical = torch.empty_like(codebook)
+-                        physical[gray] = codebook[mapping["greedy_order"]]
+-                        physical_stages.append(physical)
+-                    physical_books.append(physical_stages)
+-                    received_labels.append(label_stages)
+-                with torch.no_grad():
+-                    expected = self.model.reconstruct_from_indices(
+-                        received_labels, feature_shapes=out["feature_shapes"], codebooks=physical_books,
+-                    )
+-                torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+-                self.assertEqual(offset, len(decoded))
+-                self.assertEqual(result[2]["total"]["bit_errors"], len(streams))
+-                self.assertEqual(result[2]["total"]["index_errors"], len(streams))
+-
+-    def test_no_channel_upper_bound_and_default_disabled_path_are_unchanged(self):
+-        with patch("evaluation.quality.build_rvq_cscr_mappings",
+-                   side_effect=AssertionError("disabled CSCR must not build mappings")):
+-            off = quality.evaluate_no_channel(
+-                self.model, [self.image], self.device, return_diagnostics=True,
+-            )
+-            self.evaluate("combined", use_cscr=False)
+-        on = quality.evaluate_no_channel(
+-            self.model, [self.image], self.device, return_diagnostics=True, use_cscr=True,
+-        )
+-        self.assertEqual(off[:2], on[:2])
+-        diagnostics = dict(on[2])
+-        diagnostics.pop("cscr")
+-        self.assertEqual(off[2], diagnostics)
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/RAQ-RVQ/tests/test_joint_cscr.py b/RAQ-RVQ/tests/test_joint_cscr.py
+--- a/RAQ-RVQ/tests/test_joint_cscr.py
++++ b/RAQ-RVQ/tests/test_joint_cscr.py
+@@ -1,9 +1,11 @@
+-"""Four-way controls, mixed-radix wire labels, and original RVQ reconstruction."""
++"""Two-mode controls, mixed-radix wire labels, and original RVQ reconstruction."""
+ 
+ import argparse
+ import ast
+ import itertools
++import io
+ import os
++from contextlib import redirect_stderr
+ from pathlib import Path
+ import subprocess
+ import sys
+@@ -26,6 +28,10 @@
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ SCRIPT = ROOT / "scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh"
++SCRIPTS = (
++    SCRIPT,
++    ROOT / "scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh",
++)
+ 
+ 
+ class JointIndexTests(unittest.TestCase):
+@@ -105,7 +111,7 @@
+     def tearDownClass(cls):
+         torch.set_num_threads(cls.previous_threads)
+ 
+-    def evaluate(self, mode=None, *, flip=False, use_cscr=False):
++    def evaluate(self, mode=None, *, flip=False, packing="combined"):
+         streams, reconstructions = [], []
+ 
+         def transmit(bits, _snr, code, _device, _modulate, _llr, modulation_bits,
+@@ -128,15 +134,17 @@
+                 with patch("evaluation.quality._transmit_ldpc_stream", side_effect=transmit):
+                     result = quality.evaluate_ldpc_channel(
+                         self.model, [self.image], -10., self.code, self.device,
+-                        modulation="qpsk", stream_packing="combined",
+-                        return_diagnostics=True, use_cscr=use_cscr, cscr_mode=mode,
++                        modulation="qpsk", stream_packing=packing,
++                        return_diagnostics=True,
++                        **({"cscr_mode": mode} if mode is not None else {}),
+                     )
+         finally:
+             hook.remove()
+-        self.assertEqual(len(streams), 1)
+-        return result, streams[0], reconstructions[-1]
+-
+-    def test_four_noiseless_modes_preserve_reconstruction_weights_and_physical_lengths(self):
++        self.assertEqual(len(streams), 1 if packing == "combined" else 4)
++        combined = tuple(np.concatenate([stream[i] for stream in streams]) for i in (0, 1))
++        return result, combined, reconstructions[-1]
++
++    def test_both_noiseless_modes_preserve_reconstruction_weights_and_physical_lengths(self):
+         snapshots = {name: value.clone() for name, value in self.model.state_dict().items()}
+         reference, _, reference_image = self.evaluate("off")
+         lengths = ("payload_bits", "ldpc_input_bits", "ldpc_padding_bits", "coded_bits",
+@@ -155,66 +163,64 @@
+         for name, value in self.model.state_dict().items():
+             torch.testing.assert_close(value, snapshots[name], rtol=0, atol=0)
+ 
+-    def test_explicit_legacy_modes_match_boolean_paths_with_corruption(self):
+-        for mode, enabled in (("off", False), ("stage", True)):
+-            explicit, streams, image = self.evaluate(mode, flip=True)
+-            legacy, old_streams, old_image = self.evaluate(use_cscr=enabled, flip=True)
+-            self.assertEqual(explicit, legacy)
+-            np.testing.assert_array_equal(streams[0], old_streams[0])
+-            torch.testing.assert_close(image, old_image, rtol=0, atol=0)
++    def test_default_off_matches_explicit_off_with_corruption_in_both_packings(self):
++        for packing in ("combined", "per_stage"):
++            with self.subTest(packing=packing):
++                explicit, streams, image = self.evaluate("off", flip=True, packing=packing)
++                default, default_streams, default_image = self.evaluate(flip=True, packing=packing)
++                self.assertEqual(explicit, default)
++                np.testing.assert_array_equal(streams[0], default_streams[0])
++                np.testing.assert_array_equal(streams[1], default_streams[1])
++                torch.testing.assert_close(image, default_image, rtol=0, atol=0)
+ 
+     def test_joint_wire_order_and_corrupted_reconstruction_match_physical_joint_tables(self):
+         with torch.no_grad():
+             out = self.model.forward_test(self.image)
+-        for mode in ("joint-pack", "joint-cscr"):
+-            expected_bits, physical_books = [], []
+-            for indices, books, sizes in zip(out["indices"], out["codebooks"], out["rvq_k_lists"]):
+-                # Independently enumerate the physical sum table and joint ids.
+-                joint_book = torch.stack([a + b for a in books[0] for b in books[1]])
+-                joint_ids = indices[0] * sizes[1] + indices[1]
+-                if mode == "joint-cscr":
+-                    mapping = build_cscr_mapping(joint_book)
+-                    physical = torch.empty_like(joint_book)
+-                    gray = torch.tensor([i ^ (i >> 1) for i in range(len(joint_book))])
+-                    physical[gray] = joint_book[mapping["greedy_order"]]
+-                    wire_ids = mapping["index_to_label"][joint_ids]
+-                else:
+-                    physical, wire_ids = joint_book, joint_ids
+-                physical_books.append(physical)
+-                expected_bits.append(index_tensor_to_bits(wire_ids, len(joint_book))[0])
+-            result, (sent, received), actual = self.evaluate(mode, flip=True)
+-            np.testing.assert_array_equal(sent, np.concatenate(expected_bits))
+-            features, offset, wrong_tuples = [], 0, 0
+-            for scale, (books, sizes, physical) in enumerate(zip(
+-                out["codebooks"], out["rvq_k_lists"], physical_books,
+-            )):
+-                shape = out["indices"][scale][0].shape
+-                count = int(np.prod(shape)) * (len(physical).bit_length() - 1)
+-                labels = bits_to_index_tensor(received[offset:offset + count], shape, len(physical))
+-                sent_labels = bits_to_index_tensor(sent[offset:offset + count], shape, len(physical))
+-                wrong_tuples += int(torch.count_nonzero(labels != sent_labels))
+-                offset += count
+-                features.append(self.model.vector_quantizers[scale].get_quantized_features(
+-                    labels, output_spatial_size=out["feature_shapes"][scale], codebook_weight=physical,
+-                ))
+-            with torch.no_grad():
+-                expected_image = self.model.semantic_decoder(features)
+-            torch.testing.assert_close(actual, expected_image, rtol=0, atol=0)
+-            self.assertEqual(result[2]["total"]["bit_errors"], int(np.count_nonzero(sent != received)))
+-            self.assertEqual(result[2]["total"]["index_errors"], wrong_tuples)
+-            self.assertEqual([s["stage"] for s in result[2]["per_stage"]], [None, None])
+-
+-    def test_joint_pack_skips_mapping_and_joint_no_channel_matches_original(self):
+-        reference = quality.evaluate_no_channel(self.model, [self.image], self.device)
++        expected_bits, physical_books = [], []
++        for indices, books, sizes in zip(out["indices"], out["codebooks"], out["rvq_k_lists"]):
++            # Independently enumerate the physical sum table and joint ids.
++            joint_book = torch.stack([a + b for a in books[0] for b in books[1]])
++            joint_ids = indices[0] * sizes[1] + indices[1]
++            mapping = build_cscr_mapping(joint_book)
++            physical = torch.empty_like(joint_book)
++            gray = torch.tensor([i ^ (i >> 1) for i in range(len(joint_book))])
++            physical[gray] = joint_book[mapping["greedy_order"]]
++            wire_ids = mapping["index_to_label"][joint_ids]
++            physical_books.append(physical)
++            expected_bits.append(index_tensor_to_bits(wire_ids, len(joint_book))[0])
++        result, (sent, received), actual = self.evaluate("joint-cscr", flip=True)
++        np.testing.assert_array_equal(sent, np.concatenate(expected_bits))
++        features, offset, wrong_tuples = [], 0, 0
++        for scale, physical in enumerate(physical_books):
++            shape = out["indices"][scale][0].shape
++            count = int(np.prod(shape)) * (len(physical).bit_length() - 1)
++            labels = bits_to_index_tensor(received[offset:offset + count], shape, len(physical))
++            sent_labels = bits_to_index_tensor(sent[offset:offset + count], shape, len(physical))
++            wrong_tuples += int(torch.count_nonzero(labels != sent_labels))
++            offset += count
++            features.append(self.model.vector_quantizers[scale].get_quantized_features(
++                labels, output_spatial_size=out["feature_shapes"][scale], codebook_weight=physical,
++            ))
++        with torch.no_grad():
++            expected_image = self.model.semantic_decoder(features)
++        torch.testing.assert_close(actual, expected_image, rtol=0, atol=0)
++        self.assertEqual(offset, len(received))
++        self.assertEqual(result[2]["total"]["bit_errors"], int(np.count_nonzero(sent != received)))
++        self.assertEqual(result[2]["total"]["index_errors"], wrong_tuples)
++        self.assertEqual([s["stage"] for s in result[2]["per_stage"]], [None, None])
++        self.assertEqual(result[2]["cscr"]["mode"], "joint-cscr")
++
++    def test_off_skips_mapping_and_joint_no_channel_matches_original(self):
+         with patch("evaluation.joint_cscr.build_joint_cscr_mappings",
+-                   side_effect=AssertionError("joint-pack must not build CSCR")):
+-            self.evaluate("joint-pack", flip=True)
+-        for mode in ("joint-pack", "joint-cscr"):
+-            result = quality.evaluate_no_channel(
+-                self.model, [self.image], self.device, return_diagnostics=True, cscr_mode=mode,
+-            )
+-            self.assertEqual(result[:2], reference)
+-            self.assertEqual(result[2]["joint_packing"]["joint_k_per_scale"], [8, 16])
++                   side_effect=AssertionError("off must not build CSCR mappings")):
++            reference = quality.evaluate_no_channel(self.model, [self.image], self.device)
++            self.evaluate("off", flip=True)
++        result = quality.evaluate_no_channel(
++            self.model, [self.image], self.device, return_diagnostics=True, cscr_mode="joint-cscr",
++        )
++        self.assertEqual(result[:2], reference)
++        self.assertEqual(result[2]["joint_packing"]["joint_k_per_scale"], [8, 16])
++        self.assertTrue(result[2]["cscr"]["enabled"])
+ 
+     def test_joint_modes_reject_per_stage_streams(self):
+         with patch.dict(sys.modules, {"communications.ldpc_coding": self.fake_ldpc}):
+@@ -225,47 +231,83 @@
+                 )
+ 
+ 
+-class FourWaySelectionTests(unittest.TestCase):
++class ModeSelectionTests(unittest.TestCase):
++    @staticmethod
++    def cli_main():
++        return next(node for node in ast.parse((ROOT / "test_real.py").read_text()).body
++                    if isinstance(node, ast.If) and ast.unparse(node.test) == "__name__ == '__main__'")
++
+     def test_mode_resolution_and_cli_forwarding(self):
++        self.assertEqual(CSCR_MODES, ("off", "joint-cscr"))
+         self.assertEqual(resolve_cscr_mode(), "off")
+-        self.assertEqual(resolve_cscr_mode(True), "stage")
+-        self.assertEqual(resolve_cscr_mode(True, "joint-pack"), "joint-pack")
+-        with self.assertRaises(ValueError):
+-            resolve_cscr_mode(cscr_mode="all")
+-        main = next(node for node in ast.parse((ROOT / "test_real.py").read_text()).body
+-                    if isinstance(node, ast.If) and ast.unparse(node.test) == "__name__ == '__main__'")
+         for mode in CSCR_MODES:
++            self.assertEqual(resolve_cscr_mode(mode), mode)
++        for invalid in ("stage", "joint-pack", "all", "", None, True, False):
++            with self.subTest(mode=invalid), self.assertRaises(ValueError):
++                resolve_cscr_mode(invalid)
++        main = self.cli_main()
++        for mode in (None, *CSCR_MODES):
+             evaluate = Mock()
+-            with patch.object(sys, "argv", ["test_real.py", "--stream-packing", "combined", "--cscr-mode", mode]):
++            args = ["test_real.py", "--stream-packing", "combined"]
++            if mode is not None:
++                args += ["--cscr-mode", mode]
++            with patch.object(sys, "argv", args):
+                 exec(compile(ast.Module(body=main.body, type_ignores=[]), "test_real.py", "exec"), {
+                     "argparse": argparse, "CSCR_MODES": CSCR_MODES, "test_real": evaluate,
+                 })
+             evaluate.assert_called_once()
+-            self.assertEqual(evaluate.call_args.kwargs["cscr_mode"], mode)
+-
+-    def test_shell_selects_one_control_and_preserves_legacy_toggle(self):
++            self.assertEqual(evaluate.call_args.kwargs, {"cscr_mode": mode or "off"})
++
++    def test_cli_rejects_retired_modes_and_boolean_flags(self):
++        main = self.cli_main()
++        for args in (["--cscr-mode", "stage"], ["--cscr-mode", "joint-pack"],
++                     ["--cscr"], ["--no-cscr"], ["--cscr", "joint-cscr"]):
++            evaluate = Mock()
++            with self.subTest(args=args), redirect_stderr(io.StringIO()):
++                with patch.object(sys, "argv", ["test_real.py", *args]):
++                    with self.assertRaises(SystemExit) as raised:
++                        exec(compile(ast.Module(body=main.body, type_ignores=[]), "test_real.py", "exec"), {
++                            "argparse": argparse, "CSCR_MODES": CSCR_MODES, "test_real": evaluate,
++                        })
++                self.assertEqual(raised.exception.code, 2)
++            evaluate.assert_not_called()
++
++    def test_both_evaluators_reject_retired_modes(self):
++        fake_ldpc = SimpleNamespace(ldpc_encode=None, ldpc_decode=None)
++        with patch.dict(sys.modules, {"communications.ldpc_coding": fake_ldpc}):
++            for mode in ("stage", "joint-pack"):
++                with self.subTest(mode=mode):
++                    with self.assertRaises(ValueError):
++                        quality.evaluate_no_channel(None, [], "cpu", cscr_mode=mode)
++                    with self.assertRaises(ValueError):
++                        quality.evaluate_ldpc_channel(None, [], 12, None, "cpu", cscr_mode=mode)
++
++    def test_shell_selects_one_mode_and_defaults_to_joint_cscr(self):
+         wrapper = 'python() { printf "ARG=%s\\n" "$@"; }; export -f python; bash "$1"'
+-        cases = [(mode, "1", ["--cscr-mode", mode]) for mode in CSCR_MODES]
+-        cases += [("", "0", []), ("", "1", ["--cscr"])]
+-        for mode, legacy, expected in cases:
+-            with self.subTest(mode=mode, legacy=legacy):
+-                env = dict(os.environ, CSCR_MODE=mode, USE_CSCR=legacy)
+-                completed = subprocess.run(
+-                    ["bash", "--noprofile", "--norc", "-c", wrapper, "--", str(SCRIPT)],
+-                    env=env, capture_output=True, text=True, timeout=20, check=True,
+-                )
+-                args = [line[4:] for line in completed.stdout.splitlines() if line.startswith("ARG=")]
+-                self.assertEqual(args.count("test_real.py"), 1)
+-                selected = args[args.index("--concise") + 1:]
+-                self.assertEqual(selected, expected)
+-        for mode, legacy in (("all", "0"), ("off", "2")):
+-            completed = subprocess.run(
+-                ["bash", "--noprofile", "--norc", "-c", wrapper, "--", str(SCRIPT)],
+-                env=dict(os.environ, CSCR_MODE=mode, USE_CSCR=legacy),
+-                capture_output=True, text=True, timeout=20,
+-            )
+-            self.assertEqual(completed.returncode, 2)
+-            self.assertNotIn("ARG=test_real.py", completed.stdout)
++        for script in SCRIPTS:
++            for mode in (None, "", *CSCR_MODES):
++                with self.subTest(script=script.name, mode=mode):
++                    env = dict(os.environ)
++                    env.pop("CSCR_MODE", None)
++                    if mode is not None:
++                        env["CSCR_MODE"] = mode
++                    completed = subprocess.run(
++                        ["bash", "--noprofile", "--norc", "-c", wrapper, "--", str(script)],
++                        env=env, capture_output=True, text=True, timeout=20, check=True,
++                    )
++                    args = [line[4:] for line in completed.stdout.splitlines() if line.startswith("ARG=")]
++                    self.assertEqual(args.count("test_real.py"), 1)
++                    selected = args[args.index("--concise") + 1:]
++                    self.assertEqual(selected, ["--cscr-mode", mode or "joint-cscr"])
++            for mode in ("stage", "joint-pack", "all"):
++                with self.subTest(script=script.name, invalid=mode):
++                    completed = subprocess.run(
++                        ["bash", "--noprofile", "--norc", "-c", wrapper, "--", str(script)],
++                        env=dict(os.environ, CSCR_MODE=mode),
++                        capture_output=True, text=True, timeout=20,
++                    )
++                    self.assertEqual(completed.returncode, 2)
++                    self.assertNotIn("ARG=test_real.py", completed.stdout)
+ 
+ 
+ if __name__ == "__main__":

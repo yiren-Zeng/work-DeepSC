@@ -8,6 +8,9 @@ an ordered action contains one two-stage allocation per encoder scale::
 All actions are filtered by the exact physical channel-use ratio.  The
 scale/stage payloads can either keep separate LDPC padding boundaries or be
 concatenated into one physical payload, matching ``evaluation.quality``.
+Only a small initial subset is evaluated. Exploration measures unseen codebook
+allocations under common fixed channel seeds; exploitation reuses the best
+measured allocation without resampling channel noise or updating its reward.
 """
 
 from __future__ import annotations
@@ -17,10 +20,16 @@ __test__ = False
 import argparse
 import csv
 import json
+import io
 import math
+import os
 import random
 import statistics
-from contextlib import contextmanager
+import sys
+import tempfile
+import unicodedata
+import warnings
+from contextlib import contextmanager, redirect_stdout
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from fractions import Fraction
@@ -145,14 +154,14 @@ class _BaseEpsilonGreedyAgent:
         decay: float = 30.0,
         seed: int = 42,
     ):
-        self.actions = [tuple(action) for action in actions]
+        self.actions = list(dict.fromkeys(tuple(action) for action in actions))
         if not self.actions:
             raise ValueError("The bandit needs at least one action.")
         if not 0 <= eps_end <= eps_start <= 1:
             raise ValueError("Require 0 <= eps_end <= eps_start <= 1.")
         if decay <= 0:
             raise ValueError("epsilon decay must be positive.")
-        self.q = {action: 0.0 for action in self.actions}
+        self.q = {action: None for action in self.actions}
         self.n = {action: 0 for action in self.actions}
         self.eps_start = float(eps_start)
         self.eps_end = float(eps_end)
@@ -169,17 +178,24 @@ class _BaseEpsilonGreedyAgent:
         self.t += 1
         epsilon = self.epsilon()
         unexplored = [action for action in self.actions if self.n[action] == 0]
-        if unexplored:
-            return self.rng.choice(unexplored), "unexplored", epsilon
-        if self.rng.random() < epsilon:
-            return self.rng.choice(self.actions), "explore", epsilon
-        best_q = max(self.q.values())
-        tied = [action for action in self.actions if self.q[action] == best_q]
+        measured = [action for action in self.actions if self.n[action] > 0]
+        if not measured:
+            return self.rng.choice(unexplored), "initialize", epsilon
+        if unexplored and self.rng.random() < epsilon:
+            return self.rng.choice(unexplored), "explore", epsilon
+        best_q = max(self.q[action] for action in measured)
+        tied = [action for action in measured if self.q[action] == best_q]
         return self.rng.choice(tied), "exploit", epsilon
 
     def update(self, action: tuple, reward: float) -> None:
+        reward = float(reward)
+        if not math.isfinite(reward):
+            raise ValueError(f"Expected a finite PSNR reward for {action}, got {reward}.")
         self.n[action] += 1
-        self.q[action] += (float(reward) - self.q[action]) / self.n[action]
+        previous = self.q[action]
+        self.q[action] = reward if previous is None else (
+            previous + (reward - previous) / self.n[action]
+        )
 
 
 def _vectorized_qam16_modulate(bits):
@@ -518,87 +534,297 @@ class EpsilonGreedyAgent(_BaseEpsilonGreedyAgent):
 
     def __init__(self, actions: Iterable[Action], **kwargs):
         super().__init__([normalize_action(action) for action in actions], **kwargs)
+        self.evaluations: dict[Action, list[EvaluationMetrics]] = {}
+        self.cache_hits = 0
+        self.stop_reason = ""
+
+    def ranked_actions(self) -> list[Action]:
+        """Rank only allocations with an observed PSNR, including negative ones."""
+        return sorted(
+            (action for action in self.actions if self.n[action] > 0),
+            key=lambda action: (-self.q[action], action),
+        )
 
     def snapshot(self) -> list[dict]:
         return [
-            {"action": action_to_lists(action), "q": self.q[action], "n": self.n[action]}
+            {
+                "action": action_to_lists(action),
+                "q": self.q[action],
+                "n": self.n[action],
+                "evaluated": self.n[action] > 0,
+            }
             for action in self.actions
         ]
+
+
+def _validate_evaluation_seeds(seeds: Sequence[int], label: str) -> tuple[int, ...]:
+    normalized = tuple(int(seed) for seed in seeds)
+    if not normalized:
+        raise ValueError(f"{label} must contain at least one seed.")
+    if any(seed < 0 for seed in normalized):
+        raise ValueError(f"{label} must be non-negative.")
+    if len(set(normalized)) != len(normalized):
+        raise ValueError(f"{label} must be unique.")
+    return normalized
+
+
+def _console_width(value: str) -> int:
+    return sum(
+        0 if unicodedata.combining(char) else (
+            2 if unicodedata.east_asian_width(char) in {"W", "F"} else 1
+        )
+        for char in value
+    )
+
+
+def _console_row(values: Sequence[str], widths: Sequence[int]) -> str:
+    return "  ".join(
+        value + " " * max(0, width - _console_width(value))
+        for value, width in zip(values, widths)
+    ).rstrip()
+
+
+def _console_action(action: Sequence[Sequence[int]]) -> str:
+    return " | ".join(
+        ",".join(str(k) for k in stage_ks) for stage_ks in action
+    )
+
+
+class _SearchProgress:
+    """Show measured allocations and fold consecutive cached decisions together."""
+
+    def __init__(self, log: Callable[[str], None], episodes: int, num_scales: int, verbose: bool):
+        self.log = log
+        self.episodes = episodes
+        self.verbose = verbose
+        self.pending_first = None
+        self.pending_last = None
+        self.pending_count = 0
+        digits = len(str(episodes))
+        self.widths = [max(10, 3 * digits + 2), max(8, digits + 5), max(20, num_scales * 10), 9, 9, 8]
+        headings = ["轮次", "行为", "码本 K（尺度顺序）", "PSNR/dB", "最佳/dB", "已测配置"]
+        if verbose:
+            headings += ["epsilon", "来源"]
+            self.widths += [8, 6]
+        log(_console_row(headings, self.widths))
+        log("-" * (sum(self.widths) + 2 * (len(self.widths) - 1)))
+
+    def flush_cache(self):
+        if not self.pending_count:
+            return
+        last = self.pending_last
+        rounds = str(self.pending_first)
+        if self.pending_count > 1:
+            rounds += f"-{last['episode']}"
+        self.log(_console_row([
+            f"{rounds}/{self.episodes}", f"利用×{self.pending_count}",
+            "当前最佳（缓存）", "-", f"{last['best_psnr']:.4f}",
+            f"{last['evaluated_actions']}/{last['total_actions']}",
+        ], self.widths))
+        self.pending_first = self.pending_last = None
+        self.pending_count = 0
+
+    def write(self, record: dict):
+        if record["source"] == "cache" and not self.verbose:
+            if not self.pending_count:
+                self.pending_first = record["episode"]
+            self.pending_last = record
+            self.pending_count += 1
+            return
+        self.flush_cache()
+        values = [
+            f"{record['episode']}/{self.episodes}",
+            {"initialize": "初始化", "explore": "探索", "exploit": "利用"}[record["decision"]],
+            _console_action(record["action"]), f"{record['reward_psnr']:.4f}",
+            f"{record['best_psnr']:.4f}",
+            f"{record['evaluated_actions']}/{record['total_actions']}",
+        ]
+        if self.verbose:
+            values += [
+                "-" if record["epsilon"] is None else f"{record['epsilon']:.4f}",
+                "缓存" if record["source"] == "cache" else "评估",
+            ]
+        self.log(_console_row(values, self.widths))
+
+
+@contextmanager
+def _startup_console(verbose: bool):
+    """Fold setup notices, including native TF logs; keep warnings and errors."""
+    if verbose:
+        yield
+        return
+    output = io.StringIO()
+    # Native libraries write to fd 2 directly. Use an automatically removed
+    # temporary buffer only during startup, and restore fd 2 before any traceback.
+    with tempfile.TemporaryFile() as native_output:
+        original_stderr = os.dup(2)
+        try:
+            sys.stderr.flush()
+            os.dup2(native_output.fileno(), 2)
+            with redirect_stdout(output), warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore", category=UserWarning,
+                    message="enable_nested_tensor is True, but self.use_nested_tensor is False.*",
+                )
+                yield
+        finally:
+            sys.stderr.flush()
+            os.dup2(original_stderr, 2)
+            os.close(original_stderr)
+            native_output.seek(0)
+            for line in native_output.read().decode("utf-8", errors="replace").splitlines():
+                if line.startswith("WARNING: All log messages before absl::InitializeLog()"):
+                    continue
+                if line.startswith("I0000") and "oneDNN custom operations are on." in line:
+                    continue
+                print(line, file=sys.stderr)
+            for line in output.getvalue().splitlines():
+                if "warning" in line.lower() or "error" in line.lower():
+                    print(line)
 
 
 def run_epsilon_greedy(
     actions: Sequence[Action],
     evaluator: Callable[[Action, int], EvaluationMetrics],
     episodes: int,
-    warmup_pulls: int,
-    search_seed_base: int,
-    eps_start: float,
-    eps_end: float,
-    eps_decay: float,
-    agent_seed: int,
-    fixed_channel_seed: int | None = None,
+    initial_actions: int = 1,
+    search_seeds: Sequence[int] = (42000,),
+    eps_start: float = 0.4,
+    eps_end: float = 0.05,
+    eps_decay: float = 30.0,
+    agent_seed: int = 42,
+    initial_action: Action | None = None,
     log: Callable[[str], None] | None = None,
+    verbose: bool = False,
 ) -> tuple[EpsilonGreedyAgent, list[dict]]:
-    """Run common-seed warmup and then PSNR-driven epsilon-greedy pulls."""
-    normalized_actions = [normalize_action(action) for action in actions]
-    required_warmup = len(normalized_actions) * int(warmup_pulls)
-    if warmup_pulls < 1:
-        raise ValueError("warmup_pulls must be at least one.")
-    if episodes < required_warmup:
-        raise ValueError(
-            f"episodes={episodes} is smaller than the {required_warmup} "
-            "required common-seed warmup pulls."
-        )
+    """Measure unseen allocations; cached exploitation consumes only a decision.
+
+    ``episodes`` counts decisions, including initialization. Every newly measured
+    allocation uses the same complete ``search_seeds`` tuple and contributes one
+    aggregate reward. Reusing that reward does not increment its sample count.
+    """
+    seeds = _validate_evaluation_seeds(search_seeds, "search-seeds")
+    if initial_actions < 1:
+        raise ValueError("initial-actions must be at least one.")
+    if episodes < initial_actions:
+        raise ValueError("episodes must be at least initial-actions.")
     agent = EpsilonGreedyAgent(
-        normalized_actions,
+        actions,
         eps_start=eps_start,
         eps_end=eps_end,
         decay=eps_decay,
         seed=agent_seed,
     )
-    action_visits = {action: 0 for action in agent.actions}
+    if initial_actions > len(agent.actions):
+        raise ValueError("initial-actions exceeds the number of legal allocations.")
+    preferred = normalize_action(initial_action) if initial_action is not None else None
+    if preferred is not None and preferred not in agent.n and log is not None:
+        log("初始配置不满足当前码率约束，将选择一个合法配置。")
+    progress = _SearchProgress(log, episodes, len(agent.actions[0]), verbose) if log else None
+    summaries: dict[Action, dict] = {}
     trace = []
 
     def pull(action: Action, phase: str, decision: str, epsilon: float | None):
-        visit = action_visits[action]
-        seed = (
-            int(fixed_channel_seed)
-            if fixed_channel_seed is not None
-            else int(search_seed_base) + visit
-        )
-        metrics = evaluator(action, seed)
-        agent.update(action, metrics.psnr)
-        action_visits[action] += 1
+        cached = action in summaries
+        if cached:
+            agent.cache_hits += 1
+        else:
+            records = [evaluator(action, seed) for seed in seeds]
+            summary = summarize_evaluations(records)
+            agent.update(action, summary["psnr_mean"])
+            agent.evaluations[action] = records
+            summaries[action] = summary
+        summary = summaries[action]
+        best = agent.ranked_actions()[0]
         record = {
             "episode": len(trace) + 1,
             "phase": phase,
             "decision": decision,
             "epsilon": epsilon,
             "action": action_to_lists(action),
-            "seed": seed,
-            "reward_psnr": metrics.psnr,
-            "diagnostic_ms_ssim": metrics.ms_ssim,
+            "seed": seeds[0] if len(seeds) == 1 else None,
+            "seeds": list(seeds),
+            "source": "cache" if cached else "evaluation",
+            "reward_psnr": summary["psnr_mean"],
+            "diagnostic_ms_ssim": summary["ms_ssim_mean"],
             "action_n": agent.n[action],
             "action_q": agent.q[action],
+            "evaluated_actions": len(summaries),
+            "total_actions": len(agent.actions),
+            "evaluation_calls": len(summaries) * len(seeds),
+            "cache_hits": agent.cache_hits,
+            "best_action": action_to_lists(best),
+            "best_psnr": agent.q[best],
             "q_table": agent.snapshot(),
         }
         trace.append(record)
-        if log is not None:
-            eps_text = "-" if epsilon is None else f"{epsilon:.4f}"
-            log(
-                f"[pull {record['episode']:03d}/{episodes:03d}] "
-                f"phase={phase:<7} mode={decision:<10} eps={eps_text:<6} "
-                f"seed={seed} K={record['action']} PSNR={metrics.psnr:.4f} dB "
-                f"Q={agent.q[action]:.4f}"
-            )
+        if progress is not None:
+            progress.write(record)
 
-    for _ in range(warmup_pulls):
-        for action in agent.actions:
-            pull(action, "warmup", "forced", None)
-    while len(trace) < episodes:
+    for index in range(initial_actions):
+        unseen = [action for action in agent.actions if agent.n[action] == 0]
+        action = preferred if index == 0 and preferred in unseen else agent.rng.choice(unseen)
+        pull(action, "initial", "initialize", None)
+    while len(trace) < episodes and len(summaries) < len(agent.actions):
         action, decision, epsilon = agent.select()
         pull(action, "bandit", decision, epsilon)
+    agent.stop_reason = (
+        "all_actions_evaluated"
+        if len(summaries) == len(agent.actions)
+        else "decision_budget_exhausted"
+    )
+    if progress is not None:
+        progress.flush_cache()
     return agent, trace
+
+
+def summarize_search(agent: EpsilonGreedyAgent, trace: Sequence[dict]) -> dict:
+    best = agent.ranked_actions()[0]
+    return {
+        "total_actions": len(agent.actions),
+        "evaluated_actions": len(agent.evaluations),
+        "evaluation_calls": sum(len(records) for records in agent.evaluations.values()),
+        "decision_count": len(trace),
+        "cache_hits": agent.cache_hits,
+        "best_action": action_to_lists(best),
+        "best_psnr": agent.q[best],
+        "stop_reason": agent.stop_reason,
+    }
+
+
+def _print_search_result(result: dict, episodes: int):
+    print("\n搜索结果")
+    print(f"  最佳码本 : {action_to_lists(result['best_action'])}")
+    print(f"  最佳 PSNR: {result['best_psnr']:.4f} dB")
+    print(
+        f"  搜索统计 : 已测 {result['evaluated_actions']}/{result['total_actions']} 个配置"
+        f" | 实际评估 {result['evaluation_calls']} 次"
+    )
+    print(
+        f"  决策统计 : {result['decision_count']}/{episodes} 轮"
+        f" | 缓存利用 {result['cache_hits']} 次"
+    )
+    reason = {
+        "decision_budget_exhausted": "决策预算用尽",
+        "all_actions_evaluated": "所有合法配置均已评估",
+    }[result["stop_reason"]]
+    print(f"  结束原因 : {reason}")
+    if len(result["confirmation"]) > 1:
+        print("\n已测候选排名")
+        widths = [6, max(20, len(result["best_action"]) * 10), 12]
+        print(_console_row(["排名", "码本 K（尺度顺序）", "PSNR/dB"], widths))
+        for rank, candidate in enumerate(result["confirmation"], 1):
+            print(_console_row([
+                str(rank), _console_action(candidate["action"]), f"{candidate['psnr_mean']:.4f}",
+            ], widths))
+    if result["report_basis"] == "independent_channel_seeds":
+        report = result["report"]
+        print(
+            f"\n独立验证 : PSNR {report['psnr_mean']:.4f} dB"
+            f" | 标准差 {report['psnr_std']:.4f} dB"
+            f" | MS-SSIM {report['ms_ssim_mean']:.4f}"
+            f" | {report['num_seeds']} 个种子"
+        )
 
 
 def _mean_std_ci95(values: Sequence[float]) -> tuple[float, float, float]:
@@ -696,6 +922,7 @@ def _evaluate_model_action(
                     modulation=profile.modulation,
                     return_diagnostics=True,
                     stream_packing=packing,
+                    channel_seed=int(seed),
                 )
             )
     finally:
@@ -788,26 +1015,19 @@ def _format_snr(value: float) -> str:
     return str(int(value)) if float(value).is_integer() else str(value)
 
 
-def _validate_seed_partitions(args) -> None:
-    if args.fixed_channel_seed is not None:
-        if args.fixed_channel_seed < 0:
-            raise ValueError("fixed-channel-seed must be non-negative.")
-        return
-    if not args.confirm_seeds or not args.report_seeds:
-        raise ValueError("confirm-seeds and report-seeds must both be non-empty.")
-    if len(set(args.confirm_seeds)) != len(args.confirm_seeds):
-        raise ValueError("Confirmation seeds must be unique.")
-    if len(set(args.report_seeds)) != len(args.report_seeds):
-        raise ValueError("Report seeds must be unique.")
-    if set(args.confirm_seeds) & set(args.report_seeds):
-        raise ValueError("Confirmation and report seed sets must be disjoint.")
-    search_seeds = {
-        int(args.search_seed_base) + offset for offset in range(int(args.episodes) + 1)
-    }
-    if search_seeds & set(args.confirm_seeds):
-        raise ValueError("Search and confirmation seed sets must be disjoint.")
-    if search_seeds & set(args.report_seeds):
-        raise ValueError("Search and report seed sets must be disjoint.")
+def resolve_evaluation_seeds(args) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    """Freeze search noise samples; optional independent reporting cannot select K."""
+    search_seeds = _validate_evaluation_seeds(
+        args.search_seeds if args.search_seeds is not None else [args.fixed_channel_seed],
+        "search-seeds",
+    )
+    report_seeds = (
+        _validate_evaluation_seeds(args.report_seeds, "report-seeds")
+        if args.report_seeds else ()
+    )
+    if set(search_seeds) & set(report_seeds):
+        raise ValueError("Search and optional report seed sets must be disjoint.")
+    return search_seeds, report_seeds
 
 
 def _write_json(path: str, payload: dict) -> None:
@@ -815,7 +1035,6 @@ def _write_json(path: str, payload: dict) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2, allow_nan=False)
-    print(f"JSON results saved to {output}")
 
 
 def _write_csv(path: str, payload: dict) -> None:
@@ -844,6 +1063,8 @@ def _write_csv(path: str, payload: dict) -> None:
         "confirm_psnr_mean_db", "confirm_psnr_std_db", "confirm_psnr_ci95_db",
         "confirm_ms_ssim_mean", "report_psnr_mean_db", "report_psnr_std_db",
         "report_psnr_ci95_db", "report_ms_ssim_mean",
+        "total_actions", "evaluated_actions", "evaluation_calls", "decision_count",
+        "cache_hits", "stop_reason", "best_search_psnr_db", "report_basis",
     ]
     with output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
@@ -878,18 +1099,24 @@ def _write_csv(path: str, payload: dict) -> None:
                         "report_psnr_std_db": report["psnr_std"] if selected else "",
                         "report_psnr_ci95_db": report["psnr_ci95"] if selected else "",
                         "report_ms_ssim_mean": report["ms_ssim_mean"] if selected else "",
+                        "best_search_psnr_db": snr_result.get("best_psnr", ""),
+                        "report_basis": snr_result.get("report_basis", ""),
                     }
+                    for field in (
+                        "total_actions", "evaluated_actions", "evaluation_calls",
+                        "decision_count", "cache_hits", "stop_reason",
+                    ):
+                        row[field] = snr_result.get(field, "")
                     row.update({
                         f"k_scale{scale}_stage{stage}": action[scale][stage]
                         for scale in range(int(num_scales))
                         for stage in range(2)
                     })
                     writer.writerow(row)
-    print(f"CSV results saved to {output}")
 
 
 def run(args) -> dict:
-    _validate_seed_partitions(args)
+    search_seeds, report_seeds = resolve_evaluation_seeds(args)
     stream_packing = normalize_stream_packing(
         getattr(args, "stream_packing", "per_stage")
     )
@@ -898,24 +1125,28 @@ def run(args) -> dict:
         profile.information_block_length(args.ldpc_n)
     if args.confirm_top_k < 1:
         raise ValueError("confirm-top-k must be at least one.")
+    if args.initial_actions < 1 or args.episodes < args.initial_actions:
+        raise ValueError("Require episodes >= initial-actions >= 1.")
 
-    import torch
+    print("正在加载模型和信道模块…", flush=True)
+    with _startup_console(args.verbose):
+        import torch
 
-    from communications.ldpc_coding import get_ldpc_code
-    from config import Config
-    from data.datasets import get_dataloader
-    from evaluation import quality
-    from utils.checkpoint_utils import build_model_from_checkpoint
-    from utils.reproducibility import setup_seed
+        from communications.ldpc_coding import get_ldpc_code
+        from config import Config
+        from data.datasets import get_dataloader
+        from evaluation import quality
+        from utils.checkpoint_utils import build_model_from_checkpoint
+        from utils.reproducibility import setup_seed
 
-    cfg = Config()
-    cfg.validate()
-    setup_seed(args.agent_seed)
-    device = torch.device(cfg.DEVICE)
-    checkpoint = Path(args.checkpoint)
-    if not checkpoint.exists():
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
-    model, inferred = build_model_from_checkpoint(str(checkpoint), cfg, device)
+        cfg = Config()
+        cfg.validate()
+        setup_seed(args.agent_seed)
+        device = torch.device(cfg.DEVICE)
+        checkpoint = Path(args.checkpoint)
+        if not checkpoint.exists():
+            raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
+        model, inferred = build_model_from_checkpoint(str(checkpoint), cfg, device)
     if not getattr(model, "independent_raq_rvq_k_lists", None):
         raise RuntimeError("The selected checkpoint/config has no independent RAQ-RVQ layout.")
     if int(getattr(model, "independent_raq_rvq_depth", 0)) != 2:
@@ -945,10 +1176,6 @@ def run(args) -> dict:
         if not 1 <= args.max_images <= dataset_size:
             raise ValueError(f"max-images must be in [1,{dataset_size}], got {args.max_images}.")
         loader = list(islice(iter(base_loader), args.max_images))
-        print(
-            f"[Smoke mode] Evaluating only {args.max_images}/{dataset_size} images. "
-            "Do not use this result in a paper."
-        )
     else:
         loader = base_loader
 
@@ -962,13 +1189,6 @@ def run(args) -> dict:
             "Configured independent RAQ-RVQ scale count does not match encoder "
             f"features: {len(configured_layout)} != {num_scales}."
         )
-    fixed_seed = args.fixed_channel_seed
-    confirmation_seeds = (
-        [int(fixed_seed)] if fixed_seed is not None else list(args.confirm_seeds)
-    )
-    report_seeds = (
-        [int(fixed_seed)] if fixed_seed is not None else list(args.report_seeds)
-    )
     payload = {
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "entry_point": "bandit_independent_raq_rvq_psnr_search.py",
@@ -1001,38 +1221,46 @@ def run(args) -> dict:
         "reward": "mean_psnr_db",
         "snrs_db": list(args.snrs),
         "bandit": {
-            "algorithm": "stateless epsilon-greedy",
+            "algorithm": "epsilon-greedy over codebook allocations with cached exploitation",
             "episodes": args.episodes,
-            "warmup_pulls_per_action": args.warmup_pulls,
+            "episode_definition": "one decision, including initialization and cached exploitation",
+            "initial_actions": args.initial_actions,
             "eps_start": args.eps_start,
             "eps_end": args.eps_end,
             "eps_decay": args.eps_decay,
             "agent_seed": args.agent_seed,
-            "channel_seed_mode": "fixed" if fixed_seed is not None else "partitioned_multi_seed",
-            "fixed_channel_seed": fixed_seed,
-            "search_seed_base": None if fixed_seed is not None else args.search_seed_base,
-            "confirm_seeds": confirmation_seeds,
-            "report_seeds": report_seeds,
+            "channel_seed_mode": "fixed" if len(search_seeds) == 1 else "fixed_common_seed_set",
+            "fixed_channel_seed": search_seeds[0] if len(search_seeds) == 1 else None,
+            "search_seeds": list(search_seeds),
+            "report_seeds": list(report_seeds),
             "confirm_top_k": args.confirm_top_k,
+            "confirmation_source": "cached search rewards for measured allocations only",
             "evaluation_cache_key": "(nested action, actual channel seed)",
+            "cached_exploitation_updates_q": False,
+            "optimality_scope": "best measured allocation under fixed search conditions",
         },
         "profiles": {},
     }
 
-    print("=" * 76)
-    print("PSNR-driven epsilon-greedy independent RAQ-RVQ search")
-    print(f"Checkpoint: {checkpoint}")
-    print(f"Index counts: {list(index_counts)}, source values: {source_values}")
-    print(
-        "Fixed exact transmission ratio "
-        f"(channel symbols / RGB source values): {args.target_ratio}"
-    )
-    print(
-        f"Action: {2 * num_scales} ordered and independently selected K values "
-        f"across {num_scales} scale(s)"
-    )
-    print(f"Stream packing: {stream_packing}")
-    print("=" * 76)
+    print("\n" + "=" * 72)
+    print("独立 RAQ-RVQ 码本搜索")
+    print("=" * 72)
+    print(f"模型配置 : 源码本 {inferred['num_embeddings_list']} | 每个尺度 2 层 RVQ")
+    print(f"数据集   : {args.max_images or dataset_size}/{dataset_size} 张图像")
+    if args.max_images:
+        print("运行模式 : 小规模功能检查")
+    print(f"传输配置 : 比例 {args.target_ratio} | LDPC n={args.ldpc_n} | 打包 {stream_packing}")
+    print(f"搜索预算 : {args.episodes} 次决策 | 初始化 {args.initial_actions} 个配置")
+    print(f"探索概率 : {args.eps_start:g} → {args.eps_end:g} | 衰减 {args.eps_decay:g}")
+    print(f"评估种子 : {list(search_seeds)}（所有配置共用）")
+    if report_seeds:
+        print(f"最终验证 : 独立种子 {list(report_seeds)}")
+    print(f"码本顺序 : {' | '.join(f'尺度{s}(层1,层2)' for s in range(num_scales))}")
+    print(f"结果输出 : {'终端及指定文件' if args.json_output or args.csv_output else '仅终端'}")
+    if args.verbose:
+        print(f"Checkpoint: {checkpoint}")
+        print(f"Dataset: {cfg.TEST_DATASET_PATH}")
+        print(f"Index counts: {list(index_counts)}, source values: {source_values}")
 
     initial_layout = [list(values) for values in configured_layout]
     try:
@@ -1057,14 +1285,11 @@ def run(args) -> dict:
                 raise RuntimeError(
                     f"No exact {args.target_ratio} actions for {profile.key}."
                 )
-            if args.confirm_top_k > len(actions):
+            if args.initial_actions > len(actions):
                 raise ValueError(
-                    f"confirm-top-k={args.confirm_top_k} exceeds {len(actions)} actions."
+                    f"initial-actions={args.initial_actions} exceeds {len(actions)} actions."
                 )
-            print(
-                f"\nProfile {profile.label}: LDPC k/n={ldpc_k}/{args.ldpc_n}, "
-                f"{len(actions)} exact-rate actions"
-            )
+            print(f"\n信道配置 : {profile.label} | LDPC k/n={ldpc_k}/{args.ldpc_n}")
             profile_result = {
                 "label": profile.label,
                 "ldpc_n": args.ldpc_n,
@@ -1086,7 +1311,7 @@ def run(args) -> dict:
             payload["profiles"][profile_key] = profile_result
 
             for snr_index, snr in enumerate(args.snrs):
-                print(f"\nSearching SNR={snr:g} dB with a fresh agent")
+                print(f"\nSNR = {snr:g} dB | 合法码本配置 {len(actions)} 个")
                 evaluator = _make_runtime_evaluator(
                     model=model,
                     loader=loader,
@@ -1099,46 +1324,38 @@ def run(args) -> dict:
                     stream_packing=stream_packing,
                 )
                 agent, trace = run_epsilon_greedy(
-                    actions,
-                    evaluator,
-                    args.episodes,
-                    args.warmup_pulls,
-                    args.search_seed_base,
-                    args.eps_start,
-                    args.eps_end,
-                    args.eps_decay,
-                    args.agent_seed + profile_index * 1000 + snr_index,
-                    fixed_channel_seed=fixed_seed,
+                    actions=actions,
+                    evaluator=evaluator,
+                    episodes=args.episodes,
+                    initial_actions=args.initial_actions,
+                    search_seeds=search_seeds,
+                    eps_start=args.eps_start,
+                    eps_end=args.eps_end,
+                    eps_decay=args.eps_decay,
+                    agent_seed=args.agent_seed + profile_index * 1000 + snr_index,
+                    initial_action=normalize_action(configured_layout),
                     log=print,
+                    verbose=args.verbose,
                 )
-                ranked = sorted(actions, key=lambda action: (-agent.q[action], action))
+                search_summary = summarize_search(agent, trace)
+                ranked = agent.ranked_actions()
                 bandit_best = ranked[0]
                 candidates = ranked[: args.confirm_top_k]
-                print(
-                    f"[bandit] Q recommendation K={action_to_lists(bandit_best)}, "
-                    f"Q={agent.q[bandit_best]:.4f} dB"
-                )
-                print(
-                    f"[confirm] Evaluating Q top-{len(candidates)} on common seeds "
-                    f"{confirmation_seeds}"
-                )
-                confirmation = evaluate_common_seeds(
-                    candidates, confirmation_seeds, evaluator
-                )
-                best_confirmation = max(
-                    confirmation, key=lambda item: item["psnr_mean"]
-                )
-                best_action = normalize_action(best_confirmation["action"])
-                report_records = [
-                    evaluator(best_action, int(seed)) for seed in report_seeds
+                confirmation = [
+                    summarize_evaluations(agent.evaluations[action]) for action in candidates
                 ]
-                report = summarize_evaluations(report_records)
-                print(
-                    f"[result] SNR={snr:g} K={action_to_lists(best_action)} "
-                    f"PSNR={report['psnr_mean']:.4f} dB"
+                best_action = bandit_best
+                if report_seeds:
+                    print(f"\n正在验证选定码本，使用独立种子 {list(report_seeds)}…", flush=True)
+                report_records = (
+                    [evaluator(best_action, seed) for seed in report_seeds]
+                    if report_seeds else agent.evaluations[best_action]
                 )
+                report = summarize_evaluations(report_records)
+                report_basis = "independent_channel_seeds" if report_seeds else "search_cache"
                 profile_result["snr_results"][_format_snr(snr)] = {
                     "snr_db": snr,
+                    **search_summary,
                     "search_trace": trace,
                     "search_final_q_table": agent.snapshot(),
                     "bandit_best_action": action_to_lists(bandit_best),
@@ -1146,10 +1363,14 @@ def run(args) -> dict:
                         action_to_lists(action) for action in candidates
                     ],
                     "confirmation": confirmation,
-                    "selection_metric": "top-K confirmation psnr_mean",
+                    "confirmation_source": "search_cache",
+                    "selection_metric": "measured mean PSNR on fixed common search seeds",
                     "best_action": action_to_lists(best_action),
                     "report": report,
+                    "report_basis": report_basis,
+                    "report_evaluation_calls": len(report_seeds),
                 }
+                _print_search_result(profile_result["snr_results"][_format_snr(snr)], args.episodes)
                 if args.json_output:
                     _write_json(args.json_output, payload)
                 if args.csv_output:
@@ -1158,9 +1379,9 @@ def run(args) -> dict:
         model.independent_raq_rvq_k_lists = initial_layout
 
     if args.json_output:
-        _write_json(args.json_output, payload)
+        print(f"\n结果文件 JSON: {args.json_output}")
     if args.csv_output:
-        _write_csv(args.csv_output, payload)
+        print(f"结果文件 CSV : {args.csv_output}")
     return payload
 
 
@@ -1218,28 +1439,46 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ldpc-n", type=int, default=256)
     parser.add_argument("--min-k", type=int, default=2)
     parser.add_argument("--max-k", type=int, default=64)
-    parser.add_argument("--episodes", type=int, default=20)
-    parser.add_argument("--warmup-pulls", type=int, default=1)
+    parser.add_argument(
+        "--episodes", type=int, default=20,
+        help="Decision budget, including initialization and cached exploitation.",
+    )
+    parser.add_argument(
+        "--initial-actions", type=int, default=1,
+        help="Total distinct allocations evaluated before epsilon-greedy decisions.",
+    )
     parser.add_argument("--eps-start", type=float, default=0.4)
     parser.add_argument("--eps-end", type=float, default=0.05)
     parser.add_argument("--eps-decay", type=float, default=30.0)
     parser.add_argument("--agent-seed", type=int, default=42)
-    parser.add_argument("--fixed-channel-seed", type=int, default=None)
-    parser.add_argument("--search-seed-base", type=int, default=42000)
-    parser.add_argument(
-        "--confirm-seeds", type=int, nargs="+", default=[52000, 52001, 52002]
+    seed_group = parser.add_mutually_exclusive_group()
+    seed_group.add_argument(
+        "--fixed-channel-seed", type=int, default=42000,
+        help="One fixed channel seed shared by every searched allocation (default: 42000).",
+    )
+    seed_group.add_argument(
+        "--search-seeds", type=int, nargs="+", default=None,
+        help="Optional fixed common seed set; every new allocation uses the entire set.",
     )
     parser.add_argument(
         "--report-seeds",
         type=int,
         nargs="+",
-        default=[62000, 62001, 62002, 62003, 62004],
+        default=[],
+        help="Optional independent validation seeds, used only after selecting K.",
     )
-    parser.add_argument("--confirm-top-k", type=int, default=2)
+    parser.add_argument(
+        "--confirm-top-k", type=int, default=2,
+        help="Number of already measured candidates exported from cache, capped by coverage.",
+    )
     parser.add_argument("--expected-images", type=int, default=24)
     parser.add_argument("--max-images", type=int, default=0)
     parser.add_argument("--json-output", default=None)
     parser.add_argument("--csv-output", default=None)
+    parser.add_argument(
+        "--verbose", action="store_true",
+        help="Show every cached decision, epsilon values, and routine startup details.",
+    )
     return parser
 
 

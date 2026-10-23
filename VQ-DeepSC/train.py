@@ -63,8 +63,8 @@ def save_training_checkpoint(
     )
 
 
-def main():
-    cfg = Config()
+def main(cfg=None):
+    cfg = Config() if cfg is None else cfg
     cfg.validate()
     setup_seed(42)
     device = torch.device(cfg.DEVICE)

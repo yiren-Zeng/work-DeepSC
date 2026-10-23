@@ -1,0 +1,22 @@
+[
+  {
+    "case_id": "k16_16_qpsk_r12",
+    "initial_diagnostic_directory": "/tmp/visual_cbr_native_kodak_20261019/initial_cscr_diagnostics/k16_16_qpsk_r12",
+    "reason": "Native Bash default USE_CSCR=1 differed from original 2026-10-13 scheme; rerun with explicit USE_CSCR=0"
+  },
+  {
+    "case_id": "k32_16_qpsk_r12",
+    "initial_diagnostic_directory": "/tmp/visual_cbr_native_kodak_20261019/initial_cscr_diagnostics/k32_16_qpsk_r12",
+    "reason": "Native Bash default USE_CSCR=1 differed from original 2026-10-13 scheme; rerun with explicit USE_CSCR=0"
+  },
+  {
+    "case_id": "k64_16_qpsk_r12",
+    "initial_diagnostic_directory": "/tmp/visual_cbr_native_kodak_20261019/initial_cscr_diagnostics/k64_16_qpsk_r12",
+    "reason": "Native Bash default USE_CSCR=1 differed from original 2026-10-13 scheme; rerun with explicit USE_CSCR=0"
+  },
+  {
+    "case_id": "k64_64_qpsk_r12",
+    "initial_diagnostic_directory": "/tmp/visual_cbr_native_kodak_20261019/initial_cscr_diagnostics/k64_64_qpsk_r12",
+    "reason": "Native Bash default USE_CSCR=1 differed from original 2026-10-13 scheme; rerun with explicit USE_CSCR=0"
+  }
+]

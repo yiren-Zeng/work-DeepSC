@@ -2,6 +2,7 @@
 import argparse
 import itertools
 import math
+import numpy as np
 from pathlib import Path
 import sys
 import unittest
@@ -21,6 +22,7 @@ from eval_seq2seq_channel import (
     parse_ldpc_rate,
     qam16_modulate_vectorized,
     rician_channel,
+    transmit_ldpc_stream_exact,
     transmission_plan,
 )
 from aggregate_seq2seq_channel_trials import (
@@ -131,6 +133,39 @@ class RatePlanTests(unittest.TestCase):
             torch.testing.assert_close(
                 llrs.gt(0).to(flat_bits.dtype), flat_bits
             )
+
+    def test_transmitter_can_match_ours_theoretical_n0_convention(self):
+        seen_variances = []
+
+        def calculate_llr(received, snr_db, device, **kwargs):
+            seen_variances.append(kwargs["noise_variance"])
+            return received.real
+
+        def encode(bits, code):
+            return np.asarray(bits, dtype=np.uint8)
+
+        def decode(llrs, code):
+            return (np.asarray(llrs) > 0).astype(np.uint8)
+
+        kwargs = {
+            "flat_bits": np.asarray([0, 1, 0, 1], dtype=np.uint8),
+            "target_snr": 10.0,
+            "ldpc_code": {"k": 4, "n": 4},
+            "device": torch.device("cpu"),
+            "modulate": lambda bits: 2 * bits - 1,
+            "calculate_llr": calculate_llr,
+            "modulation_bits": 1,
+            "ldpc_encode": encode,
+            "ldpc_decode": decode,
+            "channel": "awgn",
+            "rician_k_factor": 10.0,
+        }
+        transmit_ldpc_stream_exact(**kwargs)
+        transmit_ldpc_stream_exact(
+            **kwargs, use_actual_noise_variance=False
+        )
+        self.assertIsNotNone(seen_variances[0])
+        self.assertIsNone(seen_variances[1])
 
     def test_vectorized_qam16_preserves_gray_mapping(self):
         bits = torch.tensor(list(itertools.product([0.0, 1.0], repeat=4)))

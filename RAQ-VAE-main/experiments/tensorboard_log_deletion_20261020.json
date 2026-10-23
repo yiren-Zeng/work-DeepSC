@@ -1,0 +1,415 @@
+{
+  "started_at": "2026-10-20T10:46:49.621927+08:00",
+  "authorization": "User explicitly approved deleting only the three previously identified TensorBoard event files, preserving checkpoints.",
+  "status": "completed_verified",
+  "targets": [
+    {
+      "path": "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/tensorboard/events.out.tfevents.1788946572.kaisa.167986.0",
+      "size_bytes": 30747231906,
+      "allocated_bytes": 30747234304,
+      "inode": 4314278371,
+      "mtime_ns": 1788973932749746639,
+      "owner_uid": 1002,
+      "link_count": 1,
+      "status": "deleted",
+      "deleted_at": "2026-10-20T10:46:49.632271+08:00"
+    },
+    {
+      "path": "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/tensorboard/events.out.tfevents.1789011463.kaisa.1521259.0",
+      "size_bytes": 29059609968,
+      "allocated_bytes": 29059612672,
+      "inode": 2163110675,
+      "mtime_ns": 1789040996058211828,
+      "owner_uid": 1002,
+      "link_count": 1,
+      "status": "deleted",
+      "deleted_at": "2026-10-20T10:46:49.636353+08:00"
+    },
+    {
+      "path": "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/tensorboard/events.out.tfevents.1788972866.kaisa.762241.0",
+      "size_bytes": 28744121297,
+      "allocated_bytes": 28744122368,
+      "inode": 6457282391,
+      "mtime_ns": 1789002403162272134,
+      "owner_uid": 1002,
+      "link_count": 1,
+      "status": "deleted",
+      "deleted_at": "2026-10-20T10:46:49.639419+08:00"
+    }
+  ],
+  "expected_freed_bytes": 88550969344,
+  "checkpoint_hashes_before": {
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=113-step=61560.ckpt": "03131a318982c59305717bde8793e943e06b680fdf6dd0a968889695a466f6ef",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=157-step=85320.ckpt": "a9cd04f85c67952018e57655ab657cbb1bc3f3cf17460ee43617988bc46b75d9",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=161-step=87480.ckpt": "6f06bbc6d59c7fdd6d8e9f9fe1577b0429a24f6b783c8dca2f0412f41d40142e",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=163-step=88560.ckpt": "a85f96798c8a391c98bdf452f404c9f10f72c320766df4ceae4ebe9dd60946e4",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=171-step=92880.ckpt": "300e4f400bc1828f1f9defae4a4ef6f641feb27c6c31f4cf225884a76790fe69",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/last.ckpt": "eff30588298ae75d954491cf27e0c271e53ccd6fdfd97566a7b40a19b75b26e3",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=079-step=43200.ckpt": "b31cdb22acd478ccd7df59036863ea978bf4e98ac6fe7e6b0ab80f2716a23dc4",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=145-step=78840.ckpt": "91eb5aaae9c6f5e50eaaceaae8c541a59de8aed0c0776398d3c0feeb41c79b34",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=167-step=90720.ckpt": "bb04321ad199977ff84934def6412c9a58d3800186b543935bf37a63619f100d",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=177-step=96120.ckpt": "158e7f3cf42cd398c908af6a46ef476470b1f2d957b71e40255e44190e1c5ad9",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=191-step=103680.ckpt": "26ebd359c21e5a4e99815a2747d1daf8055fcd2e6b0211a09fda4cd08d5aca11",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/last.ckpt": "3bdf964d751b5c1a0b85e58ea80f77c78265e50dc2457e2aed293a9b558c4149",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=113-step=61560.ckpt": "fe9518f4002f16e8a7765818825bec4276d4926e4e49f24604ad0dc910cb7790",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=145-step=78840.ckpt": "aaf8da650e5b419b99d949db0d781bcd34fe9d953fafd4985b8862bd6b443a0c",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=157-step=85320.ckpt": "cd61bd492054c2ea7a689a95b250ab5efc3c94c13d3ee26642d3001d51a955c5",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=161-step=87480.ckpt": "c0bd27179e16ed2f98667aee345b22c5916fc2aff77f2d946044a059a51e43f9",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=171-step=92880.ckpt": "0f7ea779a8cc8d517df05759a3f1cc247a9da130b534b34d1634148f94eb7a68",
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/last.ckpt": "6abcd68c8e931cb9aefbc46d7a3970274f410839f82ac12ddb15c14787b3820f"
+  },
+  "other_files_before": {
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/train.log": {
+      "size_bytes": 138778,
+      "allocated_bytes": 143360,
+      "inode": 6456996771,
+      "mtime_ns": 1788973933005759602,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/launch.json": {
+      "size_bytes": 351,
+      "allocated_bytes": 4096,
+      "inode": 6457052304,
+      "mtime_ns": 1788946565990674222,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/config.json": {
+      "size_bytes": 2060,
+      "allocated_bytes": 4096,
+      "inode": 6457052305,
+      "mtime_ns": 1788946569706721022,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/status.json": {
+      "size_bytes": 913,
+      "allocated_bytes": 4096,
+      "inode": 6457052310,
+      "mtime_ns": 1788973933005759602,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/first_step_gradients.json": {
+      "size_bytes": 176,
+      "allocated_bytes": 4096,
+      "inode": 6457052314,
+      "mtime_ns": 1788946573742772197,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/tensorboard/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 4314278372,
+      "mtime_ns": 1788946572398755116,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/csv/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 6457052308,
+      "mtime_ns": 1788973932973757982,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/csv/metrics.csv": {
+      "size_bytes": 190468,
+      "allocated_bytes": 192512,
+      "inode": 6457052306,
+      "mtime_ns": 1788973933005759602,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/last.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15962552,
+      "mtime_ns": 1788973932713744816,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=113-step=61560.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15962720,
+      "mtime_ns": 1788962082926526529,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=157-step=85320.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15962554,
+      "mtime_ns": 1788968129829356019,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=161-step=87480.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15962551,
+      "mtime_ns": 1788968679663853314,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=163-step=88560.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15962723,
+      "mtime_ns": 1788968955998881584,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_src64_20260909_173605_993462/checkpoints/epoch=171-step=92880.ckpt": {
+      "size_bytes": 14206793,
+      "allocated_bytes": 14209024,
+      "inode": 15963788,
+      "mtime_ns": 1788970052556880982,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/train.log": {
+      "size_bytes": 139718,
+      "allocated_bytes": 143360,
+      "inode": 6457282597,
+      "mtime_ns": 1789040996302217466,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/launch.json": {
+      "size_bytes": 414,
+      "allocated_bytes": 4096,
+      "inode": 6457282598,
+      "mtime_ns": 1789011456955524536,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/config.json": {
+      "size_bytes": 3388,
+      "allocated_bytes": 4096,
+      "inode": 6457282599,
+      "mtime_ns": 1789011460519708582,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/status.json": {
+      "size_bytes": 921,
+      "allocated_bytes": 4096,
+      "inode": 6457282602,
+      "mtime_ns": 1789040996302217466,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/first_step_gradients.json": {
+      "size_bytes": 173,
+      "allocated_bytes": 4096,
+      "inode": 6457282606,
+      "mtime_ns": 1789011464447911452,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/tensorboard/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 2163110676,
+      "mtime_ns": 1789011463155844721,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/csv/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 4317901839,
+      "mtime_ns": 1789040996274216819,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/csv/metrics.csv": {
+      "size_bytes": 186853,
+      "allocated_bytes": 188416,
+      "inode": 4317901845,
+      "mtime_ns": 1789040996302217466,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/last.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282703,
+      "mtime_ns": 1789040996022210995,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=079-step=43200.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282713,
+      "mtime_ns": 1789022977948945863,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=145-step=78840.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282707,
+      "mtime_ns": 1789032654375196110,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=167-step=90720.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282812,
+      "mtime_ns": 1789035938307741737,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=177-step=96120.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282722,
+      "mtime_ns": 1789037526708026041,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_dualk_src64_20260910_113736_956705/checkpoints/epoch=191-step=103680.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282711,
+      "mtime_ns": 1789039738773454802,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/train.log": {
+      "size_bytes": 139437,
+      "allocated_bytes": 143360,
+      "inode": 2163110347,
+      "mtime_ns": 1789002403390280385,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/launch.json": {
+      "size_bytes": 395,
+      "allocated_bytes": 4096,
+      "inode": 2163110348,
+      "mtime_ns": 1788972860627545988,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/config.json": {
+      "size_bytes": 2914,
+      "allocated_bytes": 4096,
+      "inode": 2163110349,
+      "mtime_ns": 1788972864295737725,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/status.json": {
+      "size_bytes": 914,
+      "allocated_bytes": 4096,
+      "inode": 2163110474,
+      "mtime_ns": 1789002403390280385,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/first_step_gradients.json": {
+      "size_bytes": 177,
+      "allocated_bytes": 4096,
+      "inode": 2163110351,
+      "mtime_ns": 1788972868231943466,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/tensorboard/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 6457282395,
+      "mtime_ns": 1788972866951876560,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/csv/hparams.yaml": {
+      "size_bytes": 3,
+      "allocated_bytes": 4096,
+      "inode": 15963096,
+      "mtime_ns": 1789002403362279372,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/csv/metrics.csv": {
+      "size_bytes": 187864,
+      "allocated_bytes": 188416,
+      "inode": 15963822,
+      "mtime_ns": 1789002403390280385,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/last.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282502,
+      "mtime_ns": 1789002403126270832,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=113-step=61560.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282508,
+      "mtime_ns": 1788989729618524110,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=145-step=78840.ckpt": {
+      "size_bytes": 15976265,
+      "allocated_bytes": 15978496,
+      "inode": 6457282503,
+      "mtime_ns": 1788994497211650355,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=157-step=85320.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282501,
+      "mtime_ns": 1788996179001553975,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=161-step=87480.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282509,
+      "mtime_ns": 1788996780467025320,
+      "owner_uid": 1002,
+      "link_count": 1
+    },
+    "/workspace/yi/work/RAQ-VAE-main/runs/seq2seq_ds8_src64_20260910_005420_629332/checkpoints/epoch=171-step=92880.ckpt": {
+      "size_bytes": 15976329,
+      "allocated_bytes": 15978496,
+      "inode": 6457282510,
+      "mtime_ns": 1788998284046401256,
+      "owner_uid": 1002,
+      "link_count": 1
+    }
+  },
+  "quota_before": {
+    "used_bytes": 306590871552,
+    "hard_limit_bytes": 322122547200,
+    "remaining_bytes": 15531675648,
+    "raw_output": "Disk quotas for user yi (uid 1002): \n     Filesystem  blocks   quota   limit   grace   files   quota   limit   grace\n       /dev/md1 45906700  52428800 52428800          104084       0       0        \n/dev/mapper/vg_data-lv_vault       4       0       0               1      31      31        \n       /dev/sdc 299405148  314572800 314572800          247773       0       0        \n"
+  },
+  "completed_at": "2026-10-20T10:46:50.053279+08:00",
+  "protected_checkpoints_verified": 18,
+  "other_files_verified": 42,
+  "quota_after": {
+    "used_bytes": 218039922688,
+    "hard_limit_bytes": 322122547200,
+    "remaining_bytes": 104082624512,
+    "raw_output": "Disk quotas for user yi (uid 1002): \n     Filesystem  blocks   quota   limit   grace   files   quota   limit   grace\n       /dev/md1 45906700  52428800 52428800          104084       0       0        \n/dev/mapper/vg_data-lv_vault       4       0       0               1      31      31        \n       /dev/sdc 212929612  314572800 314572800          247771       0       0        \n"
+  },
+  "quota_usage_decrease_bytes": 88550948864
+}

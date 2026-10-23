@@ -15,6 +15,7 @@ from utils.bit_utils import (
 )
 from utils.metrics import calculate_ms_ssim
 from utils.reproducibility import _reset_eval_seed
+from utils.joint_cscr import resolve_cscr_mode
 
 
 _MODULATION_BITS = {"bpsk": 1, "qpsk": 2, "16qam": 4}
@@ -578,7 +579,15 @@ def _transmit_ldpc_stream(
 
 
 @torch.no_grad()
-def evaluate_no_channel(model, loader, device, return_diagnostics=False):
+def evaluate_no_channel(
+    model, loader, device, return_diagnostics=False, cscr_mode="off",
+):
+    mode = resolve_cscr_mode(cscr_mode)
+    if mode == "joint-cscr":
+        from evaluation.joint_cscr import evaluate_joint
+        return evaluate_joint(
+            model, loader, device, return_diagnostics=return_diagnostics,
+        )
     model.eval()
     ms_ssim_scores = []
     psnr_scores = []
@@ -639,6 +648,7 @@ def evaluate_ldpc_channel(
     channel_type="awgn",
     rician_k_factor=10.0,
     channel_seed=42,
+    cscr_mode="off",
 ):
     from communications.ldpc_coding import ldpc_decode, ldpc_encode
 
@@ -667,6 +677,25 @@ def evaluate_ldpc_channel(
     modulate, calculate_llr = modulators[modulation]
     modulation_bits = _MODULATION_BITS[modulation]
 
+    mode = resolve_cscr_mode(cscr_mode)
+    if mode == "joint-cscr":
+        if stream_packing != "combined":
+            raise ValueError("Joint CSCR requires stream_packing='combined'")
+        from evaluation.joint_cscr import evaluate_joint
+
+        def transport(bits):
+            return _transmit_ldpc_stream(
+                bits, target_snr, ldpc_code, device, modulate, calculate_llr,
+                modulation_bits, ldpc_encode, ldpc_decode,
+                channel_type=channel_type, rician_k_factor=rician_k_factor,
+            )
+
+        return evaluate_joint(
+            model, loader, device, return_diagnostics=return_diagnostics,
+            target_snr=target_snr, ldpc_code=ldpc_code, modulation=modulation,
+            channel_type=channel_type, rician_k_factor=rician_k_factor,
+            channel_seed=int(channel_seed), transport=transport,
+        )
     channel_seed = int(channel_seed)
     _reset_eval_seed(channel_seed)
     model.eval()

@@ -1,0 +1,11 @@
+{
+  "source_checkpoint": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_mixture_per_k_unet2_ds8x2_k64/last_checkpoint.pth",
+  "target_directory": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_uniform_channel1_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64",
+  "method": "CPU-load a complete local Adam resume checkpoint, save and fsync in the training directory, verify ZIP checksums, then remove only the temporary probe.",
+  "temporary_probe": "/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_uniform_channel1_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64/.storage_probe_tzq1g88v.pth",
+  "saved_size_bytes": 1996845899,
+  "zip_entries_verified": 2514,
+  "status": "passed",
+  "temporary_probe_removed": true,
+  "checked_at": "2026-10-20T10:22:15.176871+08:00"
+}

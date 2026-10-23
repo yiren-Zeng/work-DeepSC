@@ -14,14 +14,14 @@ export PYTHONWARNINGS="${PYTHONWARNINGS:-ignore::UserWarning}"
 
 SNRS="${SNRS:-0 2 4 6 8 10 12 14 16 18 20}"
 LDPC_N="${LDPC_N:-256}"
-RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-10}"
+RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-0}"
 MIN_ERRORS="${MIN_ERRORS:-200}"
 MAX_BITS="${MAX_BITS:-3000000}"
 BATCH_BLOCKS="${BATCH_BLOCKS:-256}"
 SEED="${SEED:-42}"
 DEVICE="${DEVICE:-auto}"
 RESUME="${RESUME:-0}"
-OUTPUT_DIR="${OUTPUT_DIR:-experiments/eval/ldpc_modulation_ber_snr}"
+OUTPUT_DIR="${OUTPUT_DIR:-experiments/eval/ldpc_modulation_ber_snr_2}"
 
 read -r -a SNR_ARGS <<< "$SNRS"
 ARGS=(

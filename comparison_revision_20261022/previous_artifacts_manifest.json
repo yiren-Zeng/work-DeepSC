@@ -1,0 +1,74 @@
+[
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/README.md",
+    "sha256": "4cbfaea11206b29128a7023f16f7f24e277d408b381b599528aa1fccf9e5d574"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/all_image_psnr.csv",
+    "sha256": "80cd45935ad7aa41dd71a21d67b677b9d5e5244b3ae98a2c1d36b034449555b8"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/analysis.log",
+    "sha256": "bef8abcb11190cb12c70bba4ca79311f985d8bfb8c0dc3ec9787de8d3ef00c21"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/artifacts_manifest.json",
+    "sha256": "3e86651bd5e6575652924f945f2ea0218f085fc9ed8b2737851f627d02cc7081"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/build_comparisons.py",
+    "sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/changes.patch",
+    "sha256": "b81047c6741176339a00c4604e6a0fb14e931665db9882aac8c40c05e4ac71e4"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/detail_candidates.png",
+    "sha256": "00245e3e82de585f378b284e83b22b68a9b428de3f49fc820b9f4c28c8fcac1c"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/generation.log",
+    "sha256": "5e97e5a8e20c3d994d9c8e669b736061979199d2baf4cecb48d8704ec7ffbb0d"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/git_status_after.txt",
+    "sha256": "712726aef9e4b2f6a7280ab0521fee3ebe2e5b949fe83353dff24666639fe54a"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/git_status_before.txt",
+    "sha256": "eb4b4b8b29463c841a740c09d8d8c396db8c89545b97bca93159c03b8f0e8ae0"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/roi_candidates.json",
+    "sha256": "a81c04c0a1304c8ba051817147d7d444477396da6fed7eab8c41dd6dcb8f697e"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/selection_and_metrics.json",
+    "sha256": "8e1b4b2985ea93ba1cf63f62f14fd56ef872301c6a62bb3dd4ffc70d68529f39"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/source_manifest.json",
+    "sha256": "e10f739d436a55696926654e3186c160a270cb961e9dc5b0e09e755867357c45"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/verification.json",
+    "sha256": "31419f42a27bbad6fe9298e905649824971251368346c163a96659baaba35e12"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
+    "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
+    "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
+  },
+  {
+    "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
+    "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
+  },
+  {
+    "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
+    "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
+  }
+]

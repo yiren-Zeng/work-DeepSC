@@ -1,5 +1,6 @@
 #!/bin/bash
 # Evaluate the per-K-mixture checkpoint over AWGN and Rician channels.
+# CSCR_MODE=off|joint-cscr selects original indices or joint cosine/Gray labels.
 set -euo pipefail
 
 eval "$(/usr/local/miniconda3/bin/conda shell.bash hook)"
@@ -13,7 +14,7 @@ export SIMVQ_BASE_CHANNELS="128"
 export SIMVQ_ENCODER_RES_BLOCKS="6"
 export SIMVQ_DECODER_RES_BLOCKS="6"
 export SIMVQ_INDEPENDENT_RAQ_RVQ_DEPTH="2"
-export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-2,4;8,2}"
+export SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS="${SIMVQ_INDEPENDENT_RAQ_RVQ_K_LISTS:-8,2;8,2}"
 
 export SIMVQ_RAQ_MIN_TRG="2"
 export SIMVQ_RAQ_MAX_TRG="64"
@@ -27,13 +28,14 @@ export TF_CPP_MIN_LOG_LEVEL="${TF_CPP_MIN_LOG_LEVEL:-3}"
 export PYTHONWARNINGS="${PYTHONWARNINGS:-ignore::UserWarning}"
 
 CHECKPOINT="${CHECKPOINT:-/workspace/yi/work/RAQ-RVQ/checkpoints/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_curriculum_rate094_A_patch_ch256-512_res6-6_mixture_per_k_unet2_ds8x2_k64/best_vq_deepsc.pth}"
-SNRS="${SNRS:--10 -8 -6 -4 -2 0}"
+SNRS="${SNRS:-12}"
 MODULATION="${MODULATION:-qpsk}"
-LDPC_RATE="${LDPC_RATE:-0.5}"
+LDPC_RATE="${LDPC_RATE:-0.625}"
 LDPC_N="${LDPC_N:-256}"
 NO_CHANNEL="${NO_CHANNEL:-0}"
+CSCR_MODE="${CSCR_MODE:-joint-cscr}"
 CHANNEL_TYPES="${CHANNEL_TYPES:-awgn rician}"
-RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-10}"
+RICIAN_K_FACTOR="${RICIAN_K_FACTOR:-1}"
 CHANNEL_SEEDS="${CHANNEL_SEEDS:-42 43 44 45 46 47 48 49 50 51}"
 read -r -a SNR_ARGS <<< "$SNRS"
 read -r -a CHANNEL_ARGS <<< "$CHANNEL_TYPES"
@@ -54,6 +56,10 @@ ARGS=(
 if [[ "$NO_CHANNEL" == "1" ]]; then
   ARGS+=(--no-channel)
 fi
+case "$CSCR_MODE" in
+  off|joint-cscr) ARGS+=(--cscr-mode "$CSCR_MODE") ;;
+  *) printf 'CSCR_MODE must be off or joint-cscr, got: %s\n' "$CSCR_MODE" >&2; exit 2 ;;
+esac
 
 echo "Output: terminal only (no JSON file)"
 python -u test_real.py "${ARGS[@]}" "$@" \

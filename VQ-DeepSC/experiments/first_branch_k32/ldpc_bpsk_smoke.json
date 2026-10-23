@@ -1,0 +1,92 @@
+{
+  "checkpoint": "experiments/first_branch_k32/smoke_checkpoints/best_vq_deepsc.pth",
+  "num_embeddings_list": [
+    32
+  ],
+  "ldpc_n": 256,
+  "ldpc_rate": 0.5,
+  "modulation": "bpsk",
+  "stream_packing": "combined",
+  "results": {
+    "6": {
+      "ms_ssim": 0.3577291408347478,
+      "psnr": 13.040783678491911,
+      "diagnostics": {
+        "mode": "ldpc",
+        "stream_packing": "combined",
+        "modulation": "bpsk",
+        "channel_type": "awgn",
+        "modulation_bits_per_symbol": 1,
+        "snr_db": 6.0,
+        "ldpc": {
+          "k": 128,
+          "n": 256,
+          "rate": 0.5
+        },
+        "num_images": 24,
+        "per_scale": [
+          {
+            "scale": 0,
+            "num_embeddings": 32,
+            "bits_per_index": 5,
+            "num_indices": 393216,
+            "payload_bits": 1966080,
+            "bit_errors": 0,
+            "index_errors": 0,
+            "sent_index_min": 0,
+            "sent_index_max": 31,
+            "recovered_index_min": 0,
+            "recovered_index_max": 31,
+            "payload_bpp": 1.25,
+            "ber": 0.0,
+            "index_error_rate": 0.0
+          }
+        ],
+        "combined_stream": {
+          "payload_bits": 1966080,
+          "ldpc_input_bits": 1966080,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 3932160,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 3932160,
+          "channel_symbols": 3932160,
+          "bit_errors": 0,
+          "index_errors": 0,
+          "source_pixels": 1572864,
+          "source_values": 4718592,
+          "payload_bpp": 1.25,
+          "coded_bpp": 2.5,
+          "transmitted_bpp": 2.5,
+          "channel_uses_per_pixel": 2.5,
+          "transmission_ratio": 0.8333333333333334,
+          "ber": 0.0,
+          "index_error_rate": 0.0
+        },
+        "total": {
+          "payload_bits": 1966080,
+          "ldpc_input_bits": 1966080,
+          "ldpc_padding_bits": 0,
+          "coded_bits": 3932160,
+          "modulation_padding_bits": 0,
+          "transmitted_bits": 3932160,
+          "channel_symbols": 3932160,
+          "bit_errors": 0,
+          "index_errors": 0,
+          "source_pixels": 1572864,
+          "source_values": 4718592,
+          "payload_bpp": 1.25,
+          "coded_bpp": 2.5,
+          "transmitted_bpp": 2.5,
+          "channel_uses_per_pixel": 2.5,
+          "transmission_ratio": 0.8333333333333334,
+          "ber": 0.0,
+          "index_error_rate": 0.0
+        },
+        "padding_notes": {
+          "ldpc_padding_bits": "zero information bits added before LDPC encoding",
+          "modulation_padding_bits": "zero coded bits added to fill a modulation symbol"
+        }
+      }
+    }
+  }
+}

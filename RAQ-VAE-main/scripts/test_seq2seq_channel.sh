@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
-# 直接修改下面的 --target-k、--ldpc-rate、--modulation、--snr，然后运行本脚本。
-# 默认使用当前记录的最佳权重、物理 GPU1；结果自动保存到本项目 runs/ 下。
+# 这是是官方原版的 RAQVAE_TWO，对应 data-driven／Seq2Seq RAQ，基于 VQ-VAE-2，bottom、top 分别下采样 4 倍、8 倍。
+
 set -euo pipefail
 raq_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 export PYTHONDONTWRITEBYTECODE=1

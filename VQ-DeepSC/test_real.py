@@ -94,8 +94,9 @@ def test_real(
     ldpc_n=256,
     ldpc_rate=0.5,
     stream_packing="combined",
+    cfg=None,
 ):
-    cfg = Config()
+    cfg = Config() if cfg is None else cfg
     cfg.validate()
     setup_seed(42)
     device = torch.device(cfg.DEVICE)

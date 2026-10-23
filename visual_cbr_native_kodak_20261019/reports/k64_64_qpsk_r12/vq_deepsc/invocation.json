@@ -1,0 +1,27 @@
+{
+  "command": [
+    "bash",
+    "/workspace/yi/work/VQ-DeepSC/scripts/test/test_k64_64_last2_cascade_200ep.sh"
+  ],
+  "working_directory": "/workspace/yi/work/VQ-DeepSC",
+  "environment_overrides": {
+    "GPU_ID": "1",
+    "CHANNEL_TYPES": "awgn",
+    "CHANNEL_SEEDS": "42",
+    "SNRS": "10",
+    "MODULATION": "qpsk",
+    "LDPC_RATE": "0.5",
+    "LDPC_N": "256",
+    "NO_CHANNEL": "0",
+    "PYTHONPATH": "/workspace/yi/work/visual_cbr_native_kodak_20261019/hooks:/workspace/yi/work/VQ-DeepSC",
+    "NATIVE_EXPORT_ENABLE": "1",
+    "NATIVE_EXPORT_PROJECT": "/workspace/yi/work/VQ-DeepSC",
+    "NATIVE_EXPORT_DATASET": "/workspace/yi/work/Kodak",
+    "NATIVE_EXPORT_NAMES": "/workspace/yi/work/visual_cbr_native_kodak_20261019/image_names.json",
+    "NATIVE_EXPORT_SHAPES": "/workspace/yi/work/visual_cbr_native_kodak_20261019/image_shapes_hw.json",
+    "NATIVE_EXPORT_DIR": "/workspace/yi/work/visual_cbr_native_kodak_20261019/cases/k64_64_qpsk_r12/vq_deepsc",
+    "CHECKPOINT": "/home/yi/vq_deepsc_runs_20260919/checkpoints/k64_64_last2_copy_200ep/best_vq_deepsc.pth",
+    "JSON_OUTPUT": "/workspace/yi/work/visual_cbr_native_kodak_20261019/cases/k64_64_qpsk_r12/vq_deepsc/results.json",
+    "NATIVE_EXPORT_MAIN": "test_real_last2_cascade.py"
+  }
+}

@@ -1,11 +1,19 @@
 import argparse
 import json
+import math
 import os
+import tempfile
+from datetime import datetime
+from fractions import Fraction
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
 import torch
 from config import Config
 from data.datasets import get_dataloader
 from evaluation.quality import evaluate_ldpc_channel, evaluate_no_channel
 from utils.checkpoint_utils import build_model_from_checkpoint
+from utils.image_export import ReconstructionImageWriter
 from utils.raq_rvq import resolve_rvq_stage_k_lists
 from utils.reproducibility import setup_seed
 
@@ -123,10 +131,12 @@ def _print_compression_stats(diagnostics):
         f"（压缩倍数 {stats['source_compression_factor']:.4f}:1）"
     )
     if diagnostics["mode"] == "ldpc":
+        cbr = Fraction(int(total["channel_symbols"]), int(total["source_values"]))
         stats.update({
             "transmitted_bits": total["transmitted_bits"],
             "transmitted_bit_ratio": total["transmitted_bits"] / raw_image_bits,
             "transmission_ratio": total["transmission_ratio"],
+            "transmission_ratio_fraction": f"{cbr.numerator}/{cbr.denominator}",
         })
         print(
             "[压缩率] 编码后bit比例（发送bit/原图bit，含填充）: "
@@ -134,17 +144,26 @@ def _print_compression_stats(diagnostics):
         )
         print(
             "[压缩率] 传输压缩率 CBR（信道符号数/原图元素数）: "
-            f"{stats['transmission_ratio']:.8f} "
-            f"（1/{1 / stats['transmission_ratio']:.4f}）"
+            f"{stats['transmission_ratio_fraction']} "
+            f"({stats['transmission_ratio']:.8f})"
         )
+    else:
+        print("[压缩率] CBR: N/A（无信道传输）")
     return stats
+
+
+def _ms_ssim_db(mean_ms_ssim):
+    """Convert the mean rounded exactly as the four-decimal terminal display."""
+    displayed_mean = float(f"{float(mean_ms_ssim):.4f}")
+    error = 1.0 - displayed_mean
+    return math.inf if error <= 0 else -10.0 * math.log10(error)
 
 
 @torch.no_grad()
 def test_real(
     checkpoint_path=None, test_snrs=None, json_output=None, no_channel=False,
     modulation="bpsk", LDPC_N=256, LDPC_R=0.5,
-    stream_packing="per_stage", report_rate=False,
+    stream_packing="per_stage", report_rate=False, image_output_dir=None,
 ):
     if not no_channel and (
         LDPC_N <= 0 or not 0 < LDPC_R < 1 or int(LDPC_N * LDPC_R) <= 0
@@ -290,23 +309,54 @@ def test_real(
         pin_memory=cfg.PIN_MEMORY,
     )
 
+    image_run_dir = None
+    if image_output_dir is not None:
+        output_root = Path(image_output_dir).expanduser().resolve()
+        output_root.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d_%H%M%S")
+        target_label = "-".join(str(k) for k in num_embeddings_list)
+        image_run_dir = Path(tempfile.mkdtemp(
+            prefix=f"{timestamp}_k{target_label}_", dir=output_root
+        ))
+        print(f"[图片保存] 本次运行目录: {image_run_dir}")
+
+    def image_writer_for(condition):
+        if image_run_dir is None:
+            return None
+        return ReconstructionImageWriter(
+            image_run_dir / condition,
+            image_names=getattr(test_dataloader.dataset, "image_files", None),
+        )
+
     results = {}
     if no_channel:
+        image_writer = image_writer_for("no_channel")
         if test_raq_rvq_enabled or report_rate:
             mean_ms_ssim, mean_psnr, diagnostics = evaluate_no_channel(
-                deepsc_model, test_dataloader, device, return_diagnostics=True
+                deepsc_model, test_dataloader, device, return_diagnostics=True,
+                image_callback=image_writer,
             )
             if test_raq_rvq_enabled:
                 _print_raq_rvq_diagnostics(diagnostics)
         else:
             mean_ms_ssim, mean_psnr = evaluate_no_channel(
-                deepsc_model, test_dataloader, device
+                deepsc_model, test_dataloader, device, image_callback=image_writer
             )
             diagnostics = None
-        results["no_channel"] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
+        mean_ms_ssim_db = _ms_ssim_db(mean_ms_ssim)
+        results["no_channel"] = {
+            "ms_ssim": mean_ms_ssim, "ms_ssim_db": mean_ms_ssim_db, "psnr": mean_psnr,
+        }
+        if image_writer is not None:
+            results["no_channel"]["image_output_dir"] = str(image_writer.output_dir)
+            print(f"[图片保存] 已保存 {image_writer.saved_count} 张重建图: {image_writer.output_dir}")
         if diagnostics is not None:
             results["no_channel"]["diagnostics"] = diagnostics
-        print(f"No channel | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} | Avg PSNR: {mean_psnr:.4f} dB")
+        print(
+            f"No channel | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} "
+            f"| MS-SSIM (dB, from 4dp mean): {mean_ms_ssim_db:.4f} "
+            f"| Avg PSNR: {mean_psnr:.4f} dB"
+        )
         if report_rate:
             results["no_channel"]["compression"] = _print_compression_stats(diagnostics)
     else:
@@ -315,6 +365,7 @@ def test_real(
         ldpc_code = get_ldpc_code(int(LDPC_N * LDPC_R), rate=LDPC_R)
         for snr in test_snrs:
             print(f"\n正在测试 SNR = {snr} dB ...")
+            image_writer = image_writer_for(f"snr_{snr}")
             if test_raq_rvq_enabled or report_rate:
                 mean_ms_ssim, mean_psnr, diagnostics = evaluate_ldpc_channel(
                     deepsc_model,
@@ -326,18 +377,30 @@ def test_real(
                     modulation=modulation,
                     return_diagnostics=True,
                     stream_packing=stream_packing,
+                    image_callback=image_writer,
                 )
                 if test_raq_rvq_enabled:
                     _print_raq_rvq_diagnostics(diagnostics)
             else:
                 mean_ms_ssim, mean_psnr = evaluate_ldpc_channel(
                     deepsc_model, test_dataloader, num_embeddings_list, snr, ldpc_code, device,
-                    modulation=modulation, stream_packing=stream_packing)
+                    modulation=modulation, stream_packing=stream_packing,
+                    image_callback=image_writer)
                 diagnostics = None
-            results[snr] = {"ms_ssim": mean_ms_ssim, "psnr": mean_psnr}
+            mean_ms_ssim_db = _ms_ssim_db(mean_ms_ssim)
+            results[snr] = {
+                "ms_ssim": mean_ms_ssim, "ms_ssim_db": mean_ms_ssim_db, "psnr": mean_psnr,
+            }
+            if image_writer is not None:
+                results[snr]["image_output_dir"] = str(image_writer.output_dir)
+                print(f"[图片保存] 已保存 {image_writer.saved_count} 张重建图: {image_writer.output_dir}")
             if diagnostics is not None:
                 results[snr]["diagnostics"] = diagnostics
-            print(f"SNR {snr} dB | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} | Avg PSNR: {mean_psnr:.4f} dB")
+            print(
+                f"SNR {snr} dB | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} "
+                f"| MS-SSIM (dB, from 4dp mean): {mean_ms_ssim_db:.4f} "
+                f"| Avg PSNR: {mean_psnr:.4f} dB"
+            )
             if report_rate:
                 results[snr]["compression"] = _print_compression_stats(diagnostics)
 
@@ -347,10 +410,17 @@ def test_real(
     if rvq_k_lists is not None:
         print(f"RVQ Stage K Lists: {rvq_k_lists}")
     print("=" * 40)
-    print(f"{'Condition':<10} | {'MS-SSIM':<10} | {'PSNR (dB)':<10}")
-    print("-" * 11 + "|" + "-" * 12 + "|" + "-" * 11)
+    print(f"{'Condition':<10} | {'MS-SSIM':<10} | {'MS-SSIM (dB)':<13} | {'PSNR (dB)':<10} | CBR")
+    print("-" * 11 + "|" + "-" * 12 + "|" + "-" * 15 + "|" + "-" * 12 + "|" + "-" * 14)
     for condition, metrics in results.items():
-        print(f"{str(condition):<10} | {metrics['ms_ssim']:<10.4f} | {metrics['psnr']:<10.4f}")
+        compression = metrics.get("compression", {})
+        cbr = compression.get("transmission_ratio_fraction", "N/A")
+        if "transmission_ratio" in compression:
+            cbr += f" ({compression['transmission_ratio']:.8f})"
+        print(
+            f"{str(condition):<10} | {metrics['ms_ssim']:<10.4f} "
+            f"| {metrics['ms_ssim_db']:<13.4f} | {metrics['psnr']:<10.4f} | {cbr}"
+        )
 
     if json_output:
         os.makedirs(os.path.dirname(json_output) or ".", exist_ok=True)
@@ -396,6 +466,10 @@ if __name__ == "__main__":
     parser.add_argument("--checkpoint", default=None, help="Checkpoint path; defaults to the best model.")
     parser.add_argument("--snrs", type=int, nargs="+", default=[0, 3, 6, 9, 12])
     parser.add_argument("--json-output", default=None, help="Optional JSON output path.")
+    parser.add_argument(
+        "--image-output-dir", default=None,
+        help="Save every reconstruction under a new run directory, grouped by SNR.",
+    )
     parser.add_argument("--no-channel", action="store_true", help="Evaluate source reconstruction only.")
     parser.add_argument("--modulation", choices=["bpsk", "qpsk","16qam"], default="bpsk")
     parser.add_argument("--ldpc_n", type=int, default=256)
@@ -418,4 +492,5 @@ if __name__ == "__main__":
         args.ldpc_k,
         args.stream_packing,
         args.report_rate,
+        args.image_output_dir,
     )

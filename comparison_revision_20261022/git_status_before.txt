@@ -1,0 +1,824 @@
+ D AWGN_三模型_SNR_-10到0_10种子均值_20261004.xlsx
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim01.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim02.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim03.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim04.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim05.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim06.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim07.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim08.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim09.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim10.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim11.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim12.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim13.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim14.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim15.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim16.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim17.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim18.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim19.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim20.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim21.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim22.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim23.png
+ D BPG/kodak-256-decompress-0.5-bpsk-ratio-0.083/kodim24.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim01.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim02.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim03.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim04.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim05.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim06.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim07.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim08.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim09.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim10.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim11.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim12.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim13.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim14.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim15.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim16.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim17.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim18.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim19.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim20.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim21.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim22.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim23.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.042/kodim24.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim01.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim02.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim03.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim04.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim05.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim06.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim07.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim08.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim09.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim10.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim11.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim12.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim13.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim14.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim15.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim16.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim17.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim18.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim19.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim20.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim21.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim22.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim23.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.075/kodim24.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim01.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim02.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim03.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim04.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim05.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim06.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim07.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim08.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim09.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim10.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim11.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim12.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim13.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim14.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim15.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim16.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim17.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim18.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim19.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim20.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim21.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim22.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim23.png
+ D BPG/kodak-256-new-decompress-0.5-bpsk-ratio-0.083/kodim24.png
+ M BPG/test_bpg.py
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000001.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000002.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000003.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000004.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000005.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000006.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000007.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000008.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000009.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000010.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000011.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000012.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000013.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000014.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000015.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000016.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000017.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000018.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000019.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000020.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000021.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000022.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000023.jp2
+ D JPEG/kodak-256-jpeg-0.5-bpsk-ratio-0.083/val_000024.jp2
+ M JPEG/output_jpeg/val_000001.jp2
+ M JPEG/output_jpeg/val_000002.jp2
+ M JPEG/output_jpeg/val_000003.jp2
+ M JPEG/output_jpeg/val_000004.jp2
+ M JPEG/output_jpeg/val_000005.jp2
+ M JPEG/output_jpeg/val_000006.jp2
+ M JPEG/output_jpeg/val_000007.jp2
+ M JPEG/output_jpeg/val_000008.jp2
+ M JPEG/output_jpeg/val_000009.jp2
+ M JPEG/output_jpeg/val_000010.jp2
+ M JPEG/output_jpeg/val_000011.jp2
+ M JPEG/output_jpeg/val_000012.jp2
+ M JPEG/output_jpeg/val_000013.jp2
+ M JPEG/output_jpeg/val_000014.jp2
+ M JPEG/output_jpeg/val_000015.jp2
+ M JPEG/output_jpeg/val_000016.jp2
+ M JPEG/output_jpeg/val_000017.jp2
+ M JPEG/output_jpeg/val_000018.jp2
+ M JPEG/output_jpeg/val_000019.jp2
+ M JPEG/output_jpeg/val_000020.jp2
+ M JPEG/output_jpeg/val_000021.jp2
+ M JPEG/output_jpeg/val_000022.jp2
+ M JPEG/output_jpeg/val_000023.jp2
+ M JPEG/output_jpeg/val_000024.jp2
+ D JPEG/requirements-eval.txt
+ M JPEG/test_jpeg.py
+ M Ours-RAQ/evaluation/quality.py
+ D Ours-RAQ/experiments/shiyan_raq_src128-128_raq2-128_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k128_codebook_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src128-128_raq2-128_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k128_epoch_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256-256_raq2-256_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k256_codebook_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256-256_raq2-256_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k256_epoch_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds2_k256_codebook_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds2_k256_epoch_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds8_k256_codebook_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds8_k256_epoch_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src64-64_raq2-64_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k64_codebook_metrics.csv
+ D Ours-RAQ/experiments/shiyan_raq_src64-64_raq2-64_curriculum_rate044_A_patch_ch256-512_res6_unet2_ds8x2_k64_epoch_metrics.csv
+ D Ours-RAQ/scripts/eval/test_src256_raq32_2048_curriculum_ch256_res6_unet1.sh
+ M Ours-RAQ/scripts/eval/test_src256_raq32_2048_curriculum_ch256_res6_unet1_ds2.sh
+ M Ours-RAQ/scripts/eval/test_src256_raq32_2048_curriculum_ch256_res6_unet1_sweep.sh
+ M Ours-RAQ/test_real.py
+ D PROPOSED_RAQ-RVQ_第一版.md
+ M RAQ-RVQ/bandit_independent_raq_rvq_psnr_search.py
+ M RAQ-RVQ/evaluation/quality.py
+ M RAQ-RVQ/experiments/eval/independent_raq_rvq_src256-256_mixture_per_k_combined.json
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_awgn.pdf
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_awgn.png
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_results.csv
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_results.json
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_rician.pdf
+ M RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr/ber_snr_rician.png
+ M RAQ-RVQ/scripts/eval/run_ldpc_modulation_ber_snr.sh
+ M RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src256_256_d2_res6_6_mixture_per_k_combined.sh
+ M RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_mixture_per_k_combined.sh
+ M RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_randomval_bandit_psnr_ldpc_combined.sh
+ M RAQ-RVQ/test_real.py
+ M RAQ-RVQ/tests/test_independent_raq_rvq_bandit_psnr.py
+ M RAQ-VAE-main/TRAINING_CARS_SEQ2SEQ_ONE_DS2_SRC256_K32_2048.md
+ M RAQ-VAE-main/aggregate_seq2seq_channel_trials.py
+ M RAQ-VAE-main/eval_seq2seq_channel.py
+ M RAQ-VAE-main/eval_seq2seq_one_ds2_src256_k32_2048_channel.py
+ M RAQ-VAE-main/scripts/test_seq2seq_channel.sh
+ M RAQ-VAE-main/scripts/test_seq2seq_ds8_dualk_channel.sh
+ M RAQ-VAE-main/scripts/test_seq2seq_one_ds2_src256_k32_2048_channel.sh
+ M RAQ-VAE-main/tests/test_eval_rate_plan.py
+ D Rician_K10_三模型_SNR_-10到0_10种子均值_20261004.xlsx
+ M VQ-DeepSC/scripts/test/test_k16_16_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k16_32_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k32_16_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k4_16_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k64_16_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k8_16_last2_cascade_200ep.sh
+ M VQ-DeepSC/scripts/test/test_k8_8_last2_cascade_200ep.sh
+?? AGENTS.md
+?? BPG/Kodak-De/kodim01.png
+?? BPG/Kodak-De/kodim02.png
+?? BPG/Kodak-De/kodim03.png
+?? BPG/Kodak-De/kodim04.png
+?? BPG/Kodak-De/kodim05.png
+?? BPG/Kodak-De/kodim06.png
+?? BPG/Kodak-De/kodim07.png
+?? BPG/Kodak-De/kodim08.png
+?? BPG/Kodak-De/kodim09.png
+?? BPG/Kodak-De/kodim10.png
+?? BPG/Kodak-De/kodim11.png
+?? BPG/Kodak-De/kodim12.png
+?? BPG/Kodak-De/kodim13.png
+?? BPG/Kodak-De/kodim14.png
+?? BPG/Kodak-De/kodim15.png
+?? BPG/Kodak-De/kodim16.png
+?? BPG/Kodak-De/kodim17.png
+?? BPG/Kodak-De/kodim18.png
+?? BPG/Kodak-De/kodim19.png
+?? BPG/Kodak-De/kodim20.png
+?? BPG/Kodak-De/kodim21.png
+?? BPG/Kodak-De/kodim22.png
+?? BPG/Kodak-De/kodim23.png
+?? BPG/Kodak-De/kodim24.png
+?? JPEG/experiments/reviews/20261022_export_native_size/README.md
+?? JPEG/experiments/reviews/20261022_export_native_size/before.json
+?? JPEG/experiments/reviews/20261022_export_native_size/changes.patch
+?? JPEG/experiments/reviews/20261022_export_native_size/validation.json
+?? JPEG/export_reconstruction_png.py
+?? JPEG/generated_images/cbr1over1.2/README.md
+?? JPEG/generated_images/cbr1over1.2/image_export.json
+?? JPEG/generated_images/cbr1over1.2/kodim01.png
+?? JPEG/generated_images/cbr1over1.2/kodim02.png
+?? JPEG/generated_images/cbr1over1.2/kodim03.png
+?? JPEG/generated_images/cbr1over1.2/kodim04.png
+?? JPEG/generated_images/cbr1over1.2/kodim05.png
+?? JPEG/generated_images/cbr1over1.2/kodim06.png
+?? JPEG/generated_images/cbr1over1.2/kodim07.png
+?? JPEG/generated_images/cbr1over1.2/kodim08.png
+?? JPEG/generated_images/cbr1over1.2/kodim09.png
+?? JPEG/generated_images/cbr1over1.2/kodim10.png
+?? JPEG/generated_images/cbr1over1.2/kodim11.png
+?? JPEG/generated_images/cbr1over1.2/kodim12.png
+?? JPEG/generated_images/cbr1over1.2/kodim13.png
+?? JPEG/generated_images/cbr1over1.2/kodim14.png
+?? JPEG/generated_images/cbr1over1.2/kodim15.png
+?? JPEG/generated_images/cbr1over1.2/kodim16.png
+?? JPEG/generated_images/cbr1over1.2/kodim17.png
+?? JPEG/generated_images/cbr1over1.2/kodim18.png
+?? JPEG/generated_images/cbr1over1.2/kodim19.png
+?? JPEG/generated_images/cbr1over1.2/kodim20.png
+?? JPEG/generated_images/cbr1over1.2/kodim21.png
+?? JPEG/generated_images/cbr1over1.2/kodim22.png
+?? JPEG/generated_images/cbr1over1.2/kodim23.png
+?? JPEG/generated_images/cbr1over1.2/kodim24.png
+?? JPEG/generated_images/cbr1over32/README.md
+?? JPEG/generated_images/cbr1over32/image_export.json
+?? JPEG/generated_images/cbr1over32/kodim01.png
+?? JPEG/generated_images/cbr1over32/kodim02.png
+?? JPEG/generated_images/cbr1over32/kodim03.png
+?? JPEG/generated_images/cbr1over32/kodim04.png
+?? JPEG/generated_images/cbr1over32/kodim05.png
+?? JPEG/generated_images/cbr1over32/kodim06.png
+?? JPEG/generated_images/cbr1over32/kodim07.png
+?? JPEG/generated_images/cbr1over32/kodim08.png
+?? JPEG/generated_images/cbr1over32/kodim09.png
+?? JPEG/generated_images/cbr1over32/kodim10.png
+?? JPEG/generated_images/cbr1over32/kodim11.png
+?? JPEG/generated_images/cbr1over32/kodim12.png
+?? JPEG/generated_images/cbr1over32/kodim13.png
+?? JPEG/generated_images/cbr1over32/kodim14.png
+?? JPEG/generated_images/cbr1over32/kodim15.png
+?? JPEG/generated_images/cbr1over32/kodim16.png
+?? JPEG/generated_images/cbr1over32/kodim17.png
+?? JPEG/generated_images/cbr1over32/kodim18.png
+?? JPEG/generated_images/cbr1over32/kodim19.png
+?? JPEG/generated_images/cbr1over32/kodim20.png
+?? JPEG/generated_images/cbr1over32/kodim21.png
+?? JPEG/generated_images/cbr1over32/kodim22.png
+?? JPEG/generated_images/cbr1over32/kodim23.png
+?? JPEG/generated_images/cbr1over32/kodim24.png
+?? Ours-RAQ/docs/eval_ds2_output_changes_20261022.md
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim01.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim02.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim03.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim04.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim05.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim06.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim07.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim08.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim09.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim10.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim11.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim12.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim13.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim14.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim15.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim16.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim17.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim18.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim19.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim20.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim21.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim22.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim23.png
+?? Ours-RAQ/experiments/eval_images/20261022_140259_k256_izja7co7/snr_10/kodim24.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim01.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim02.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim03.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim04.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim05.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim06.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim07.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim08.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim09.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim10.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim11.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim12.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim13.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim14.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim15.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim16.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim17.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim18.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim19.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim20.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim21.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim22.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim23.png
+?? Ours-RAQ/experiments/eval_images/20261022_140841_k32_wwydw7h7/snr_10/kodim24.png
+?? Ours-RAQ/experiments/reviews/20261022_ms_ssim_db_display_rounding/before.json
+?? Ours-RAQ/experiments/reviews/20261022_ms_ssim_db_display_rounding/changes.patch
+?? Ours-RAQ/scripts/eval/test_src256_raq32_2048_curriculum_ch256_res6_unet1_ds8.sh
+?? Ours-RAQ/tests/test_eval_reporting.py
+?? Ours-RAQ/utils/image_export.py
+?? RAQ-RVQ/BANDIT_EXPLORATION_EXPLOITATION_RATIONALE.md
+?? RAQ-RVQ/evaluation/joint_cscr.py
+?? RAQ-RVQ/experiments/benchmark_equal_conditions.py
+?? RAQ-RVQ/experiments/checkpoint_storage_probe_20261020.json
+?? RAQ-RVQ/experiments/complexity_comparison_snr4p5_raq_rvq_8_2.md
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/AWGN_RAQ_RVQ_4configs_LDPC5over8_QPSK_dB.xlsx
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/REPORT.md
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/build_report.py
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/case01_k2-4_k2-4.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/case02_k8-2_k8-2.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/case03_k32-2_k8-8.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/case04_k8-64_k8-2.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/driver.pid
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/manifest.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/per_seed_db.csv
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/run.lock
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/run_matrix.py
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/status.json
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/summary_db.csv
+?? RAQ-RVQ/experiments/eval/awgn_rvq_4configs_ldpc5over8_qpsk_snr3_4p5_seeds42_51_20261009/summary_db.json
+?? RAQ-RVQ/experiments/eval/independent_raq_rvq_src64-64_d2_res6-6_randomval_rate1over48_bandit_psnr_ldpc3over4_qpsk_combined/20261007_223102.csv
+?? RAQ-RVQ/experiments/eval/independent_raq_rvq_src64-64_d2_res6-6_randomval_rate1over48_bandit_psnr_ldpc3over4_qpsk_combined/20261007_223102.json
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_awgn.pdf
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_awgn.png
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_results.csv
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_results.json
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_rician.pdf
+?? RAQ-RVQ/experiments/eval/ldpc_modulation_ber_snr_2/ber_snr_rician.png
+?? RAQ-RVQ/experiments/latency_comparison_snr4p5_raq_rvq_8_2.md
+?? RAQ-RVQ/experiments/latency_equal_conditions_snr4p5.json
+?? RAQ-RVQ/experiments/quota_archive_manifest_20261020.json
+?? RAQ-RVQ/experiments/quota_cleanup_proposal_20261020.md
+?? RAQ-RVQ/experiments/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_uniform_channel1_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64_codebook_metrics.csv
+?? RAQ-RVQ/experiments/shiyan_independent_raq_rvq_src64-64_trg2-64_d2_uniform_channel1_rate094_A_patch_ch256-512_res6-6_unet2_ds8x2_k64_epoch_metrics.csv
+?? RAQ-RVQ/reviews/20261020_joint_cscr/README.md
+?? RAQ-RVQ/reviews/20261020_joint_cscr/changes.patch
+?? RAQ-RVQ/reviews/20261022_cscr_two_modes/README.md
+?? RAQ-RVQ/reviews/20261022_cscr_two_modes/changes.patch
+?? RAQ-RVQ/scripts/eval/test_independent_raq_rvq_src64_64_d2_res6_6_uniform_channel1_combined.sh
+?? RAQ-RVQ/scripts/maintenance/archive_quota_checkpoints_20261020.py
+?? RAQ-RVQ/scripts/train/current/run_independent_raq_rvq_src64_64_k2_64_d2_uniform_channel1_ch256_512_res6_6.sh
+?? RAQ-RVQ/tests/test_cscr.py
+?? RAQ-RVQ/tests/test_joint_cscr.py
+?? RAQ-RVQ/tests/test_uniform_channel1.py
+?? RAQ-RVQ/train_uniform_channel1.py
+?? RAQ-RVQ/utils/cscr.py
+?? RAQ-RVQ/utils/joint_cscr.py
+?? RAQ-VAE-main/TRAINING_CARS_SEQ2SEQ_SRC256_K4_4096.md
+?? RAQ-VAE-main/cscr.py
+?? RAQ-VAE-main/eval_seq2seq_ds8_dualk_console.py
+?? RAQ-VAE-main/eval_seq2seq_src256_k4_4096_channel.py
+?? RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/README.md
+?? RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/before.json
+?? RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/changes.patch
+?? RAQ-VAE-main/experiments/reviews/20261022_one_ds2_native_images/native_no_channel_audit.json
+?? RAQ-VAE-main/experiments/tensorboard_log_deletion_20261020.json
+?? RAQ-VAE-main/experiments/tensorboard_log_deletion_20261020.md
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim01.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim02.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim03.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim04.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim05.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim06.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim07.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim08.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim09.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim10.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim11.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim12.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim13.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim14.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim15.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim16.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim17.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim18.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim19.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim20.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim21.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim22.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim23.png
+?? RAQ-VAE-main/generated_images/20261022_205436_261293_88b35026/k32/awgn_snr10/kodim24.png
+?? RAQ-VAE-main/scripts/launch_seq2seq_cars_src256_k4_4096.py
+?? RAQ-VAE-main/scripts/supervise_seq2seq_src256_k4_4096.py
+?? RAQ-VAE-main/scripts/test_seq2seq_src256_k4_4096_channel.sh
+?? RAQ-VAE-main/tests/test_console_channel.py
+?? RAQ-VAE-main/tests/test_cscr.py
+?? RAQ-VAE-main/tests/test_native_resolution_channel.py
+?? RAQ-VAE-main/tests/test_one_ds2_native_images.py
+?? RAQ-VAE-main/tests/test_seq2seq_src256_k4_4096.py
+?? RAQ-VAE-main/train_seq2seq_cars_src256_k4_4096.py
+?? Rate-Adaptive_Vector_Quantization_for_Deep_Joint_Source-Channel_Coding.pdf
+?? VQ-DeepSC/experiments/train/last2_cascade_k64_64_k512_16_200ep/README.md
+?? VQ-DeepSC/experiments/train/last2_cascade_k64_64_k512_16_200ep/first_checkpoint_verification.json
+?? VQ-DeepSC/experiments/train/last2_cascade_k64_64_k512_16_200ep/launch_manifest.json
+?? VQ-DeepSC/experiments/train/last2_cascade_k64_64_k512_16_200ep/training_processes.json
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/README.md
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/eval_results.json
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/image_export.json
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/invocation.json
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim01.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim02.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim03.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim04.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim05.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim06.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim07.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim08.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim09.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim10.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim11.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim12.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim13.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim14.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim15.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim16.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim17.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim18.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim19.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim20.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim21.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim22.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim23.png
+?? VQ-DeepSC/generated_images/cbr1over128_awgn10_16qam_ldpc34_k16_4/seed_42/kodim24.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/README.md
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/image_export.json
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/image_index.json
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/invocation.json
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim01.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim02.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim03.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim04.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim05.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim06.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim07.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim08.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim09.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim10.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim11.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim12.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim13.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim14.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim15.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim16.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim17.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim18.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim19.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim20.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim21.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim22.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim23.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim24.png
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/results.json
+?? VQ-DeepSC/generated_images/high_psnr_native_kodak_20261019_k64_16_qpsk_r12/seed_42/summary.json
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/README.md
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/image_export.json
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/image_index.json
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/invocation.json
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim01.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim02.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim03.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim04.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim05.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim06.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim07.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim08.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim09.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim10.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim11.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim12.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim13.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim14.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim15.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim16.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim17.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim18.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim19.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim20.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim21.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim22.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim23.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/kodim24.png
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/results.json
+?? VQ-DeepSC/generated_images/native_kodak_20261019_k64_16_qpsk_r12/seed_42/summary.json
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/README.md
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/image_index.json
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim01.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim02.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim03.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim04.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim05.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim06.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim07.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim08.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim09.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim10.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim11.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim12.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim13.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim14.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim15.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim16.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim17.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim18.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim19.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim20.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim21.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim22.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim23.png
+?? VQ-DeepSC/generated_images/visual_cbr1over32_awgn10_qpsk_ldpc12_k32_16/seed_42/kodim24.png
+?? VQ-DeepSC/scripts/test/test_k512_16_last2_cascade_200ep.sh
+?? VQ-DeepSC/scripts/test/test_k64_64_last2_cascade_200ep.sh
+?? VQ-DeepSC/scripts/train/supervise_new_last2_cascade_200ep.sh
+?? VQ-DeepSC/scripts/train/train_k512_16_last2_cascade_200ep.sh
+?? VQ-DeepSC/scripts/train/train_k64_64_last2_cascade_200ep.sh
+?? comparison_review_20261022/README.md
+?? comparison_review_20261022/all_image_psnr.csv
+?? comparison_review_20261022/artifacts_manifest.json
+?? comparison_review_20261022/build_comparisons.py
+?? comparison_review_20261022/changes.patch
+?? comparison_review_20261022/detail_candidates.png
+?? comparison_review_20261022/git_status_after.txt
+?? comparison_review_20261022/git_status_before.txt
+?? comparison_review_20261022/roi_candidates.json
+?? comparison_review_20261022/selection_and_metrics.json
+?? comparison_review_20261022/source_manifest.json
+?? comparison_review_20261022/verification.json
+?? kodim05_comparison_20261022.pdf
+?? kodim05_comparison_20261022.png
+?? kodim21_comparison_20261022.pdf
+?? kodim21_comparison_20261022.png
+?? visual_cbr_native_high_psnr_20261019/README.md
+?? visual_cbr_native_high_psnr_20261019/SEARCH_NOTES.md
+?? visual_cbr_native_high_psnr_20261019/adapter_audit/launcher_change_review.json
+?? visual_cbr_native_high_psnr_20261019/adapter_audit/observed_shell_after.sh
+?? visual_cbr_native_high_psnr_20261019/adapter_audit/parity_256.json
+?? visual_cbr_native_high_psnr_20261019/adapter_audit/vae_evaluator_393216_pixels.diff
+?? visual_cbr_native_high_psnr_20261019/adapter_audit/vae_evaluator_393216_pixels.json
+?? visual_cbr_native_high_psnr_20261019/candidate_selection.json
+?? visual_cbr_native_high_psnr_20261019/cases/k16_16_qpsk_r12
+?? visual_cbr_native_high_psnr_20261019/cases/k32_16_qpsk_r12
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b16_4_t2_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b16_4_t4_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b16_4_t8_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b2_32_t2_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b2_32_t4_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b32_2_t2_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b32_2_t4_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b32_2_t8_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b4_16_t2_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b4_16_t4_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b4_16_t8_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b8_8_t2_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b8_8_t4_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_16_qpsk_r12_b8_8_t8_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b16_4_t16_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b16_4_t2_32
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b16_4_t32_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b16_4_t4_16
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b16_4_t8_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b2_32_t16_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b2_32_t2_32
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b2_32_t32_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b2_32_t4_16
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b2_32_t8_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b32_2_t16_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b32_2_t2_32
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b32_2_t32_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b32_2_t4_16
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b4_16_t16_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b4_16_t2_32
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b4_16_t32_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b4_16_t4_16
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b4_16_t8_8
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b8_8_t16_4
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b8_8_t2_32
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b8_8_t32_2
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b8_8_t4_16
+?? visual_cbr_native_high_psnr_20261019/cases/k64_64_qpsk_r12_b8_8_t8_8
+?? visual_cbr_native_high_psnr_20261019/comparison_all.json
+?? visual_cbr_native_high_psnr_20261019/environment.json
+?? visual_cbr_native_high_psnr_20261019/full_psnr_ranking.json
+?? visual_cbr_native_high_psnr_20261019/hooks/sitecustomize.py
+?? visual_cbr_native_high_psnr_20261019/image_names.json
+?? visual_cbr_native_high_psnr_20261019/image_shapes_hw.json
+?? visual_cbr_native_high_psnr_20261019/inspect_native.py
+?? visual_cbr_native_high_psnr_20261019/inspection
+?? visual_cbr_native_high_psnr_20261019/manifest.json
+?? visual_cbr_native_high_psnr_20261019/mplconfig/fontlist-v390.json
+?? visual_cbr_native_high_psnr_20261019/native_diagnostics.json
+?? visual_cbr_native_high_psnr_20261019/native_experiments.py
+?? visual_cbr_native_high_psnr_20261019/native_vae_adapter.py
+?? visual_cbr_native_high_psnr_20261019/rank_higher.py
+?? visual_cbr_native_high_psnr_20261019/render_native.py
+?? visual_cbr_native_high_psnr_20261019/reports
+?? visual_cbr_native_high_psnr_20261019/run_higher_search.py
+?? visual_cbr_native_high_psnr_20261019/selected/comparison_metrics.csv
+?? visual_cbr_native_high_psnr_20261019/selected/comparison_metrics.json
+?? visual_cbr_native_high_psnr_20261019/selected/kodim03_comparison.pdf
+?? visual_cbr_native_high_psnr_20261019/selected/kodim03_comparison.png
+?? visual_cbr_native_high_psnr_20261019/selected/kodim12_comparison.pdf
+?? visual_cbr_native_high_psnr_20261019/selected/kodim12_comparison.png
+?? visual_cbr_native_high_psnr_20261019/selected/mdrq
+?? visual_cbr_native_high_psnr_20261019/selected/original/kodim03.png
+?? visual_cbr_native_high_psnr_20261019/selected/original/kodim12.png
+?? visual_cbr_native_high_psnr_20261019/selected/raq_vae
+?? visual_cbr_native_high_psnr_20261019/selected/vq_deepsc
+?? visual_cbr_native_high_psnr_20261019/selection.json
+?? visual_cbr_native_high_psnr_20261019/verification.json
+?? visual_cbr_native_high_psnr_20261019/verify_native.py
+?? visual_cbr_native_kodak_20261019/README.md
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/invocation.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim01.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim02.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim03.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim04.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim05.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim06.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim07.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim08.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim09.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim10.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim11.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim12.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim13.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim14.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim15.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim16.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim17.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim18.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim19.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim20.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim21.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim22.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim23.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/kodim24.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/native_output.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256/results.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/invocation.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim01.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim02.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim03.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim04.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim05.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim06.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim07.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim08.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim09.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim10.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim11.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim12.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim13.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim14.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim15.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim16.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim17.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim18.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim19.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim20.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim21.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim22.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim23.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/kodim24.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/native_output.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/adapted256_native_artifact_version/results.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/invocation.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim01.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim02.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim03.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim04.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim05.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim06.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim07.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim08.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim09.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim10.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim11.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim12.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim13.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim14.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim15.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim16.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim17.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim18.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim19.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim20.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim21.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim22.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim23.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/kodim24.png
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/native_output.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/original256/results.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/parity_256.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/parity_256_native_artifact_version.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_393216_pixels.diff
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_393216_pixels.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_393216_pixels.py
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_65536_pixels.diff
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_65536_pixels.json
+?? visual_cbr_native_kodak_20261019/adapter_audit/vae_evaluator_65536_pixels.py
+?? visual_cbr_native_kodak_20261019/cases
+?? visual_cbr_native_kodak_20261019/comparison_all.json
+?? visual_cbr_native_kodak_20261019/environment.json
+?? visual_cbr_native_kodak_20261019/hooks/sitecustomize.py
+?? visual_cbr_native_kodak_20261019/image_names.json
+?? visual_cbr_native_kodak_20261019/image_shapes_hw.json
+?? visual_cbr_native_kodak_20261019/initial_cscr_diagnostics.json
+?? visual_cbr_native_kodak_20261019/inspect_native.py
+?? visual_cbr_native_kodak_20261019/inspection
+?? visual_cbr_native_kodak_20261019/manifest.json
+?? visual_cbr_native_kodak_20261019/mplconfig/fontlist-v390.json
+?? visual_cbr_native_kodak_20261019/native_diagnostics.json
+?? visual_cbr_native_kodak_20261019/native_experiments.py
+?? visual_cbr_native_kodak_20261019/native_vae_adapter.py
+?? visual_cbr_native_kodak_20261019/preview_k64_16_qpsk_r12.json
+?? visual_cbr_native_kodak_20261019/preview_k64_16_qpsk_r12_b16_4_t8_2.json
+?? visual_cbr_native_kodak_20261019/preview_k64_16_qpsk_r12_b32_2_t8_2.json
+?? visual_cbr_native_kodak_20261019/render_native.py
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_vae/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_vae/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_vae/native_output.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_vae/results.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/raq_vae/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/vq_deepsc/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/vq_deepsc/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/vq_deepsc/results.json
+?? visual_cbr_native_kodak_20261019/reports/k16_16_qpsk_r12/vq_deepsc/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_vae/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_vae/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_vae/native_output.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_vae/results.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/raq_vae/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/vq_deepsc/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/vq_deepsc/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/vq_deepsc/results.json
+?? visual_cbr_native_kodak_20261019/reports/k32_16_qpsk_r12/vq_deepsc/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_vae/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_vae/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_vae/native_output.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_vae/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/raq_vae/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/vq_deepsc/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/vq_deepsc/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/vq_deepsc/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12/vq_deepsc/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b16_4_t8_2/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b16_4_t8_2/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b16_4_t8_2/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b16_4_t8_2/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b32_2_t8_2/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b32_2_t8_2/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b32_2_t8_2/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_16_qpsk_r12_b32_2_t8_2/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_rvq/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_rvq/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_rvq/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_rvq/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_vae/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_vae/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_vae/native_output.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_vae/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/raq_vae/summary.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/vq_deepsc/image_export.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/vq_deepsc/invocation.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/vq_deepsc/results.json
+?? visual_cbr_native_kodak_20261019/reports/k64_64_qpsk_r12/vq_deepsc/summary.json
+?? visual_cbr_native_kodak_20261019/selected/comparison_metrics.csv
+?? visual_cbr_native_kodak_20261019/selected/comparison_metrics.json
+?? visual_cbr_native_kodak_20261019/selected/kodim04_comparison.pdf
+?? visual_cbr_native_kodak_20261019/selected/kodim04_comparison.png
+?? visual_cbr_native_kodak_20261019/selected/kodim15_comparison.pdf
+?? visual_cbr_native_kodak_20261019/selected/kodim15_comparison.png
+?? visual_cbr_native_kodak_20261019/selected/mdrq
+?? visual_cbr_native_kodak_20261019/selected/original/kodim04.png
+?? visual_cbr_native_kodak_20261019/selected/original/kodim15.png
+?? visual_cbr_native_kodak_20261019/selected/raq_vae
+?? visual_cbr_native_kodak_20261019/selected/vq_deepsc
+?? visual_cbr_native_kodak_20261019/selection.json
+?? visual_cbr_native_kodak_20261019/verification.json
+?? visual_cbr_native_kodak_20261019/verify_native.py

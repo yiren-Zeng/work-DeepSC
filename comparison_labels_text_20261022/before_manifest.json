@@ -1,0 +1,52 @@
+[
+  {
+    "path": "/workspace/yi/work/comparison_review_20261022/build_comparisons.py",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_review_20261022/build_comparisons.py",
+    "sha256": "f02b963abe1ac88284f977c65bd05ad2669582b9d3eafa488f61da5c01d2f571"
+  },
+  {
+    "path": "/workspace/yi/work/comparison_revision_20261022/revise_comparisons.py",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/comparison_revision_20261022/revise_comparisons.py",
+    "sha256": "e9e7da83f04af391e84155cd24f756ef95c9dfb276159a53458a73077754de7f"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022.png",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.png",
+    "sha256": "31373b7f63d8340368d5585f882ea5b46c51dcfd64a2461327df7ee966916eb9"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022.pdf",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022.pdf",
+    "sha256": "3747ba7106ab3a233e2d3b58160629997245a502f698c19aaab92f5c1853b843"
+  },
+  {
+    "path": "/workspace/yi/work/kodim21_comparison_20261022.png",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.png",
+    "sha256": "b45012da0b7148710b66613ebad5cca3658cd3b52fc04437fcfc5b0bd8b4a8d2"
+  },
+  {
+    "path": "/workspace/yi/work/kodim21_comparison_20261022.pdf",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim21_comparison_20261022.pdf",
+    "sha256": "da90090cc6f6dd9867de2539854b3629b3251248938cdee364d38110e7edd24d"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.png",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.png",
+    "sha256": "eb6993d787ccf72e5a3b58beed27f9cb915220f48acc6b70b6be81eddd474033"
+  },
+  {
+    "path": "/workspace/yi/work/kodim05_comparison_20261022_v2.pdf",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim05_comparison_20261022_v2.pdf",
+    "sha256": "6eecdd1e56df909f5e4efdf97613e77e85344c0bc0c6aee745313b3879a41689"
+  },
+  {
+    "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.png",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.png",
+    "sha256": "76a2be7b437368670163185b720e59fb435277bbf2962285ebe406d8463f79d9"
+  },
+  {
+    "path": "/workspace/yi/work/kodim14_comparison_20261022_v2.pdf",
+    "snapshot": "/workspace/yi/work/comparison_labels_text_20261022/before/kodim14_comparison_20261022_v2.pdf",
+    "sha256": "bc3844034123cbf1b68c2da7692fe020ed62c5e987954f3fc85ea84b1bfa8f0c"
+  }
+]

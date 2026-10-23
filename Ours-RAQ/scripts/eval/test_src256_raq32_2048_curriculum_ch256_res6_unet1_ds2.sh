@@ -22,24 +22,26 @@ export SIMVQ_USE_DYNAMIC_RAQ_RVQ="0"
 export SIMVQ_USE_SHARED_RAQ_RVQ="0"
 export SIMVQ_USE_INDEPENDENT_RAQ_RVQ="0"
 export SIMVQ_TEST_USE_RAQ_RVQ="0"
-export SIMVQ_RAQ_TARGET_LIST="${SIMVQ_RAQ_TARGET_LIST:-256}"
+export SIMVQ_RAQ_TARGET_LIST="${SIMVQ_RAQ_TARGET_LIST:-32}"
 export SIMVQ_RAQ_MIN_TRG="32"
 export SIMVQ_RAQ_MAX_TRG="2048"
 unset SIMVQ_RAQ_MIN_TRG_LIST SIMVQ_RAQ_MAX_TRG_LIST
 
-export SIMVQ_TEST_DATASET_PATH="${SIMVQ_TEST_DATASET_PATH:-/workspace/yi/work/Kodak-256-transform-resize}"
+export SIMVQ_TEST_DATASET_PATH="${SIMVQ_TEST_DATASET_PATH:-/workspace/yi/work/Kodak}"
 export SIMVQ_TEST_NO_RESIZE="${SIMVQ_TEST_NO_RESIZE:-1}"
 export GPU_ID="${GPU_ID:-0}"
 export CUDA_VISIBLE_DEVICES="$GPU_ID"
 
 CHECKPOINT="${CHECKPOINT:-/workspace/yi/work/Ours-RAQ/checkpoints/shiyan_raq_src256_raq32-2048_curriculum_ratevar_A_patch_ch256_res6_unet1_ds2_k256/best_vq_deepsc.pth}"
-SNRS="${SNRS:-0}"
+SNRS="${SNRS:-10}"
 MODULATION="${MODULATION:-bpsk}"
 # LDPC_RATE is the channel coding rate k/n, e.g. 0.5 or 0.75.
 LDPC_RATE="${LDPC_RATE:-0.5}"
 LDPC_N="${LDPC_N:-256}"
 JSON_OUTPUT="${JSON_OUTPUT:-}"
 NO_CHANNEL="${NO_CHANNEL:-0}"
+SAVE_IMAGES="${SAVE_IMAGES:-1}"
+IMAGE_OUTPUT_DIR="${IMAGE_OUTPUT_DIR:-$PROJECT_ROOT/experiments/eval_images}"
 read -r -a SNR_ARGS <<< "$SNRS"
 
 ARGS=(
@@ -55,6 +57,9 @@ if [[ "$NO_CHANNEL" == "1" ]]; then
 fi
 if [[ -n "$JSON_OUTPUT" ]]; then
   ARGS+=(--json-output "$JSON_OUTPUT")
+fi
+if [[ "$SAVE_IMAGES" == "1" ]]; then
+  ARGS+=(--image-output-dir "$IMAGE_OUTPUT_DIR")
 fi
 
 python -u test_real.py "${ARGS[@]}" "$@"

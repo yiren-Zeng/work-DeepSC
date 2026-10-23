@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Single-scale LSTM-RAQ baseline aligned to the Ours-RAQ ds2/source-K256 setup.
+# Sweep the strict-original single-scale x2 RAQVAE_ONE target codebooks.
 set -euo pipefail
 raq_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 raq_python="${RAQ_PYTHON:-/home/yi/.conda/envs/work/bin/python}"
@@ -37,18 +37,72 @@ if [[ -z "$run_dir" || ! -f "$run_dir/config.json" || ! -f "$run_dir/status.json
   exit 1
 fi
 
+targets="${TARGETS:-32}"
+no_channel="${NO_CHANNEL:-0}"
+channel="${CHANNEL:-awgn}"
+rician_k_factor="${RICIAN_K_FACTOR:-1}"
+ldpc_rate="${LDPC_RATE:-1/2}"
+modulation="${MODULATION:-BPSK}"
+snr="${SNR:-10}"
+seed="${SEED:-42}"
+ratio_denominator="${RATIO_DENOMINATOR:-48}"
+dataset="${DATASET:-/workspace/yi/work/Kodak}"
+output_root="${OUTPUT_ROOT:-$raq_root/generated_images}"
+
+if [[ "$no_channel" != "0" && "$no_channel" != "1" ]]; then
+  echo "NO_CHANNEL must be 0 or 1, got: $no_channel" >&2
+  exit 2
+fi
+
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONWARNINGS="ignore"
 export TF_CPP_MIN_LOG_LEVEL="3"
 export CUDA_VISIBLE_DEVICES="${GPU_ID:-0}"
 cd -- "$raq_root"
-exec "$raq_python" -B \
-  eval_seq2seq_one_ds2_src256_k32_2048_channel.py \
-  --run-dir "$run_dir" \
-  --target-k 256 \
-  --ldpc-rate 1/2 \
-  --modulation BPSK \
-  --channel awgn \
-  --snr 0 \
-  --concise \
-  "$@"
+
+run_stamp="$("$raq_python" -B - <<'PY'
+import datetime
+import uuid
+from zoneinfo import ZoneInfo
+print(datetime.datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d_%H%M%S_%f") + "_" + uuid.uuid4().hex[:8])
+PY
+)"
+image_run="$output_root/$run_stamp"
+
+for target in $targets; do
+  case " 32 64 128 256 512 1024 2048 " in
+    *" $target "*) ;;
+    *)
+      echo "Unsupported target K=$target; expected one of: 32 64 128 256 512 1024 2048" >&2
+      exit 2
+      ;;
+  esac
+
+  args=(
+    --run-dir "$run_dir"
+    --target-k "$target"
+    --ldpc-rate "$ldpc_rate"
+    --modulation "$modulation"
+    --channel "$channel"
+    --rician-k-factor "$rician_k_factor"
+    --snr "$snr"
+    --seed "$seed"
+    --model-seed 42
+    --ratio-denominator "$ratio_denominator"
+    --dataset "$dataset"
+    --images-only
+    --concise
+  )
+  if [[ "$no_channel" == "1" ]]; then
+    args+=(--no-channel)
+    condition="no_channel"
+  else
+    condition="${channel}_snr${snr}"
+  fi
+  args+=(--output "$image_run/k${target}/$condition")
+
+  "$raq_python" -B \
+    eval_seq2seq_one_ds2_src256_k32_2048_channel.py \
+    "${args[@]}" \
+    "$@"
+done

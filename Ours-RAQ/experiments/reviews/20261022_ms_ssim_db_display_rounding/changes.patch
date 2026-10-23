@@ -1,0 +1,135 @@
+diff --git a/Ours-RAQ/test_real.py b/Ours-RAQ/test_real.py
+--- a/Ours-RAQ/test_real.py
++++ b/Ours-RAQ/test_real.py
+@@ -153,8 +153,9 @@
+ 
+ 
+ def _ms_ssim_db(mean_ms_ssim):
+-    """Convert the dataset's mean MS-SSIM, rather than averaging image dB values."""
+-    error = 1.0 - float(mean_ms_ssim)
++    """Convert the mean rounded exactly as the four-decimal terminal display."""
++    displayed_mean = float(f"{float(mean_ms_ssim):.4f}")
++    error = 1.0 - displayed_mean
+     return math.inf if error <= 0 else -10.0 * math.log10(error)
+ 
+ 
+@@ -353,7 +354,7 @@
+             results["no_channel"]["diagnostics"] = diagnostics
+         print(
+             f"No channel | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} "
+-            f"| MS-SSIM (dB, from mean): {mean_ms_ssim_db:.4f} "
++            f"| MS-SSIM (dB, from 4dp mean): {mean_ms_ssim_db:.4f} "
+             f"| Avg PSNR: {mean_psnr:.4f} dB"
+         )
+         if report_rate:
+@@ -397,7 +398,7 @@
+                 results[snr]["diagnostics"] = diagnostics
+             print(
+                 f"SNR {snr} dB | {branch_name} Avg MS-SSIM: {mean_ms_ssim:.4f} "
+-                f"| MS-SSIM (dB, from mean): {mean_ms_ssim_db:.4f} "
++                f"| MS-SSIM (dB, from 4dp mean): {mean_ms_ssim_db:.4f} "
+                 f"| Avg PSNR: {mean_psnr:.4f} dB"
+             )
+             if report_rate:
+diff --git a/Ours-RAQ/tests/test_eval_reporting.py b/Ours-RAQ/tests/test_eval_reporting.py
+--- a/Ours-RAQ/tests/test_eval_reporting.py
++++ b/Ours-RAQ/tests/test_eval_reporting.py
+@@ -70,6 +70,18 @@
+         self.assertAlmostEqual(evaluator._ms_ssim_db(0.99), 20)
+         self.assertTrue(math.isinf(evaluator._ms_ssim_db(1)))
+ 
++    def test_ms_ssim_db_matches_four_decimal_display_in_reported_example(self):
++        mean_ms_ssim = 0.993566460081
++        self.assertEqual(f"{mean_ms_ssim:.4f}", "0.9936")
++        self.assertEqual(f"{evaluator._ms_ssim_db(mean_ms_ssim):.4f}", "21.9382")
++        self.assertAlmostEqual(
++            evaluator._ms_ssim_db(mean_ms_ssim), -10 * math.log10(1 - 0.9936)
++        )
++
++    def test_ms_ssim_db_handles_rounding_to_one(self):
++        self.assertTrue(math.isinf(evaluator._ms_ssim_db(0.99996)))
++        self.assertAlmostEqual(evaluator._ms_ssim_db(0.99994), 40)
++
+     def test_mean_conversion_and_separate_runs_with_all_images(self):
+         cfg = SimpleNamespace(
+             validate=lambda: None,
+@@ -91,16 +103,18 @@
+                         ToyModel(),
+                         {"num_embeddings_list": [2], "quantizer_type": "simvq"},
+                     )),
+-                    patch("evaluation.quality._image_quality", side_effect=[(0.9, 20), (0.99, 30)]),
++                    patch("evaluation.quality._image_quality", side_effect=[(0.90001, 20), (0.99001, 30)]),
+                     contextlib.redirect_stdout(output),
+                 ):
+                     results = evaluator.test_real(
+                         no_channel=True, report_rate=True, image_output_dir=root
+                     )
+                 metrics = results["no_channel"]
+-                self.assertAlmostEqual(metrics["ms_ssim"], 0.945)
++                self.assertAlmostEqual(metrics["ms_ssim"], 0.94501)
+                 self.assertAlmostEqual(metrics["ms_ssim_db"], -10 * math.log10(0.055))
+                 self.assertNotAlmostEqual(metrics["ms_ssim_db"], 15)
++                self.assertIn("Avg MS-SSIM: 0.9450", output.getvalue())
++                self.assertIn("MS-SSIM (dB, from 4dp mean): 12.5964", output.getvalue())
+                 self.assertIn("MS-SSIM (dB)", output.getvalue())
+                 self.assertIn("CBR: N/A", output.getvalue())
+                 image_dir = Path(metrics["image_output_dir"])
+diff --git a/Ours-RAQ/docs/eval_ds2_output_changes_20261022.md b/Ours-RAQ/docs/eval_ds2_output_changes_20261022.md
+--- a/Ours-RAQ/docs/eval_ds2_output_changes_20261022.md
++++ b/Ours-RAQ/docs/eval_ds2_output_changes_20261022.md
+@@ -3,7 +3,7 @@
+ ## 已确认的需求
+ 
+ - CBR 沿用“实际信道符号数 / 原图元素数（H×W×3）”，包含 LDPC 和调制填充，显示精确约分的分数和小数。
+-- 保留原始 MS-SSIM 均值，额外显示 `-10 * log10(1 - mean_ms_ssim)`；先平均再转换。
++- 保留原始 MS-SSIM 均值；终端显示四位小数，dB 使用 `-10 * log10(1 - 四位小数均值)`。先平均，再按终端精度舍入，最后转换。
+ - 每次运行使用独立目录，按 SNR 保存全部重建图，默认沿用原图名，输出 RGB PNG。
+ 
+ ## 本次代码与文档文件
+@@ -51,7 +51,7 @@
+ 
+ 直接调用 Python 时，传入 `--image-output-dir` 才会保存图片。设置原有的 `JSON_OUTPUT` 时，结果还包含 `ms_ssim_db`、各条件图片目录及 CBR 分数字符串。
+ 
+-PNG 从当前评测重建结果转换：`[-1, 1] -> [0, 1]`，截断到合法范围，乘 255 后四舍五入。不修改用于指标计算的张量。CBR 在无信道模式显示 `N/A`；MS-SSIM 均值恰为 1 时，dB 为正无穷。
++PNG 从当前评测重建结果转换：`[-1, 1] -> [0, 1]`，截断到合法范围，乘 255 后四舍五入。不修改用于指标计算的张量。CBR 在无信道模式显示 `N/A`；MS-SSIM 均值显示为 `1.0000` 时，按该显示值计算的 dB 为正无穷。JSON 中的 `ms_ssim` 保留完整均值，`ms_ssim_db` 按四位小数均值计算。
+ 
+ ## 验证命令与产物
+ 
+@@ -84,7 +84,7 @@
+ 
+ 产物根目录为 `experiments/eval_images/verification_20261022/`，运行日志和图片属于自动生成产物；图片内容及哈希在 `artifact_manifest.json` 中记录。`changes.patch` 包含上表全部手工代码和文档改动，包含新增文件的完整内容。
+ 
+-## 验证结果
++## 初次验证结果（调整 dB 舍入口径前）
+ 
+ - 5 项回归测试全部通过；日志为 `unit_tests.log`。
+ - 两个 Shell 脚本通过 `bash -n`；本次修改的已跟踪文件通过定向 `git diff --check`。
+@@ -108,3 +108,28 @@
+ 额外自动生成文件为 `channel_results.json`、`artifact_manifest.json` 和 `changes.patch`；`channel_run.log`、`unit_tests.log` 为运行日志，可能被工作区通用日志忽略规则隐藏，但文件实际保留。
+ 
+ 补丁生成方式：在工作区 Git 根目录对本次 4 个已跟踪文件运行 `git diff --binary -- <文件清单>`，对本次 3 个新增文本文件分别运行 `git diff --no-index -- /dev/null <文件>`，将实际补丁拼接到 `changes.patch`；未纳入用户原有改动和生成的图片。使用 `git apply --reverse --check` 检查补丁与当前文件一致，不实际应用补丁。
++
++## 后续调整：dB 与终端四位小数一致
++
++用户确认以终端显示的四位小数 MS-SSIM 计算 dB。原先 `21.9155 dB` 对应约 `0.99356646`，四位显示为 `0.9936`；调整后直接使用 `0.9936`，因此显示 `21.9382 dB`。
++
++此次仅修改三个已有文件：
++
++| 文件 | 关键改动 |
++| --- | --- |
++| `test_real.py` | `_ms_ssim_db` 先按 `.4f` 格式舍入均值再计算，有信道和无信道评测均使用此口径。 |
++| `tests/test_eval_reporting.py` | 增加截图数值与舍入到 1 的边界检查，并验证完整评测输出使用舍入后的均值。 |
++| `docs/eval_ds2_output_changes_20261022.md` | 记录新口径，并将原有验证数据标为调整前的历史结果。 |
++
++此次修改前快照、增量补丁和测试日志位于 `experiments/reviews/20261022_ms_ssim_db_display_rounding/`。`before.json` 保存三份修改前完整文本；`changes.patch` 仅比较该快照与本次修改后的内容，避免混入早先工作。此处测试文件和本文档在 Git 中仍是先前创建的未跟踪文件，本次操作是继续修改它们。
++
++验证命令：
++
++```bash
++set -o pipefail
++PYTHONDONTWRITEBYTECODE=1 TF_CPP_MIN_LOG_LEVEL=2 \
++  python -m unittest discover -s tests -p 'test_eval_reporting.py' -v \
++  2>&1 | tee experiments/reviews/20261022_ms_ssim_db_display_rounding/unit_tests.log
++```
++
++此次验证结果：7 项回归检查全部通过；Python 语法检查和定向差异空白检查通过。截图中的 `0.9936` 现在对应 `21.9382 dB`；均值舍入后为 `1.0000` 时显示 `inf`，边界情况也通过测试。
